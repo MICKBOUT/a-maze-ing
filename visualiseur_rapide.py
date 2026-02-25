@@ -1,10 +1,11 @@
 from gen import gen
+from solver import solver_heap
 import tkinter as tk
 
 # -----------------------------
 # Labyrinthe fourni
 # -----------------------------
-maze = gen(25, 25)
+maze = gen(15, 15)
 
 # -----------------------------
 # Paramètres d'affichage
@@ -68,4 +69,8 @@ def main():
 
 
 if __name__ == "__main__":
+    try:
+        solver_heap(maze, (0, 0), (0, 3))
+    except Exception as e:
+        print(e)
     main()
