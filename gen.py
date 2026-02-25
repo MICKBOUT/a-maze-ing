@@ -95,6 +95,27 @@ def gen(height: int, width: int) -> list[list[int]]:
     return grid
 
 
+def write_file(
+        maze: list[list[int]],
+        start: tuple[int, int],
+        end: tuple[int, int]) -> str:
+
+    file = "output_maze.txt"
+    with open(file, 'w') as f:
+        line = ""
+        for row in maze:
+            for nb in row:
+                line += format(nb, "X")
+            line += "\n"
+        line += "\n"
+        line += f"{str(start[0])},{str(start[1])}\n"
+        line += f"{str(end[0])},{str(end[1])}\n"
+        line += "placer_holder"
+        f.write("".join(str(line)))
+
+    return file
+
+
 def validate_maze(grid: list[list[int]]):
     height = len(grid)
     width = len(grid[0])
@@ -113,9 +134,8 @@ def validate_maze(grid: list[list[int]]):
 
 
 if __name__ == "__main__":
-    grid = gen(height=200, width=150)
-    for line in grid:
-        print(line)
+    grid = gen(height=10, width=10)
+    write_file(grid, (0, 0), (9, 9))
 
 # Bit Direction|
 # -------------|

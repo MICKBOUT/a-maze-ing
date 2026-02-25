@@ -54,7 +54,8 @@ def main():
     root = tk.Tk()
     root.title("Labyrinthe bitmask")
 
-    canvas = tk.Canvas(root, width=cols * CELL, height=rows * CELL, bg=BG_COLOR)
+    canvas = tk.Canvas(
+        root, width=cols * CELL, height=rows * CELL, bg=BG_COLOR)
     canvas.pack()
     # Dessiner le cadre extérieur
 
