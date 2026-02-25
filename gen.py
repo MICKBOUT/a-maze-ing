@@ -1,12 +1,60 @@
-import random
+from random import randint, choice
 
 
 def gen(height: int, width: int) -> list[list[int]]:
+    """
+    Generate a perfect maze represented as a 2D grid of wall-bit masks.
+
+    Parameters:
+    height : int
+        Number of rows in the maze (must be a positive integer).
+    width : int
+        Number of columns in the maze (must be a positive integer).
+
+    Returns:
+    list[list[int]]
+        A height-by-width 2D list of integers where each integer encodes the
+        walls remaining around that cell using the bit layout described above.
+    """
+
+    assert height >= 6, "height too small for the 42 logo"
+    assert width >= 9, "width need to be >= 7 for the 42 logo"
+
     grid = [[15 for _ in range(width)] for _ in range(height)]
 
-    rnd_node = (random.randint(0, height - 1), random.randint(0, width - 1))
-    seen = {rnd_node}
-    stack = [rnd_node]
+    mid_height = height // 2
+    mid_width = width // 2
+
+    # 42 logo
+    seen = {
+        # 4
+        (mid_height - 2, mid_width - 3),
+        (mid_height - 1, mid_width - 3),
+        (mid_height, mid_width - 3),
+        (mid_height, mid_width - 2),
+        (mid_height, mid_width - 1),
+        (mid_height, mid_width - 1),
+        (mid_height + 1, mid_width - 1),
+        (mid_height + 2, mid_width - 1),
+        # 2
+        (mid_height - 2, mid_width + 1),
+        (mid_height - 2, mid_width + 2),
+        (mid_height - 2, mid_width + 3),
+        (mid_height - 1, mid_width + 3),
+        (mid_height, mid_width + 3),
+        (mid_height, mid_width + 2),
+        (mid_height, mid_width + 1),
+        (mid_height + 1, mid_width + 1),
+        (mid_height + 2, mid_width + 1),
+        (mid_height + 2, mid_width + 2),
+        (mid_height + 2, mid_width + 3),
+    }
+
+    rnd_cell = (randint(0, height - 1), randint(0, width - 1))
+    while rnd_cell in seen:
+        rnd_cell = (randint(0, height - 1), randint(0, width - 1))
+    stack = [rnd_cell]
+
     while stack:
         y, x = stack[-1]
         seen.add((y, x))
@@ -26,7 +74,7 @@ def gen(height: int, width: int) -> list[list[int]]:
         if not candidate:
             stack.pop()
         else:
-            direction = random.choice(candidate)
+            direction = choice(candidate)
             if direction == 0:  # North
                 grid[y][x] -= 1  # 0 LSB (least significant bit)
                 grid[y - 1][x] -= 4  # 2 LSB
@@ -44,8 +92,6 @@ def gen(height: int, width: int) -> list[list[int]]:
                 grid[y][x - 1] -= 2
                 stack.append((y, x - 1))
     # north, est, south , west
-    for line in grid:
-        print(line)
     return grid
 
 
@@ -66,60 +112,10 @@ def validate_maze(grid: list[list[int]]):
     return len(error) == 0
 
 
-# === COLORS ===
-RESET = "\033[0m"
-WALL  = "\033[100m██\033[0m"   # dark grey wall
-EMPTY = "  "                   # empty space
-
-def render_bitmask_maze(grid):
-    rows = len(grid)
-    cols = len(grid[0])
-
-    # Draw top border
-    print(WALL * cols)
-
-    for y in range(rows):
-        line = ""
-        for x in range(cols):
-            cell = grid[y][x]
-
-            # Check walls
-            left   = cell & 8
-            right  = cell & 2
-
-            # Draw left wall
-            if left:
-                line += WALL
-            else:
-                line += EMPTY
-
-            # Draw cell interior
-            line += EMPTY
-
-            # Draw right wall
-            if right:
-                line += WALL
-            else:
-                line += EMPTY
-
-        print(line)
-
-        # Draw bottom walls
-        bottom_line = ""
-        for x in range(cols):
-            cell = grid[y][x]
-            bottom = cell & 4
-            if bottom:
-                bottom_line += WALL * 2
-            else:
-                bottom_line += EMPTY * 2
-        print(bottom_line)
-
-
-
 if __name__ == "__main__":
-    grid = gen(height=5, width=3)
-    render_bitmask_maze(grid)
+    grid = gen(height=200, width=150)
+    for line in grid:
+        print(line)
 
 # Bit Direction|
 # -------------|

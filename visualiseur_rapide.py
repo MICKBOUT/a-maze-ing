@@ -4,12 +4,12 @@ import tkinter as tk
 # -----------------------------
 # Labyrinthe fourni
 # -----------------------------
-maze = gen(12, 25)
+maze = gen(25, 25)
 
 # -----------------------------
 # Paramètres d'affichage
 # -----------------------------
-CELL = 30  # taille d'une case
+CELL = 50  # taille d'une case
 WALL_COLOR = "#352208"
 BG_COLOR = "#E1BB80"
 
