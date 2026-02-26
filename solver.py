@@ -1,8 +1,7 @@
 from gen import gen
-import heapq
 
 
-def solver_heap(
+def solver_a_star(
         maze: list[list[int]],
         start: tuple[int, int] = (0, 0),
         end: tuple[int, int] = None):
@@ -13,52 +12,57 @@ def solver_heap(
     assert start != end, "Start and end need to be diferent"
 
     y_end, x_end = end
-    y, x = start
-    heap = []
-    seen = {start}
-    heapq.heappush(heap, (abs(x_end - x) + abs(y_end - y), y, x, ""))
-    print(heap)
-    while heap:
-        # print(heap)
-        dst, y, x, path = heapq.heappop(heap)
-        print(y == y_end, x == x_end)
-        if (y, x) == end:
-            return path
-        # north
-        if (not (maze[y][x] >> 0) & 1) and (y - 1, x) not in seen:
-            heapq.heappush(heap, (
-                    abs(y_end - y - 1) + abs(x_end - x), y - 1, x, path + "N"))
-            seen.add((y - 1, x))
+    stack = [[*start, ""]]
+    path = {}
+
+    while stack:
+        print(stack)
+        y, x, current_path = stack.pop()
+        # North
+        if (not (maze[y][x] >> 0) & 1):
+            if ((y - 1, x) not in path or
+               len(current_path) + 1 < len(path[(y - 1, x)])):
+                path[(y - 1, x)] = current_path + "N"
+                stack.append((y - 1, x, current_path + "N"))
         # East
-        if (not (maze[y][x] >> 1) & 1) and (y, x + 1) not in seen:
-            heapq.heappush(heap, (
-                    abs(y_end - y) + abs(x_end - x + 1), y, x + 1, path + "E"))
-            seen.add((y, x + 1))
+        if (not (maze[y][x] >> 1) & 1):
+            if ((y, x + 1) not in path or
+               len(current_path) + 1 < len(path[(y, x + 1)])):
+                path[(y, x + 1)] = current_path + "E"
+                stack.append((y, x + 1, current_path + "E"))
         # South
-        if (not (maze[y][x] >> 2) & 1) and (y + 1, x) not in seen:
-            heapq.heappush(heap, (
-                    abs(y_end - y + 1) + abs(x_end - x), y + 1, x, path + "S"))
-            seen.add((y + 1, x))
+        if (not (maze[y][x] >> 2) & 1):
+            if ((y + 1, x) not in path or
+               len(current_path) + 1 < len(path[(y + 1, x)])):
+                path[(y + 1, x)] = current_path + "S"
+                stack.append((y + 1, x, current_path + "S"))
         # West
-        if (not (maze[y][x] >> 3) & 1) and (y, x - 1) not in seen:
-            heapq.heappush(heap, (
-                    abs(y_end - y) + abs(x_end - x - 1), y, x - 1, path + "W"))
-            seen.add((y + 1, x))
-    print("not found")
-    print("found ?", end in seen)
+        if (not (maze[y][x] >> 3) & 1):
+            if ((y, x - 1) not in path or
+               len(current_path) + 1 < len(path[(y, x - 1)])):
+                path[(y, x - 1)] = current_path + "W"
+                stack.append((y, x - 1, current_path + "W"))
+
+    return path.get(end, None)
+
 # Bit Direction|
 # -------------|
-# 0 North      |
-# 1 East       |
-# 2 South      |
-# 3 West       |
+# 0 North    1 |
+# 1 East     2 |
+# 2 South    4 |
+# 3 West     8 |
 
 
 if __name__ == "__main__":
     maze = gen(10, 10)
-    start = (0, 0)
-    end = (9, 9)
+    # maze = [
+    #     [9, 1, 1, 1, 3],
+    #     [8, 0, 0, 0, 2],
+    #     [8, 0, 0, 0, 2],
+    #     [8, 0, 0, 0, 2],
+    #     [12, 4, 4, 4, 6],
+    # ]
+    # start = (0, 0)
+    # end = (4, 4)
 
-    assert maze[start[0]][start[1]] != 15, "Error entry on full block"
-    assert maze[end[0]][end[1]] != 15, "Error exit on full block"
-    solver_heap(maze)
+    print(solver_a_star(maze))
