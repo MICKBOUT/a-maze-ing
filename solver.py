@@ -1,4 +1,4 @@
-from gen import gen
+from gen import gen, write_file
 
 
 def solver_a_star(
@@ -16,7 +16,6 @@ def solver_a_star(
     path = {}
 
     while stack:
-        print(stack)
         y, x, current_path = stack.pop()
         # North
         if (not (maze[y][x] >> 0) & 1):
@@ -54,7 +53,6 @@ def solver_a_star(
 
 
 if __name__ == "__main__":
-    maze = gen(10, 10)
     # maze = [
     #     [9, 1, 1, 1, 3],
     #     [8, 0, 0, 0, 2],
@@ -64,5 +62,5 @@ if __name__ == "__main__":
     # ]
     # start = (0, 0)
     # end = (4, 4)
-
-    print(solver_a_star(maze))
+    maze = gen(25, 25)
+    write_file(maze, path=solver_a_star(maze))
