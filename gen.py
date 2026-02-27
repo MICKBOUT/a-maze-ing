@@ -94,9 +94,88 @@ def gen_prefect(height: int, width: int) -> list[list[int]]:
     # north, est, south , west
     return grid
 
+
+def gen_imperfect(height, width):
+    """
+    Generate an imperfect maze by starting with a perfect maze
+    and randomly removing some walls.
+    Parameters:
+        height : int
+            Number of rows in the maze (must be a positive integer).
+        width : int
+            Number of columns in the maze (must be a positive integer).
+    Returns:
+        list[list[int]]
+            A height-by-width 2D list of integers where each integer encodes
+            the walls remaining around that cell
+            using the bit layout described above.
+    """
+    def rm_wall(maze: list[list[int]],
+                row: int,
+                col: int,
+                direction: int,
+                ) -> None:
+        """
+        Remove a wall between the cell at (row, col) and
+        its neighbor in the specified direction.
+            Parameters:
+            maze : list[list[int]]
+                The maze represented as a 2D grid of wall-bit masks.
+            row : int
+                The row index of the cell from which to remove the wall.
+            col : int
+                The column index of the cell from which to remove the wall.
+            direction : int
+                The direction of the wall to remove
+                (0 for North, 1 for East, 2 for South, 3 for West).
+        """
+        match direction:
+            # North
+            case 0:
+                maze[row][col] &= ~(1 << 0)
+                maze[row - 1][col] &= ~(1 << 2)
+            # East
+            case 1:
+                maze[row][col] &= ~(1 << 1)
+                maze[row][col + 1] &= ~(1 << 3)
+            # South
+            case 2:
+                maze[row][col] &= ~(1 << 2)
+                maze[row + 1][col] &= ~(1 << 0)
+            # West
+            case 3:
+                maze[row][col] &= ~(1 << 3)
+                maze[row][col - 1] &= ~(1 << 1)
+
+    maze = gen_prefect(height, width)
+    for _ in range((height * width) // 12):
+        row = randint(0, height - 1)
+        col = randint(0, width - 1)
+        if maze[row][col] == 15:
+            continue
+
+        candidate = []
+        if row > 0 and maze[row - 1][col] != 15:
+            candidate.append(0)
+        if col < width - 2 and maze[row][col + 1] != 15:
+            candidate.append(1)
+        if row < height - 2 and maze[row + 1][col] != 15:
+            candidate.append(2)
+        if col > 0 and maze[row][col - 1] != 15:
+            candidate.append(3)
+
+        if not candidate:
+            continue
+        # else:
+        rm_wall(maze, row, col, choice(candidate))
+
+    return maze
+
 if __name__ == "__main__":
-    grid = gen_prefect(height=10, width=10)
-    write_file(grid, (0, 0), (9, 9))
+    # grid = gen_prefect(height=10, width=10)
+    grid = gen_imperfect(height=10, width=10)
+
+    # write_file(grid, (0, 0), (9, 9))
 
 # Bit Direction|
 # -------------|

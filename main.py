@@ -1,4 +1,4 @@
-from gen import gen_prefect
+from gen import gen_prefect, gen_imperfect
 from solver import solver_a_star
 
 
@@ -45,13 +45,16 @@ def validate_maze(grid: list[list[int]]):
 
 
 def main() -> None:
-    maze = gen_prefect(25, 25)
+    maze = gen_imperfect(25, 25)
     if not validate_maze(maze):
         raise Exception("Maze Not validate")
-
+    else:
+        print("all maze validate")
     path = solver_a_star(maze)
     if path is None:
         raise Exception("Path Not found")
+    else:
+        print("Solution found", f"{len(path)} move")
 
     write_file(maze, path=path)
 
