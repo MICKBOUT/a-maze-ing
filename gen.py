@@ -1,7 +1,7 @@
 from random import randint, choice
 
 
-def gen(height: int, width: int) -> list[list[int]]:
+def gen_prefect(height: int, width: int) -> list[list[int]]:
     """
     Generate a perfect maze represented as a 2D grid of wall-bit masks.
 
@@ -94,51 +94,8 @@ def gen(height: int, width: int) -> list[list[int]]:
     # north, est, south , west
     return grid
 
-
-def write_file(
-        maze: list[list[int]],
-        start: tuple[int, int] = None,
-        end: tuple[int, int] = None,
-        path: str = "placer_holder") -> str:
-
-    start = (0, 0) if start is None else start
-    end = (len(maze) - 1, len(maze[0]) - 1) if end is None else end
-
-    file = "output_maze.txt"
-    with open(file, 'w') as f:
-        line = ""
-        for row in maze:
-            for nb in row:
-                line += format(nb, "X")
-            line += "\n"
-        line += "\n"
-        line += f"{str(start[0])},{str(start[1])}\n"
-        line += f"{str(end[0])},{str(end[1])}\n"
-        line += path
-        f.write("".join(str(line)))
-
-    return file
-
-
-def validate_maze(grid: list[list[int]]):
-    height = len(grid)
-    width = len(grid[0])
-
-    error = []
-    for y in range(height - 1):
-        for x in range(width - 1):
-            if (grid[y][x] >> 2) & 1 != (grid[y + 1][x] >> 0) & 1:
-                error.append((y, x, "wrong y"))
-            if (grid[y][x] >> 1) & 1 != (grid[y][x + 1] >> 3) & 1:
-                error.append((y, x, "wrong x"))
-
-    if error:
-        print(error)
-    return len(error) == 0
-
-
 if __name__ == "__main__":
-    grid = gen(height=10, width=10)
+    grid = gen_prefect(height=10, width=10)
     write_file(grid, (0, 0), (9, 9))
 
 # Bit Direction|

@@ -1,4 +1,4 @@
-from gen import gen, write_file
+from gen import gen_prefect
 
 
 def solver_a_star(
@@ -62,5 +62,7 @@ if __name__ == "__main__":
     # ]
     # start = (0, 0)
     # end = (4, 4)
-    maze = gen(25, 25)
-    write_file(maze, path=solver_a_star(maze))
+    maze = gen_prefect(25, 25)
+    print(maze)
+    path = solver_a_star(maze)
+    print(path)
