@@ -1,3 +1,6 @@
+
+*This project has been created as part of the 42 curriculum by mboutte, pdauga*
+
 # Genaration algorithme
 
 Generate a perfect maze represented as a 2D grid of wall-bit masks.
