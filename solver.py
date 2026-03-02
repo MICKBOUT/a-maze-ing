@@ -1,7 +1,8 @@
 from gen import gen_prefect, gen_imperfect
+from heapq import heappop, heappush
 
 
-def solver_a_star(
+def solver_fast(
         maze: list[list[int]],
         start: tuple[int, int] = (0, 0),
         end: tuple[int, int] = None):
@@ -13,34 +14,53 @@ def solver_a_star(
 
     y_end, x_end = end
     stack = [[*start, ""]]
-    path = {}
+    heap = []
+    y, x = start
+    # len(path) + dst + , y, x, path
+    seen = {(y, x)}
+    heappush(heap, (
+        abs(y_end - y) + abs(y_end - x),  # current distance + dst (dst = 0)
+        y,
+        x,
+        "",))
 
-    while stack:
-        y, x, current_path = stack.pop()
+    while heap:
+        dst, y, x, current_path = heappop(heap)
+        seen.add((y, x))
+        if y == y_end and x == x_end:
+            return current_path
         # North
         if not maze[y][x] & 1:
-            if ((y - 1, x) not in path or
-               len(current_path) + 1 < len(path[(y - 1, x)])):
-                path[(y - 1, x)] = current_path + "N"
-                stack.append((y - 1, x, current_path + "N"))
+            if (y - 1, x) not in seen:
+                heappush(heap, (
+                    len(current_path) + 1 + abs(y_end - (y - 1)) + abs(x_end - x),
+                    y - 1,
+                    x,
+                    current_path + "N"))
         # East
         if not maze[y][x] & 2:
-            if ((y, x + 1) not in path or
-               len(current_path) + 1 < len(path[(y, x + 1)])):
-                path[(y, x + 1)] = current_path + "E"
-                stack.append((y, x + 1, current_path + "E"))
+            if (y, x + 1) not in seen:
+                heappush(heap, (
+                    len(current_path) + 1 + abs(y_end - y) + abs(x_end - (x + 1)),
+                    y,
+                    x + 1,
+                    current_path + "E"))
         # South
         if not maze[y][x] & 4:
-            if ((y + 1, x) not in path or
-               len(current_path) + 1 < len(path[(y + 1, x)])):
-                path[(y + 1, x)] = current_path + "S"
-                stack.append((y + 1, x, current_path + "S"))
+            if (y + 1, x) not in seen:
+                heappush(heap, (
+                    len(current_path) + 1 + abs(y_end - (y + 1)) + abs(x_end - x),
+                    y + 1,
+                    x,
+                    current_path + "S"))
         # West
         if not maze[y][x] & 8:
-            if ((y, x - 1) not in path or
-               len(current_path) + 1 < len(path[(y, x - 1)])):
-                path[(y, x - 1)] = current_path + "W"
-                stack.append((y, x - 1, current_path + "W"))
+            if (y, x - 1) not in seen:
+                heappush(heap, (
+                    len(current_path) + 1 + abs(y_end - y) + abs(x_end - (x - 1)),
+                    y,
+                    x - 1,
+                    current_path + "W"))
 
     return path.get(end, None)
 
@@ -57,12 +77,12 @@ if __name__ == "__main__":
     maze = gen_prefect(8, 10)
     for row in maze:
         print(row)
-    path = solver_a_star(maze)
+    path = solver_fast(maze)
     print(path)
 
     print("\n\n=== imperfecte ===")
-    maze = gen_imperfect(8, 10)
+    maze = gen_imperfect(250, 250)
     for row in maze:
         print(row)
-    path = solver_a_star(maze)
+    path = solver_fast(maze)
     print(path)
