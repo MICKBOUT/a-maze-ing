@@ -214,7 +214,7 @@ class MLXRendering:
 
     def draw_path(self):
         # The position in the maze (col, row)
-        current_x, current_y = self.start
+        current_y, current_x = self.start
         for c in self.path[:-1]:
             if c == "S":
                 current_y += 1

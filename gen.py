@@ -17,8 +17,10 @@ def gen_perfect(height: int, width: int) -> list[list[int]]:
         walls remaining around that cell using the bit layout described above.
     """
 
-    assert height >= 6, "height too small for the 42 logo"
-    assert width >= 9, "width need to be >= 7 for the 42 logo"
+    if height < 6:
+        raise Exception("height too small for the 42 logo")
+    if width < 9:
+        raise Exception("width need to be >= 7 for the 42 logo")
 
     grid = [[15 for _ in range(width)] for _ in range(height)]
 
@@ -157,9 +159,9 @@ def gen_imperfect(height, width):
         candidate = []
         if row > 0 and maze[row - 1][col] != 15:
             candidate.append(0)
-        if col < width - 2 and maze[row][col + 1] != 15:
+        if col < width - 1 and maze[row][col + 1] != 15:
             candidate.append(1)
-        if row < height - 2 and maze[row + 1][col] != 15:
+        if row < height - 1 and maze[row + 1][col] != 15:
             candidate.append(2)
         if col > 0 and maze[row][col - 1] != 15:
             candidate.append(3)
