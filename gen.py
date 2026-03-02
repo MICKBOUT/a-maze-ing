@@ -97,8 +97,12 @@ def gen(height: int, width: int) -> list[list[int]]:
 
 def write_file(
         maze: list[list[int]],
-        start: tuple[int, int],
-        end: tuple[int, int]) -> str:
+        start: tuple[int, int] = None,
+        end: tuple[int, int] = None,
+        path: str = "placer_holder") -> str:
+
+    start = (0, 0) if start is None else start
+    end = (len(maze) - 1, len(maze[0]) - 1) if end is None else end
 
     file = "output_maze.txt"
     with open(file, 'w') as f:
@@ -109,8 +113,8 @@ def write_file(
             line += "\n"
         line += "\n"
         line += f"{str(start[0])},{str(start[1])}\n"
-        line += f"{str(end[0])},{str(end[1])}\n"
-        line += "placer_holder"
+        line += f"{str(end[1])},{str(end[0])}\n"
+        line += path
         f.write("".join(str(line)))
 
     return file
@@ -133,9 +137,16 @@ def validate_maze(grid: list[list[int]]):
     return len(error) == 0
 
 
+import sys
+
 if __name__ == "__main__":
-    grid = gen(height=10, width=10)
-    write_file(grid, (0, 0), (9, 9))
+    try:
+        grid = gen(height=int(sys.argv[1]), width=int(sys.argv[2]))
+    except Exception:
+        print("Argv not found")
+        grid = gen(height=10, width=10)
+    finally:
+        write_file(grid, (0, 0), (9, 9))
 
 # Bit Direction|
 # -------------|
