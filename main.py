@@ -35,10 +35,11 @@ def validate_maze(grid: list[list[int]]):
     error = []
     for y in range(height):
         for x in range(width):
-            if (grid[y][x] >> 2) & 1 != grid[y + 1][x] & 1:
+            if y < height - 1 and ((grid[y][x] >> 2) & 1) != (grid[y + 1][x] & 1):
                 error.append((y, x, "wrong y"))
-            if (grid[y][x] >> 1) & 1 != (grid[y][x + 1] >> 3) & 1:
+            if x < width - 1 and ((grid[y][x] >> 1) & 1) != ((grid[y][x + 1] >> 3) & 1):
                 error.append((y, x, "wrong x"))
+
 
     if error:
         print(error)

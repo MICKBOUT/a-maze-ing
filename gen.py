@@ -18,9 +18,9 @@ def gen_perfect(height: int, width: int) -> list[list[int]]:
     """
 
     if height < 6:
-        raise Exception("height too small for the 42 logo")
+        raise ValueError("height too small for the 42 logo")
     if width < 9:
-        raise Exception("width need to be >= 7 for the 42 logo")
+        raise ValueError("width need to be >= 7 for the 42 logo")
 
     grid = [[15 for _ in range(width)] for _ in range(height)]
 

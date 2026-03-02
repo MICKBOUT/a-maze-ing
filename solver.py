@@ -8,10 +8,10 @@ def solver_fast(
         end: tuple[int, int] = None):
     end = (len(maze) - 1, len(maze[0]) - 1) if end is None else end
 
-    if maze[start[0]][start[1]] != 15:
-        raise Exception("Error entry on full block")
-    if maze[end[0]][end[1]] != 15:
-        raise Exception("Error exit on full block")
+    if maze[start[0]][start[1]] == 15:
+        raise ValueError("Error entry on full block")
+    if maze[end[0]][end[1]] == 15:
+        raise ValueError("Error exit on full block")
 
     y_end, x_end = end
     heap = []
