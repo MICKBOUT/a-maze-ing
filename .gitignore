@@ -8,3 +8,6 @@ env/
 venv/
 ENV/
 build_venv/
+
+# File created at execution
+output_maze.txt
