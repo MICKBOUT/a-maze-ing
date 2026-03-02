@@ -12,6 +12,7 @@ take congfig file:
     EXIT=(x, y)
     OUTPUT_FILE
     PERFECT
+    ANIMATION
 
     ALGO -> choice path
     optionelle: output view isometrique (optionelle terminale)
