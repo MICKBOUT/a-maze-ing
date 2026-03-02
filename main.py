@@ -1,4 +1,4 @@
-from gen import gen_perfect, gen_imperfect
+from gen import gen_imperfect  # gen_perfect
 from solver import solver_fast
 from time import time
 
@@ -57,7 +57,6 @@ def get_maze(file_path: str = "output_maze.txt") -> list[list[int]]:
 
 
 def main() -> None:
-    # maze = gen_perfect(25, 25)
     # t = time()
     # maze = gen_perfect(40, 60)
     # print("t_perfecte=", time() - t)
