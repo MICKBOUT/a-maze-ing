@@ -2,7 +2,7 @@ from random import randint, choice
 import sys
 
 
-def gen(height: int, width: int) -> list[list[int]]:
+def gen_prefect(height: int, width: int) -> list[list[int]]:
     """
     Generate a perfect maze represented as a 2D grid of wall-bit masks.
 
@@ -96,56 +96,85 @@ def gen(height: int, width: int) -> list[list[int]]:
     return grid
 
 
-def write_file(
-        maze: list[list[int]],
-        start: tuple[int, int] = None,
-        end: tuple[int, int] = None,
-        path: str = "placer_holder") -> str:
+def gen_imperfect(height, width):
+    """
+    Generate an imperfect maze by starting with a perfect maze
+    and randomly removing some walls.
+    Parameters:
+        height : int
+            Number of rows in the maze (must be a positive integer).
+        width : int
+            Number of columns in the maze (must be a positive integer).
+    Returns:
+        list[list[int]]
+            A height-by-width 2D list of integers where each integer encodes
+            the walls remaining around that cell
+            using the bit layout described above.
+    """
+    def rm_wall(maze: list[list[int]],
+                row: int,
+                col: int,
+                direction: int,
+                ) -> None:
+        """
+        Remove a wall between the cell at (row, col) and
+        its neighbor in the specified direction.
+            Parameters:
+            maze : list[list[int]]
+                The maze represented as a 2D grid of wall-bit masks.
+            row : int
+                The row index of the cell from which to remove the wall.
+            col : int
+                The column index of the cell from which to remove the wall.
+            direction : int
+                The direction of the wall to remove
+                (0 for North, 1 for East, 2 for South, 3 for West).
+        """
+        match direction:
+            # North
+            case 0:
+                maze[row][col] &= ~(1 << 0)
+                maze[row - 1][col] &= ~(1 << 2)
+            # East
+            case 1:
+                maze[row][col] &= ~(1 << 1)
+                maze[row][col + 1] &= ~(1 << 3)
+            # South
+            case 2:
+                maze[row][col] &= ~(1 << 2)
+                maze[row + 1][col] &= ~(1 << 0)
+            # West
+            case 3:
+                maze[row][col] &= ~(1 << 3)
+                maze[row][col - 1] &= ~(1 << 1)
 
-    start = (0, 0) if start is None else start
-    end = (len(maze) - 1, len(maze[0]) - 1) if end is None else end
+    maze = gen_prefect(height, width)
+    for _ in range((height * width) // 12):
+        row = randint(0, height - 1)
+        col = randint(0, width - 1)
+        if maze[row][col] == 15:
+            continue
 
-    file = "output_maze.txt"
-    with open(file, 'w') as f:
-        line = ""
-        for row in maze:
-            for nb in row:
-                line += format(nb, "X")
-            line += "\n"
-        line += "\n"
-        line += f"{str(start[0])},{str(start[1])}\n"
-        line += f"{str(end[1])},{str(end[0])}\n"
-        line += path
-        f.write("".join(str(line)))
+        candidate = []
+        if row > 0 and maze[row - 1][col] != 15:
+            candidate.append(0)
+        if col < width - 2 and maze[row][col + 1] != 15:
+            candidate.append(1)
+        if row < height - 2 and maze[row + 1][col] != 15:
+            candidate.append(2)
+        if col > 0 and maze[row][col - 1] != 15:
+            candidate.append(3)
 
-    return file
+        if not candidate:
+            continue
+        # else:
+        rm_wall(maze, row, col, choice(candidate))
 
-
-def validate_maze(grid: list[list[int]]):
-    height = len(grid)
-    width = len(grid[0])
-
-    error = []
-    for y in range(height - 1):
-        for x in range(width - 1):
-            if (grid[y][x] >> 2) & 1 != (grid[y + 1][x] >> 0) & 1:
-                error.append((y, x, "wrong y"))
-            if (grid[y][x] >> 1) & 1 != (grid[y][x + 1] >> 3) & 1:
-                error.append((y, x, "wrong x"))
-
-    if error:
-        print(error)
-    return len(error) == 0
-
+    return maze
 
 if __name__ == "__main__":
-    try:
-        grid = gen(height=int(sys.argv[1]), width=int(sys.argv[2]))
-    except Exception:
-        print("Argv not found")
-        grid = gen(height=10, width=10)
-    finally:
-        write_file(grid, (0, 0), (9, 9))
+    # grid = gen_prefect(height=10, width=10)
+    grid = gen_imperfect(height=10, width=10)
 
 
 # Bit Direction|

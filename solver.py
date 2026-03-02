@@ -1,5 +1,5 @@
 from gen import gen, write_file
-import sys
+import sys_prefect
 
 
 def solver_a_star(
@@ -19,25 +19,25 @@ def solver_a_star(
     while stack:
         y, x, current_path = stack.pop()
         # North
-        if (not (maze[y][x] >> 0) & 1):
+        if not maze[y][x] & 1:
             if ((y - 1, x) not in path or
                len(current_path) + 1 < len(path[(y - 1, x)])):
                 path[(y - 1, x)] = current_path + "N"
                 stack.append((y - 1, x, current_path + "N"))
         # East
-        if (not (maze[y][x] >> 1) & 1):
+        if not maze[y][x] & 2:
             if ((y, x + 1) not in path or
                len(current_path) + 1 < len(path[(y, x + 1)])):
                 path[(y, x + 1)] = current_path + "E"
                 stack.append((y, x + 1, current_path + "E"))
         # South
-        if (not (maze[y][x] >> 2) & 1):
+        if not maze[y][x] & 4:
             if ((y + 1, x) not in path or
                len(current_path) + 1 < len(path[(y + 1, x)])):
                 path[(y + 1, x)] = current_path + "S"
                 stack.append((y + 1, x, current_path + "S"))
         # West
-        if (not (maze[y][x] >> 3) & 1):
+        if not maze[y][x] & 8:
             if ((y, x - 1) not in path or
                len(current_path) + 1 < len(path[(y, x - 1)])):
                 path[(y, x - 1)] = current_path + "W"
@@ -63,10 +63,7 @@ if __name__ == "__main__":
     # ]
     # start = (0, 0)
     # end = (4, 4)
-    try:
-        maze = gen(int(sys.argv[2]), int(sys.argv[1]))
-    except Exception:
-        print("notfound")
-        maze = gen(15, 15)
-    finally:
-        write_file(maze, path=solver_a_star(maze))
+    maze = gen_prefect(25, 25)
+    print(maze)
+    path = solver_a_star(maze)
+    print(path)

@@ -1,18 +1,27 @@
-from gen import gen
-from solver import solver_heap
+from gen import gen_prefect
 import tkinter as tk
-
+from random import randint
 # -----------------------------
 # Labyrinthe fourni
 # -----------------------------
-maze = gen(15, 15)
 
+
+# maze = gen_prefect(15, 15)
+def get_maze(file_path: str = "output_maze.txt") -> list[list[int]]:
+    maze = []
+    with open(file_path) as file:
+        for i in file:
+            line = i.strip()
+            if line == "":
+                break
+            maze.append([int(letter, 16) for letter in line])
+    return maze
 # -----------------------------
 # Paramètres d'affichage
 # -----------------------------
 CELL = 50  # taille d'une case
-WALL_COLOR = "#352208"
-BG_COLOR = "#E1BB80"
+WALL_COLOR = "#000000"
+BG_COLOR = f"#{randint(30,99):02}{randint(30,99):02}{randint(30,99):02}"
 
 # -----------------------------
 # Fonction pour dessiner une cellule
@@ -49,6 +58,7 @@ def draw_cell(canvas, row, col, value):
 
 
 def main():
+    maze = get_maze()
     rows = len(maze)
     cols = len(maze[0])
 
@@ -69,8 +79,5 @@ def main():
 
 
 if __name__ == "__main__":
-    try:
-        solver_heap(maze, (0, 0), (0, 3))
-    except Exception as e:
-        print(e)
+    # get_maze()
     main()
