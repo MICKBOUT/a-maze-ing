@@ -84,7 +84,10 @@ class MLXRendering:
     def fetch_data(self):
         parsed_data = read_file()
         self.maze = parsed_data["maze_data"]
-        self.maze_size = (len(self.maze[0]), len(self.maze))
+        self.maze_height = len(self.maze)        # y
+        self.maze_width = len(self.maze[0])      # x
+        self.maze_size = (self.maze_width, self.maze_height)
+
         self.start = parsed_data["start"]
         self.end = parsed_data["end"]
         self.path = parsed_data["path"]
@@ -108,12 +111,12 @@ class MLXRendering:
             self.window_size,
             self.wall_color
         )
-        for col in range(self.maze_size[0]):
-            for row in range(self.maze_size[1]):
-                self.draw_cell(self.maze_img, self.maze[row][col], row, col)
+        for y in range(self.maze_height):
+            for x in range(self.maze_width):
+                self.draw_cell(self.maze_img, self.maze[y][x], y, x)
 
-        x_start, y_start = self.start
-        x_end, y_end = self.end
+        y_start, x_start = self.start
+        y_end, x_end = self.end
 
         # start
         self.draw_cell(
@@ -133,12 +136,12 @@ class MLXRendering:
             background_color=(255, 0, 0, 255)
         )
 
-    def draw_cell(self, img, value, row, col, background_color=None):
-        x = col * self.cell_size
-        y = row * self.cell_size
+    def draw_cell(self, img, value, y, x, background_color=None):
+        px = x * self.cell_size
+        py = y * self.cell_size
 
-        x1, y1 = x, y
-        x2, y2 = x + self.cell_size, y + self.cell_size
+        x1, y1 = px, py
+        x2, y2 = px + self.cell_size, py + self.cell_size
 
         # Nord
         if background_color is not None:
@@ -265,7 +268,7 @@ def read_file(file_name: str = "output_maze.txt"):
 
 
 if __name__ == "__main__":
-    render = MLXRendering((1500, 1500))
+    render = MLXRendering((3850, 2000))
     render.put_string(
         (1000, 0),
         (255, 255, 255, 255),

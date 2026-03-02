@@ -1,5 +1,5 @@
-from gen import gen_prefect, gen_imperfect
 from heapq import heappop, heappush
+from gen import gen_perfect, gen_imperfect
 
 
 def solver_fast(
@@ -71,7 +71,7 @@ def solver_fast(
 
 if __name__ == "__main__":
     print("=== perfecte ===")
-    maze = gen_prefect(8, 10)
+    maze = gen_perfect(8, 10)
     for row in maze:
         print(row)
     path = solver_fast(maze)

@@ -1,4 +1,4 @@
-from gen import gen_prefect, gen_imperfect
+from gen import gen_perfect, gen_imperfect
 from solver import solver_fast
 
 
@@ -56,9 +56,8 @@ def get_maze(file_path: str = "output_maze.txt") -> list[list[int]]:
 
 
 def main() -> None:
-    gen_prefect
     # maze = gen_perfect(25, 25)
-    maze = gen_imperfect(150, 150)
+    maze = gen_perfect(800, 1540)
     if not validate_maze(maze):
         raise Exception("Maze Not validate")
     else:

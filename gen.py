@@ -1,7 +1,7 @@
 from random import randint, choice
 
 
-def gen_prefect(height: int, width: int) -> list[list[int]]:
+def gen_perfect(height: int, width: int) -> list[list[int]]:
     """
     Generate a perfect maze represented as a 2D grid of wall-bit masks.
 
@@ -147,7 +147,7 @@ def gen_imperfect(height, width):
                 maze[row][col] &= ~(1 << 3)
                 maze[row][col - 1] &= ~(1 << 1)
 
-    maze = gen_prefect(height, width)
+    maze = gen_perfect(height, width)
     for _ in range((height * width) // 12):
         row = randint(0, height - 1)
         col = randint(0, width - 1)
