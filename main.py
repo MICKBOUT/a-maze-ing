@@ -44,12 +44,25 @@ def validate_maze(grid: list[list[int]]):
     return len(error) == 0
 
 
+def get_maze(file_path: str = "output_maze.txt") -> list[list[int]]:
+    maze = []
+    with open(file_path) as file:
+        for i in file:
+            line = i.strip()
+            if line == "":
+                break
+            maze.append([int(letter, 16) for letter in line])
+    return maze
+
+
 def main() -> None:
+    gen_prefect
+    # maze = gen_perfect(25, 25)
     maze = gen_imperfect(25, 25)
     if not validate_maze(maze):
         raise Exception("Maze Not validate")
     else:
-        print("maze validate (No wall on a single side1)")
+        print("maze validate (No wall on a single side)")
     path = solver_a_star(maze)
     if path is None:
         raise Exception("Path Not found")

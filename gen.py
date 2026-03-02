@@ -1,5 +1,4 @@
 from random import randint, choice
-import sys
 
 
 def gen_prefect(height: int, width: int) -> list[list[int]]:
@@ -172,10 +171,12 @@ def gen_imperfect(height, width):
 
     return maze
 
+
 if __name__ == "__main__":
     # grid = gen_prefect(height=10, width=10)
     grid = gen_imperfect(height=10, width=10)
-
+    for row in grid:
+        print(row)
 
 # Bit Direction|
 # -------------|

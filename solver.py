@@ -1,5 +1,4 @@
-from gen import gen, write_file
-import sys_prefect
+from gen import gen_prefect, gen_imperfect
 
 
 def solver_a_star(
@@ -54,16 +53,16 @@ def solver_a_star(
 
 
 if __name__ == "__main__":
-    # maze = [
-    #     [9, 1, 1, 1, 3],
-    #     [8, 0, 0, 0, 2],
-    #     [8, 0, 0, 0, 2],
-    #     [8, 0, 0, 0, 2],
-    #     [12, 4, 4, 4, 6],
-    # ]
-    # start = (0, 0)
-    # end = (4, 4)
-    maze = gen_prefect(25, 25)
-    print(maze)
+    print("=== perfecte ===")
+    maze = gen_prefect(8, 10)
+    for row in maze:
+        print(row)
+    path = solver_a_star(maze)
+    print(path)
+
+    print("\n\n=== imperfecte ===")
+    maze = gen_imperfect(8, 10)
+    for row in maze:
+        print(row)
     path = solver_a_star(maze)
     print(path)

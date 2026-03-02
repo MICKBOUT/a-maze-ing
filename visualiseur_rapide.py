@@ -1,27 +1,14 @@
-from gen import gen_prefect
 import tkinter as tk
 from random import randint
-# -----------------------------
-# Labyrinthe fourni
-# -----------------------------
+from main import get_maze
 
 
-# maze = gen_prefect(15, 15)
-def get_maze(file_path: str = "output_maze.txt") -> list[list[int]]:
-    maze = []
-    with open(file_path) as file:
-        for i in file:
-            line = i.strip()
-            if line == "":
-                break
-            maze.append([int(letter, 16) for letter in line])
-    return maze
 # -----------------------------
 # Paramètres d'affichage
 # -----------------------------
 CELL = 50  # taille d'une case
 WALL_COLOR = "#000000"
-BG_COLOR = f"#{randint(30,99):02}{randint(30,99):02}{randint(30,99):02}"
+BG_COLOR = f"#{randint(30, 99):02}{randint(30, 99):02}{randint(30, 99):02}"
 
 # -----------------------------
 # Fonction pour dessiner une cellule
