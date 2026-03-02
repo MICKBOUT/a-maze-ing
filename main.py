@@ -34,7 +34,7 @@ def validate_maze(grid: list[list[int]]):
     error = []
     for y in range(height - 1):
         for x in range(width - 1):
-            if (grid[y][x] >> 2) & 1 != (grid[y + 1][x] >> 0) & 1:
+            if (grid[y][x] >> 2) & 1 != grid[y + 1][x] & 1:
                 error.append((y, x, "wrong y"))
             if (grid[y][x] >> 1) & 1 != (grid[y][x + 1] >> 3) & 1:
                 error.append((y, x, "wrong x"))
@@ -49,7 +49,7 @@ def main() -> None:
     if not validate_maze(maze):
         raise Exception("Maze Not validate")
     else:
-        print("all maze validate")
+        print("maze validate (No wall on a single side1)")
     path = solver_a_star(maze)
     if path is None:
         raise Exception("Path Not found")
