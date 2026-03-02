@@ -21,7 +21,7 @@ def solver_fast(
         "",))
 
     while heap:
-        dst, y, x, path = heappop(heap)
+        _, y, x, path = heappop(heap)
         seen.add((y, x))
         if y == y_end and x == x_end:
             return path
@@ -58,7 +58,7 @@ def solver_fast(
                     x - 1,
                     path + "W"))
 
-    return path.get(end, None)
+    return None
 
 # Bit Direction|
 # -------------|
