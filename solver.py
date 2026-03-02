@@ -1,4 +1,5 @@
 from gen import gen, write_file
+import sys
 
 
 def solver_a_star(
@@ -62,9 +63,9 @@ if __name__ == "__main__":
     # ]
     # start = (0, 0)
     # end = (4, 4)
-    import sys
-    try: maze = gen(int(sys.argv[2]), int(sys.argv[1]))
-    except Exception: 
+    try:
+        maze = gen(int(sys.argv[2]), int(sys.argv[1]))
+    except Exception:
         print("notfound")
         maze = gen(15, 15)
     finally:

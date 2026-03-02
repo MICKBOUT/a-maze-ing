@@ -1,4 +1,5 @@
 from random import randint, choice
+import sys
 
 
 def gen(height: int, width: int) -> list[list[int]]:
@@ -137,8 +138,6 @@ def validate_maze(grid: list[list[int]]):
     return len(error) == 0
 
 
-import sys
-
 if __name__ == "__main__":
     try:
         grid = gen(height=int(sys.argv[1]), width=int(sys.argv[2]))
@@ -147,6 +146,7 @@ if __name__ == "__main__":
         grid = gen(height=10, width=10)
     finally:
         write_file(grid, (0, 0), (9, 9))
+
 
 # Bit Direction|
 # -------------|

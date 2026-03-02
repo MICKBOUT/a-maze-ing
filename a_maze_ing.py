@@ -4,7 +4,6 @@ from random import choice, randint
 from time import sleep
 
 
-
 class Image:
     def __init__(self, mlx, mlx_ptr, size: tuple):
         self.width, self.height = size
