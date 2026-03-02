@@ -1,14 +1,14 @@
 from mlx import Mlx
 import sys
-from random import choice, randint
-from time import sleep
+from random import randint
 
 
 class Image:
     def __init__(self, mlx, mlx_ptr, size: tuple):
         self.width, self.height = size
         self.img = mlx.mlx_new_image(mlx_ptr, self.width, self.height)
-        self.data, self.bpp, self.size_line, self.fmt = mlx.mlx_get_data_addr(self.img)
+        data_img = mlx.mlx_get_data_addr(self.img)
+        self.data, self.bpp, self.size_line, self.fmt = data_img
 
     def draw_rect(self, pos1, pos2, color):
         r, g, b, a = color
@@ -32,13 +32,18 @@ class Image:
 
 
 class MLXRendering:
-    def __init__(self, window_size): # dev
+    def __init__(self, window_size):  # dev
         # Mlx instance
         self.mlx = Mlx()
         self.mlx_ptr = self.mlx.mlx_init()
         # The main window
         self.window_size: tuple = window_size
-        self.win_ptr = self.mlx.mlx_new_window(self.mlx_ptr, *self.window_size, "Maze")
+        self.win_ptr = self.mlx.mlx_new_window(
+            self.mlx_ptr,
+            *self.window_size,
+            "Maze"
+        )
+
         # The image where the maze is draw
         self.maze_img = Image(self.mlx, self.mlx_ptr, self.window_size)
         self.maze_img_ptr = self.maze_img.img
@@ -47,7 +52,8 @@ class MLXRendering:
         self.fetch_data()
 
         # === Cells proprieties ===
-        # the size of each cell is the bigger size possible, depending of the windows
+        # the size of each cell is the bigger size possible,
+        # depending of the windows
         self.cell_size = min(
             self.window_size[0] // self.maze_size[0],
             self.window_size[1] // self.maze_size[1]
@@ -67,12 +73,12 @@ class MLXRendering:
                 self.mlx.mlx_destroy_window(self.mlx_ptr, self.win_ptr)
                 self.mlx.mlx_loop_exit(self.mlx_ptr)
                 sys.exit(0)
-            
+
             elif keycode == 65361:
                 self.draw_path()
                 # draw start
                 # draw end
-        
+
         self.mlx.mlx_hook(self.win_ptr, 2, 1, on_keypress, None)
 
     def fetch_data(self):
@@ -83,14 +89,25 @@ class MLXRendering:
         self.end = parsed_data["end"]
         self.path = parsed_data["path"]
 
-        print("Maze size:", self.maze_size) 
-        print("Start:", self.start) 
+        print("Maze size:", self.maze_size)
+        print("Start:", self.start)
         print("End:", self.end)
 
     def draw_maze(self):
+        # Background Maze
         maze_size = tuple(s * self.cell_size for s in self.maze_size)
-        self.maze_img.draw_rect((0, 0), maze_size, self.background_color)
-        self.maze_img.draw_rect((maze_size[0], 0), self.window_size, self.wall_color)
+        self.maze_img.draw_rect(
+            (0, 0),
+            maze_size,
+            self.background_color
+        )
+
+        # Background Right
+        self.maze_img.draw_rect(
+            (maze_size[0], 0),
+            self.window_size,
+            self.wall_color
+        )
         for col in range(self.maze_size[0]):
             for row in range(self.maze_size[1]):
                 self.draw_cell(self.maze_img, self.maze[row][col], row, col)
@@ -98,10 +115,23 @@ class MLXRendering:
         x_start, y_start = self.start
         x_end, y_end = self.end
 
-        self.draw_cell(self.maze_img, self.maze[y_start][x_start], y_start, x_start, background_color=(0, 255, 0, 255))
-        self.draw_cell(self.maze_img, self.maze[y_end][x_end], y_end, x_end, background_color=(255, 0, 0, 255))
-        
-        
+        # start
+        self.draw_cell(
+            self.maze_img,
+            self.maze[y_start][x_start],
+            y_start,
+            x_start,
+            background_color=(0, 255, 0, 255)
+        )
+
+        # end
+        self.draw_cell(
+            self.maze_img,
+            self.maze[y_end][x_end],
+            y_end,
+            x_end,
+            background_color=(255, 0, 0, 255)
+        )
 
     def draw_cell(self, img, value, row, col, background_color=None):
         x = col * self.cell_size
@@ -138,7 +168,7 @@ class MLXRendering:
                 (x1, y2 - self.width_wall),
                 (x2, y2),
                 self.wall_color
-                
+
             )
 
         # # Ouest
@@ -159,20 +189,29 @@ class MLXRendering:
     @staticmethod
     def create_colors():
         """Create colors using random"""
+        # Dict of complementary colors randomly generated
         colors = {
-            "background": [randint(128, 255), randint(128, 255), randint(128, 255)] + [255]
+            "background": [randint(128, 255),
+                           randint(128, 255),
+                           randint(128, 255)
+                           ] + [255]
         }
-        colors["wall"] = ([c - randint(0, 128) for c in colors["background"][:-1]] + [255])
+
+        colors["wall"] = (
+            [c - randint(0, 128) for c in colors["background"][:-1]] + [255]
+        )
         red, green, blue, _ = colors["background"]
-        if (red *0.299 + green*0.587 + blue*0.114) > 186:
+        # Apply the best color to contrast tehe text with the background.
+        if (red * 0.299 + green*0.587 + blue*0.114) > 186:
             colors["text"] = (0, 0, 0, 255)
         else:
             colors["text"] = (255, 255, 255, 255)
 
         return colors
-    
+
     def draw_path(self):
-        current_x, current_y = self.start # The position in the maze (col, row)
+        # The position in the maze (col, row)
+        current_x, current_y = self.start
         for c in self.path[:-1]:
             if c == "S":
                 current_y += 1
@@ -182,36 +221,53 @@ class MLXRendering:
                 current_x += 1
             else:
                 current_x -= 1
-            self.draw_cell(self.maze_img, self.maze[current_y][current_x], current_y, current_x, background_color=(255, 255, 255, 255))
+            self.draw_cell(
+                self.maze_img,
+                self.maze[current_y][current_x],
+                current_y, current_x,
+                background_color=(255, 255, 255, 255)
+            )
         self.put_image(self.maze_img)
-                
 
     def put_image(self, img):
-        self.mlx.mlx_put_image_to_window(self.mlx_ptr, self.win_ptr, img.img, 0, 0)
-    
+        self.mlx.mlx_put_image_to_window(
+            self.mlx_ptr,
+            self.win_ptr,
+            img.img,
+            0, 0
+        )
+
     def main_loop(self):
         self.mlx.mlx_loop(self.mlx_ptr)
 
     def put_string(self, pos: tuple, color: tuple, string):
         r, g, b, _ = self.font_color
         color = (r << 16) | (g << 8) | b
-        self.mlx.mlx_string_put(self.mlx_ptr, self.win_ptr, *pos, color, string)
+        self.mlx.mlx_string_put(
+            self.mlx_ptr,
+            self.win_ptr,
+            *pos,
+            color,
+            string
+        )
 
 
-def read_file(file_name: str="output_maze.txt"):
+def read_file(file_name: str = "output_maze.txt"):
     with open(file_name, 'r') as file:
         data = [line.strip() for line in file]
 
     return {
-        "maze_data": [[int(c, 16) for c in line ] for line in data[:-4]],
+        "maze_data": [[int(c, 16) for c in line] for line in data[:-4]],
         "start": tuple([int(n) for n in data[-3].split(sep=",")]),
         "end": tuple([int(n) for n in data[-2].split(sep=",")]),
         "path": data[-1]
     }
 
 
-
 if __name__ == "__main__":
     render = MLXRendering((1500, 1500))
-    render.put_string((1000, 0), (255, 255, 255, 255), "Test123 456 Maze\nhi poqwpow")
+    render.put_string(
+        (1000, 0),
+        (255, 255, 255, 255),
+        "Simple string")
     render.main_loop()
