@@ -10,14 +10,13 @@ def solver_fast(
 
     assert maze[start[0]][start[1]] != 15, "Error entry on full block"
     assert maze[end[0]][end[1]] != 15, "Error exit on full block"
-    assert start != end, "Start and end need to be diferent"
 
     y_end, x_end = end
     heap = []
     y, x = start
     seen = {(y, x)}
     heappush(heap, (
-        abs(y_end - y) + abs(y_end - x),
+        abs(y_end - y) + abs(x_end - x),
         y, x,
         "",))
 
