@@ -13,54 +13,51 @@ def solver_fast(
     assert start != end, "Start and end need to be diferent"
 
     y_end, x_end = end
-    stack = [[*start, ""]]
     heap = []
     y, x = start
-    # len(path) + dst + , y, x, path
     seen = {(y, x)}
     heappush(heap, (
-        abs(y_end - y) + abs(y_end - x),  # current distance + dst (dst = 0)
-        y,
-        x,
+        abs(y_end - y) + abs(y_end - x),
+        y, x,
         "",))
 
     while heap:
-        dst, y, x, current_path = heappop(heap)
+        dst, y, x, path = heappop(heap)
         seen.add((y, x))
         if y == y_end and x == x_end:
-            return current_path
+            return path
         # North
         if not maze[y][x] & 1:
             if (y - 1, x) not in seen:
                 heappush(heap, (
-                    len(current_path) + 1 + abs(y_end - (y - 1)) + abs(x_end - x),
+                    len(path) + 1 + abs(y_end - (y - 1)) + abs(x_end - x),
                     y - 1,
                     x,
-                    current_path + "N"))
+                    path + "N"))
         # East
         if not maze[y][x] & 2:
             if (y, x + 1) not in seen:
                 heappush(heap, (
-                    len(current_path) + 1 + abs(y_end - y) + abs(x_end - (x + 1)),
+                    len(path) + 1 + abs(y_end - y) + abs(x_end - (x + 1)),
                     y,
                     x + 1,
-                    current_path + "E"))
+                    path + "E"))
         # South
         if not maze[y][x] & 4:
             if (y + 1, x) not in seen:
                 heappush(heap, (
-                    len(current_path) + 1 + abs(y_end - (y + 1)) + abs(x_end - x),
+                    len(path) + 1 + abs(y_end - (y + 1)) + abs(x_end - x),
                     y + 1,
                     x,
-                    current_path + "S"))
+                    path + "S"))
         # West
         if not maze[y][x] & 8:
             if (y, x - 1) not in seen:
                 heappush(heap, (
-                    len(current_path) + 1 + abs(y_end - y) + abs(x_end - (x - 1)),
+                    len(path) + 1 + abs(y_end - y) + abs(x_end - (x - 1)),
                     y,
                     x - 1,
-                    current_path + "W"))
+                    path + "W"))
 
     return path.get(end, None)
 
