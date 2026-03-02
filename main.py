@@ -1,5 +1,6 @@
 from gen import gen_perfect, gen_imperfect
 from solver import solver_fast
+from time import time
 
 
 def write_file(
@@ -57,11 +58,18 @@ def get_maze(file_path: str = "output_maze.txt") -> list[list[int]]:
 
 def main() -> None:
     # maze = gen_perfect(25, 25)
-    maze = gen_perfect(800, 1540)
-    if not validate_maze(maze):
-        raise Exception("Maze Not validate")
-    else:
-        print("maze validate (No wall on a single side)")
+    t = time()
+    maze = gen_perfect(40, 60)
+    print("t_perfecte=", time() - t)
+    t = time()
+    maze = gen_imperfect(60, 40)
+    print("t_imperfecte=", time() - t)
+
+
+    # if not validate_maze(maze):
+    #     raise Exception("Maze Not validate")
+    # else:
+    #     print("maze validate (No wall on a single side)")
     path = solver_fast(maze)
     if path is None:
         raise Exception("Path Not found")

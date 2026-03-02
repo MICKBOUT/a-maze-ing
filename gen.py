@@ -148,7 +148,7 @@ def gen_imperfect(height, width):
                 maze[row][col - 1] &= ~(1 << 1)
 
     maze = gen_perfect(height, width)
-    for _ in range((height * width) // 12):
+    for _ in range((height * width) // 8):
         row = randint(0, height - 1)
         col = randint(0, width - 1)
         if maze[row][col] == 15:

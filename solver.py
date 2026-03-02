@@ -77,7 +77,7 @@ if __name__ == "__main__":
     print(path)
 
     print("\n\n=== imperfecte ===")
-    maze = gen_imperfect(250, 250)
+    maze = gen_imperfect(10, 250)
     for row in maze:
         print(row)
     path = solver_fast(maze)
