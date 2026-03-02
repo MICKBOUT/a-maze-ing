@@ -1,4 +1,4 @@
-from gen import gen_prefect, gen_imperfect
+from gen import gen_perfect, gen_imperfect
 
 
 def solver_a_star(
@@ -54,7 +54,7 @@ def solver_a_star(
 
 if __name__ == "__main__":
     print("=== perfecte ===")
-    maze = gen_prefect(8, 10)
+    maze = gen_perfect(8, 10)
     for row in maze:
         print(row)
     path = solver_a_star(maze)
