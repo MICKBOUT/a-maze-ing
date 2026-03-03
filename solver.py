@@ -5,17 +5,35 @@ from gen import gen_perfect, gen_imperfect
 def solver_fast(
         maze: list[list[int]],
         start: tuple[int, int] = (0, 0),
-        end: tuple[int, int] = None):
-    end = (len(maze) - 1, len(maze[0]) - 1) if end is None else end
+        end: tuple[int, int] = None) -> str:
+    """
+    Solves a maze using the A* algorithm and returns the path as a string of
+    directions.
 
-    if maze[start[0]][start[1]] == 15:
+    Parameters:
+        maze (list[list[int]]): The maze represented as a 2D list of integers,
+        where each integer encodes wall information.
+        start (tuple[int, int], optional): The starting position in the maze
+        as (x, y). Defaults to (0, 0).
+        end (tuple[int, int], optional): The ending position in the maze as
+        (x, y). If None, must be provided by the caller.
+
+    Returns:
+        str: A string representing the path from start to end using
+        'N', 'E', 'S', 'W' for directions.
+
+    Raises:
+        ValueError: If the start or end position is on a full block.
+        Exception: If no path is found.
+    """
+    x, y = start
+    if maze[y][x] == 15:
         raise ValueError("Error entry on full block")
-    if maze[end[0]][end[1]] == 15:
+    x_end, y_end = end
+    if maze[y_end][x_end] == 15:
         raise ValueError("Error exit on full block")
 
-    y_end, x_end = end
     heap = []
-    y, x = start
     seen = {(y, x)}
     heappush(heap, (
         abs(y_end - y) + abs(x_end - x),
@@ -59,15 +77,7 @@ def solver_fast(
                     y,
                     x - 1,
                     path + "W"))
-
-    return None
-
-# Bit Direction|
-# -------------|
-# 0 North    1 |
-# 1 East     2 |
-# 2 South    4 |
-# 3 West     8 |
+    raise Exception("No path found")
 
 
 if __name__ == "__main__":

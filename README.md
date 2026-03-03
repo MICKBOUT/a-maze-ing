@@ -37,3 +37,11 @@ list[list[int]]
 
 ## Examples
 grid = gen(5, 7)
+
+
+Bit Direction|
+-------------|
+0 North    1 |
+1 East     2 |
+2 South    4 |
+3 West     8 |
