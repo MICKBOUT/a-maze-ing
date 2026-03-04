@@ -59,11 +59,11 @@ def get_maze(file_path: str = "output_maze.txt") -> list[list[int]]:
 def main() -> None:
     # maze = gen_perfect(25, 25)
     t = time()
-    maze = gen_perfect(40, 60)
+    maze = gen_perfect(7, 9)
     print("t_perfecte=", time() - t)
-    t = time()
-    maze = gen_imperfect(60, 40)
-    print("t_imperfecte=", time() - t)
+    #t = time()
+    #maze = gen_imperfect(60, 40)
+    #print("t_imperfecte=", time() - t)
 
 
     # if not validate_maze(maze):

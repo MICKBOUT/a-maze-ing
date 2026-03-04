@@ -1,43 +1,10 @@
-from mlx import Mlx
-import sys
-from random import randint
-
-
-class Image:
-    def __init__(self, mlx, mlx_ptr, size: tuple):
-        self.width, self.height = size
-        self.img = mlx.mlx_new_image(mlx_ptr, self.width, self.height)
-        data_img = mlx.mlx_get_data_addr(self.img)
-        self.data, self.bpp, self.size_line, self.fmt = data_img
-
-    def draw_rect(self, pos1, pos2, color):
-        r, g, b, a = color
-        bpp = self.bpp // 8
-        width = pos2[0] - pos1[0]
-
-        # ligne complète en bytes
-        if bpp == 4:
-            pixel = bytes([b, g, r, a])
-        else:
-            pixel = bytes([b, g, r])
-
-        line = pixel * width
-
-        for y in range(pos1[1], pos2[1]):
-            offset = y * self.size_line + pos1[0] * bpp
-            self.data[offset:offset + len(line)] = line
-
-    def clear(self):
-        self.draw_rect((0, 0), (self.width, self.height), (0, 0, 0, 255))
-
-
 class MLXRendering:
-    def __init__(self, window_size):  # dev
+    def __init__(self):
         # Mlx instance
         self.mlx = Mlx()
         self.mlx_ptr = self.mlx.mlx_init()
         # The main window
-        self.window_size: tuple = window_size
+        self.window_size = (int(max_monitor.width*0.9), int(max_monitor.height*0.9))
         self.win_ptr = self.mlx.mlx_new_window(
             self.mlx_ptr,
             *self.window_size,
@@ -45,7 +12,8 @@ class MLXRendering:
         )
 
         # The image where the maze is draw
-        self.maze_img = Image(self.mlx, self.mlx_ptr, self.window_size)
+        self.maze_img = Image(self.mlx, self.mlx_ptr, int(self.window_size[0] * 0.8), self.window_size[1])
+        self.button_image = Image(self.mlx, self.mlx_ptr, int(self.window_size[0] * 0.2), self.window_size[1])
         self.maze_img_ptr = self.maze_img.img
 
         # parsing, init self.{start, end, size, path}
@@ -54,10 +22,10 @@ class MLXRendering:
         # === Cells proprieties ===
         # the size of each cell is the bigger size possible,
         # depending of the windows
-        self.cell_size = min(
-            self.window_size[0] // self.maze_size[0],
-            self.window_size[1] // self.maze_size[1]
-        )
+        self.cell_size = max(1, min(
+            self.maze_img.width // self.maze_size[0],
+            self.maze_img.height // self.maze_size[1]
+        ))
         self.width_wall = max(1, self.cell_size // 10)
 
         colors = MLXRendering.create_colors()
@@ -66,7 +34,8 @@ class MLXRendering:
         self.font_color = colors["text"]
 
         self.draw_maze()
-        self.put_image(self.maze_img)
+        self.put_image(self.maze_img, (0, 0))
+        self.put_image(self.button_image, (0, 0))
 
         def on_keypress(keycode, param):
             if keycode == 65307:
@@ -138,7 +107,7 @@ class MLXRendering:
 
     def draw_cell(self, img, value, y, x, background_color=None):
         px = x * self.cell_size
-        py = y * self.cell_size
+        py = y * self.cell_size 
 
         x1, y1 = px, py
         x2, y2 = px + self.cell_size, py + self.cell_size
@@ -268,7 +237,8 @@ def read_file(file_name: str = "output_maze.txt"):
 
 
 if __name__ == "__main__":
-    render = MLXRendering((3850, 2000))
+    
+    render = MLXRendering()
     render.put_string(
         (1000, 0),
         (255, 255, 255, 255),
