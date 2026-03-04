@@ -148,7 +148,6 @@ def main() -> None:
         "exit": (19, 19),
         "output_file": "output_maze.txt",
         "perfect": True,
-        # "animation": False,
     }
     if len(argv) > 1:
         load_file(argv[1], config_dict)
