@@ -148,24 +148,34 @@ def main() -> None:
         "exit": (19, 19),
         "output_file": "output_maze.txt",
         "perfect": True,
-        "animation": False,
+        # "animation": False,
     }
     if len(argv) > 1:
         load_file(argv[1], config_dict)
 
     if config_dict["perfect"]:
-        maze = gen_perfect(config_dict["height"], config_dict["width"])
+        maze = gen_perfect(
+            width=config_dict["width"],
+            height=config_dict["height"]
+        )
     else:
-        maze = gen_imperfect(config_dict["height"], config_dict["width"])
+        maze = gen_imperfect(
+            width=config_dict["width"],
+            height=config_dict["height"]
+        )
 
-    path = solver_fast(maze, config_dict["entry"], config_dict["exit"])
+    path = solver_fast(
+        maze=maze,
+        start=config_dict["entry"],
+        end=config_dict["exit"]
+    )
 
     write_file(
-        maze,
-        config_dict["entry"],
-        config_dict["exit"],
-        path,
-        config_dict["output_file"]
+        maze=maze,
+        start=config_dict["entry"],
+        end=config_dict["exit"],
+        path=path,
+        output=config_dict["output_file"]
     )
 
 

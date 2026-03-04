@@ -1,15 +1,15 @@
 from random import randint, choice
 
 
-def gen_perfect(height: int, width: int) -> list[list[int]]:
+def gen_perfect(width: int, height: int) -> list[list[int]]:
     """
     Generate a perfect maze represented as a 2D grid of wall-bit masks.
 
     Parameters:
-    height : int
-        Number of rows in the maze (must be a positive integer).
     width : int
         Number of columns in the maze (must be a positive integer).
+    height : int
+        Number of rows in the maze (must be a positive integer).
 
     Returns:
     list[list[int]]
@@ -97,15 +97,15 @@ def gen_perfect(height: int, width: int) -> list[list[int]]:
     return grid
 
 
-def gen_imperfect(height, width):
+def gen_imperfect(width: int, height: int):
     """
     Generate an imperfect maze by starting with a perfect maze
     and randomly removing some walls.
     Parameters:
-        height : int
-            Number of rows in the maze (must be a positive integer).
         width : int
             Number of columns in the maze (must be a positive integer).
+        height : int
+            Number of rows in the maze (must be a positive integer).
     Returns:
         list[list[int]]
             A height-by-width 2D list of integers where each integer encodes
@@ -149,7 +149,7 @@ def gen_imperfect(height, width):
                 maze[row][col] &= ~(1 << 3)
                 maze[row][col - 1] &= ~(1 << 1)
 
-    maze = gen_perfect(height, width)
+    maze = gen_perfect(height=height, width=width)
     for _ in range((height * width) // 10):
         row = randint(0, height - 1)
         col = randint(0, width - 1)
@@ -176,7 +176,7 @@ def gen_imperfect(height, width):
 
 if __name__ == "__main__":
     # grid = gen_prefect(height=10, width=10)
-    grid = gen_imperfect(height=10, width=10)
+    grid = gen_imperfect(width=10, height=10)
     for row in grid:
         print(row)
 
