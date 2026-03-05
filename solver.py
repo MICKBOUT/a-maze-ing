@@ -1,86 +1,106 @@
 from heapq import heappop, heappush
 from gen import gen_perfect, gen_imperfect
+from exception import PathNotFound
 
 
 def solver_fast(
         maze: list[list[int]],
-        start: tuple[int, int] = (0, 0),
-        end: tuple[int, int] = None):
-    end = (len(maze) - 1, len(maze[0]) - 1) if end is None else end
+        start: tuple[int, int],
+        end: tuple[int, int]) -> str:
+    """
+    Solves a maze using the A* algorithm and returns the path as a string of
+    directions.
 
-    if maze[start[0]][start[1]] == 15:
+    Parameters:
+        maze (list[list[int]]): The maze represented as a 2D list of integers,
+        where each integer encodes wall information.
+        start (tuple[int, int], optional): The starting position in the maze
+        as (x, y). Defaults to (0, 0).
+        end (tuple[int, int], optional): The ending position in the maze as
+        (x, y). If None, must be provided by the caller.
+
+    Returns:
+        str: A string representing the path from start to end using
+        'N', 'E', 'S', 'W' for directions.
+
+    Raises:
+        ValueError: If the start or end position is on a full block.
+        Exception: If no path is found.
+    """
+    x, y = start
+    if maze[y][x] == 15:
         raise ValueError("Error entry on full block")
-    if maze[end[0]][end[1]] == 15:
+    x_end, y_end = end
+    if maze[y_end][x_end] == 15:
         raise ValueError("Error exit on full block")
 
-    y_end, x_end = end
     heap = []
-    y, x = start
-    seen = {(y, x)}
+    seen = {(x, y)}
     heappush(heap, (
-        abs(y_end - y) + abs(x_end - x),
-        y, x,
+        abs(x_end - x) + abs(y_end - y),
+        x, y,
         "",))
-
+    stack_visual = []
     while heap:
-        _, y, x, path = heappop(heap)
-        seen.add((y, x))
+        _, x, y, path = heappop(heap)
+        stack_visual.append((x, y))
+        seen.add((x, y))
         if y == y_end and x == x_end:
-            return path
+            return path, stack_visual
         # North
         if not maze[y][x] & 1:
-            if (y - 1, x) not in seen:
+            if (x, y - 1) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + abs(y_end - (y - 1)) + abs(x_end - x),
-                    y - 1,
+                    len(path) + 1 + abs(x_end - x) + abs(y_end - (y - 1)),
                     x,
+                    y - 1,
                     path + "N"))
         # East
         if not maze[y][x] & 2:
-            if (y, x + 1) not in seen:
+            if (x + 1, y) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + abs(y_end - y) + abs(x_end - (x + 1)),
-                    y,
+                    len(path) + 1 + abs(x_end - (x + 1)) + abs(y_end - y),
                     x + 1,
+                    y,
                     path + "E"))
         # South
         if not maze[y][x] & 4:
-            if (y + 1, x) not in seen:
+            if (x, y + 1) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + abs(y_end - (y + 1)) + abs(x_end - x),
-                    y + 1,
+                    len(path) + 1 + abs(x_end - x) + abs(y_end - (y + 1)),
                     x,
+                    y + 1,
                     path + "S"))
         # West
         if not maze[y][x] & 8:
-            if (y, x - 1) not in seen:
+            if (x - 1, y) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + abs(y_end - y) + abs(x_end - (x - 1)),
-                    y,
+                    len(path) + 1 + abs(x_end - (x - 1)) + abs(y_end - y),
                     x - 1,
+                    y,
                     path + "W"))
-
-    return None
-
-# Bit Direction|
-# -------------|
-# 0 North    1 |
-# 1 East     2 |
-# 2 South    4 |
-# 3 West     8 |
+    raise PathNotFound
 
 
 if __name__ == "__main__":
     print("=== perfecte ===")
-    maze = gen_perfect(8, 10)
+    maze = gen_perfect(15, 10)
     for row in maze:
         print(row)
-    path = solver_fast(maze)
+    path = solver_fast(
+        maze=maze,
+        start=(0, 0),
+        end=(14, 9)
+    )
     print(path)
 
     print("\n\n=== imperfecte ===")
-    maze = gen_imperfect(10, 250)
+    maze = gen_imperfect(15, 10)
     for row in maze:
         print(row)
-    path = solver_fast(maze)
+    path = solver_fast(
+        maze=maze,
+        start=(0, 0),
+        end=(14, 9)
+    )
     print(path)
