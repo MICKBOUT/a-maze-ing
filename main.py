@@ -172,8 +172,6 @@ def main() -> None:
         start=config_dict["entry"],
         end=config_dict["exit"]
     )
-    print(progress_stack)
-    print(len(progress_stack))
     write_file(
         maze=maze,
         start=config_dict["entry"],

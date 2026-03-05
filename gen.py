@@ -181,7 +181,6 @@ def gen_imperfect(width: int, height: int, seed_input: str):
             continue
         # else:
         rm_wall(maze, row, col, choice(candidate))
-    print("ended")
     return maze
 
 
