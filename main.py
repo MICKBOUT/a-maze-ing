@@ -2,6 +2,17 @@ import sys
 
 from gen import gen_imperfect, gen_perfect
 from solver import solver_heap
+from a_maze_ing import MLXRendering
+
+config_dict = {
+    "width": 25,
+    "height": 20,
+    "entry": (24, 19),
+    "exit": (23, 18),
+    "output_file": "output_maze.txt",
+    "perfect": True,
+    "seed": None
+}
 
 
 def write_file(
@@ -128,12 +139,24 @@ def load_file(file_name: str, config_dict: dict) -> None:
         print("Error:", e)
 
 
-def new_maze(config_dict: dict) -> list[tuple[int, int]]:
+def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
+
+    if len(sys.argv) > 1:
+        load_file(sys.argv[1], config_dict)
+    else:
+        print("config file missing")
+        print("default value used")
+
+    print(config_dict)
+
+    if new_seed:
+        config_dict["seed"] = None
+
     chosen_gen = gen_perfect if config_dict["perfect"] else gen_imperfect
     maze = chosen_gen(
-            config_dict["width"],
-            config_dict["height"],
-            config_dict["seed"]
+            width=config_dict["width"],
+            height=config_dict["height"],
+            seed_input=config_dict["seed"]
     )
 
     path, progress_stack = solver_heap(
@@ -152,23 +175,9 @@ def new_maze(config_dict: dict) -> list[tuple[int, int]]:
 
 
 def main() -> None:
-    config_dict = {
-        "width": 25,
-        "height": 20,
-        "entry": (24, 19),
-        "exit": (23, 18),
-        "output_file": "output_maze.txt",
-        "perfect": True,
-        "seed": None
-    }
-
-    if len(sys.argv) > 1:
-        load_file(sys.argv[1], config_dict)
-    else:
-        print("config file missing")
-        print("default value used")
-
-    new_maze(config_dict)
+    new_maze()
+    render = MLXRendering()
+    render.mlx.mlx_loop(render.mlx_ptr)
 
 
 if __name__ == "__main__":

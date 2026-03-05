@@ -200,7 +200,7 @@ def gen_imperfect(width: int, height: int, seed_input: str):
                 maze[row][col] &= ~(1 << 3)
                 maze[row][col - 1] &= ~(1 << 1)
 
-    maze = gen_perfect(height, width, seed_input)
+    maze = gen_perfect(width, height, seed_input)
     for _ in range((height * width) // 12):
         row = randint(0, height - 1)
         col = randint(0, width - 1)

@@ -180,7 +180,11 @@ class MazeImage(Image):
             self.draw_path()
 
     @staticmethod
-    def get_faded_path(current: int, end: int, start_color: tuple[int, int, int], end_color: tuple[int, int, int]):
+    def get_faded_path(current: int,
+                       end: int,
+                       start_color: tuple[int, int, int],
+                       end_color: tuple[int, int, int]
+                       ):
         start_r, start_g, start_b = start_color
         end_r, end_g, end_b = end_color
 
@@ -194,11 +198,15 @@ class MazeImage(Image):
             int(start_r + coef * diff_r,),
             int(start_g + coef * diff_g,),
             int(start_b + coef * diff_b,),
-            255 # alpha
+            255  # alpha
         )
 
     def draw_path(self):
         current_x, current_y = self.start
+        if self.drawed_path:
+            color = (255, 255, 255, 255)
+        else:
+            color = self.background_color
         for i in range(len(self.path[:-1])):
             if self.path[i] == "S":
                 current_y += 1
@@ -211,8 +219,7 @@ class MazeImage(Image):
             self.draw_cell(
                 self.maze[current_y][current_x],
                 current_y, current_x,
-                background_color=self.background_color if not self.drawed_path else MazeImage.get_faded_path(i, len(self.path), (255, 0, 0), (0, 255, 0))
-            )
+                color)
 
 
 class MLXRendering:
@@ -254,8 +261,7 @@ class MLXRendering:
             self.end,
             self.path
         )
-        self.maze_img.draw_rect(0, 0, self.maze_img.width,
-                                self.maze_img.height, (255, 255, 255, 255))
+        self.maze_img.draw_maze()
         self.put_image(self.maze_img, 0, 0)
 
         print()
@@ -285,10 +291,8 @@ class MLXRendering:
         def on_mouse(button, x, y, param):
             # Change Color Button
             if (
-                self.button_new_color[0] <= x <=
-                self.button_new_color[0] + button1_box[2] - button1_box[0]
-                and self.button_new_color[1] <= y <=
-                self.button_new_color[1] + button1_box[3] - button1_box[1]
+                self.button_new_color[0] <= x <= button1_box[2]
+                and self.button_new_color[1] <= y <= button1_box[3]
             ):
                 COLORS.update(create_colors())
                 self.maze_img.wall_color = COLORS["wall"]
@@ -296,13 +300,35 @@ class MLXRendering:
                 self.maze_img.draw_maze()
                 self.put_image(self.maze_img, 0, 0)
 
-            # Show path Button
-
+            # New maze button
             if (
-                self.button_show_path[0] <= x <=
-                self.button_show_path[0] + button3_box[2] - button3_box[0]
-                and self.button_show_path[1] <= y <=
-                self.button_show_path[1] + button3_box[3] - button3_box[1]
+                self.button_new_maze[0] <= x <= button2_box[2]
+                and self.button_new_maze[1] <= y <= button2_box[3]
+            ):
+                from main import new_maze
+                new_maze(new_seed=True)
+                self.fetch_data()
+                width, height = self.maze_img.width, self.maze_img.height
+                self.mlx.mlx_destroy_image(self.mlx_ptr, self.maze_img.img)
+                self.maze_img = MazeImage(
+                    self.mlx,
+                    self.mlx_ptr,
+                    width,
+                    height,
+                    self.maze_width,
+                    self.maze_height,
+                    self.maze,
+                    self.start,
+                    self.end,
+                    self.path
+                )
+                self.maze_img.draw_maze()
+                self.put_image(self.maze_img, 0, 0)
+
+            # Show path Button
+            if (
+                self.button_show_path[0] <= x <= button3_box[2]
+                and self.button_show_path[1] <= y <= button3_box[3]
             ):
                 self.maze_img.drawed_path = not self.maze_img.drawed_path
                 self.maze_img.draw_path()
@@ -395,6 +421,3 @@ def read_file(file_name: str = "output_maze.txt"):
 
 if __name__ == "__main__":
     render = MLXRendering()
-    render.maze_img.draw_maze()
-    render.put_image(render.maze_img, 0, 0)
-    render.mlx.mlx_loop(render.mlx_ptr)
