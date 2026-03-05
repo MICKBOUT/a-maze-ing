@@ -3,7 +3,7 @@ from gen import gen_perfect, gen_imperfect
 from exception import PathNotFound
 
 
-def solver_fast(
+def solver_heap(
         maze: list[list[int]],
         start: tuple[int, int],
         end: tuple[int, int]) -> str:
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     maze = gen_perfect(15, 10)
     for row in maze:
         print(row)
-    path = solver_fast(
+    path = solver_heap(
         maze=maze,
         start=(0, 0),
         end=(14, 9)
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     maze = gen_imperfect(15, 10)
     for row in maze:
         print(row)
-    path = solver_fast(
+    path = solver_heap(
         maze=maze,
         start=(0, 0),
         end=(14, 9)
