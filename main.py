@@ -117,12 +117,13 @@ def load_file(file_name: str, config_dict: dict) -> None:
                 elif variable == "output_file":
                     config_dict[variable] = data
                 elif variable == "perfect":
-                    if data.lower() == "true":
+                    if data.lower() in {"true", 1, "yes", "y"}:
                         config_dict["perfect"] = True
-                    elif data.lower() == "false":
+                    elif data.lower() in {"false", 0, "no", "n"}:
                         config_dict["perfect"] = False
+                elif variable == "seed":
+                    config_dict["seed"] = data
                 else:
-
                     print("unused parameter", variable, data)
 
     except Exception as e:
@@ -148,6 +149,7 @@ def main() -> None:
         "exit": (19, 19),
         "output_file": "output_maze.txt",
         "perfect": True,
+        "seed": None
     }
     if len(argv) > 1:
         load_file(argv[1], config_dict)
@@ -155,7 +157,8 @@ def main() -> None:
     if config_dict["perfect"]:
         maze = gen_perfect(
             width=config_dict["width"],
-            height=config_dict["height"]
+            height=config_dict["height"],
+            seed_input=config_dict["seed"]
         )
     else:
         maze = gen_imperfect(
@@ -163,18 +166,17 @@ def main() -> None:
             height=config_dict["height"]
         )
 
-    path = solver_fast(
+    path, progress_stack = solver_fast(
         maze=maze,
         start=config_dict["entry"],
         end=config_dict["exit"]
     )
-
     write_file(
         maze=maze,
         start=config_dict["entry"],
         end=config_dict["exit"],
         path=path,
-        output=config_dict["output_file"]
+        file_output=config_dict["output_file"]
     )
 
 

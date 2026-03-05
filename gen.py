@@ -1,7 +1,8 @@
-from random import randint, choice
+from random import randint, choice, seed
+from time import time
 
 
-def gen_perfect(width: int, height: int) -> list[list[int]]:
+def gen_perfect(width: int, height: int, seed_input: str) -> list[list[int]]:
     """
     Generate a perfect maze represented as a 2D grid of wall-bit masks.
 
@@ -16,6 +17,12 @@ def gen_perfect(width: int, height: int) -> list[list[int]]:
         A height-by-width 2D list of integers where each integer encodes the
         walls remaining around that cell using the bit layout described above.
     """
+    if seed_input is None or seed_input.lower() in {"none", ""}:
+        seed_input = hash(time())
+        print("Seed auto-Generated:", seed_input)
+    else:
+        print("Seed used:", seed_input)
+    seed(seed_input)
 
     if height < 6:
         raise ValueError("height too small for the 42 logo")
@@ -97,7 +104,7 @@ def gen_perfect(width: int, height: int) -> list[list[int]]:
     return grid
 
 
-def gen_imperfect(width: int, height: int):
+def gen_imperfect(width: int, height: int, seed_input: str):
     """
     Generate an imperfect maze by starting with a perfect maze
     and randomly removing some walls.
@@ -149,7 +156,11 @@ def gen_imperfect(width: int, height: int):
                 maze[row][col] &= ~(1 << 3)
                 maze[row][col - 1] &= ~(1 << 1)
 
-    maze = gen_perfect(height=height, width=width)
+    maze = gen_perfect(
+        height=height,
+        width=width,
+        seed_input=seed_input
+    )
     for _ in range((height * width) // 10):
         row = randint(0, height - 1)
         col = randint(0, width - 1)
@@ -176,7 +187,7 @@ def gen_imperfect(width: int, height: int):
 
 if __name__ == "__main__":
     # grid = gen_prefect(height=10, width=10)
-    grid = gen_imperfect(width=10, height=10)
+    grid = gen_perfect(width=15, height=10)
     for row in grid:
         print(row)
 
