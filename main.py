@@ -1,14 +1,15 @@
+import sys
+
 from gen import gen_imperfect, gen_perfect
-from solver import solver_fast
-from sys import argv
+from solver import solver_heap
 
 
 def write_file(
         maze: list[list[int]],
-        start: tuple[int, int] = None,
-        end: tuple[int, int] = None,
-        path: str = "Placer_holder",
-        file_output: str = "output_maze.txt") -> str:
+        start: tuple[int, int],
+        end: tuple[int, int],
+        path: str,
+        file) -> str:
     """
     Write the given 2-D integer maze to a text file.
 
@@ -22,16 +23,16 @@ def write_file(
     ----------
     maze : list[list[int]]
         2-D list representing the maze grid (rows of integer cells).
-    start : tuple[int, int], optional
+    start : tuple[int, int]
         (row, column) coordinates of the start cell.
         If None, defaults to (0, 0).
-    end : tuple[int, int], optional
+    end : tuple[int, int]
         (row, column) coordinates of the end cell. If None, defaults to
         (len(maze) - 1, len(maze[0]) - 1).
-    path : str, optional
+    path : str
         Arbitrary string describing or representing the path; written verbatim
         after the coordinates. Defaults to "Placer_holder".
-    file_output : str, optional
+    file : str
         Filesystem path to write the output to. Defaults to "output_maze.txt".
 
     Returns
@@ -47,9 +48,6 @@ def write_file(
     OSError
         If the file cannot be opened or written.
     """
-    start = (0, 0) if start is None else start
-    end = (len(maze) - 1, len(maze[0]) - 1) if end is None else end
-    file = file_output
     with open(file, 'w') as f:
         line = ""
         for row in maze:
@@ -130,15 +128,27 @@ def load_file(file_name: str, config_dict: dict) -> None:
         print("Error:", e)
 
 
-def get_maze(file_path: str = "output_maze.txt") -> list[list[int]]:
-    maze = []
-    with open(file_path) as file:
-        for i in file:
-            line = i.strip()
-            if line == "":
-                break
-            maze.append([int(letter, 16) for letter in line])
-    return maze
+def new_maze(config_dict: dict) -> list[tuple[int, int]]:
+    chosen_gen = gen_perfect if config_dict["perfect"] else gen_imperfect
+    maze = chosen_gen(
+            config_dict["width"],
+            config_dict["height"],
+            config_dict["seed"]
+    )
+
+    path, progress_stack = solver_heap(
+        maze,
+        config_dict["entry"],
+        config_dict["exit"]
+    )
+    write_file(
+        maze,
+        config_dict["entry"],
+        config_dict["exit"],
+        path,
+        config_dict["output_file"]
+    )
+    return progress_stack
 
 
 def main() -> None:
@@ -151,34 +161,14 @@ def main() -> None:
         "perfect": True,
         "seed": None
     }
-    if len(argv) > 1:
-        load_file(argv[1], config_dict)
 
-    if config_dict["perfect"]:
-        maze = gen_perfect(
-            width=config_dict["width"],
-            height=config_dict["height"],
-            seed_input=config_dict["seed"]
-        )
+    if len(sys.argv) > 1:
+        load_file(sys.argv[1], config_dict)
     else:
-        maze = gen_imperfect(
-            width=config_dict["width"],
-            height=config_dict["height"],
-            seed_input=config_dict["seed"]
-        )
+        print("config file missing")
+        print("default value used")
 
-    path, progress_stack = solver_fast(
-        maze=maze,
-        start=config_dict["entry"],
-        end=config_dict["exit"]
-    )
-    write_file(
-        maze=maze,
-        start=config_dict["entry"],
-        end=config_dict["exit"],
-        path=path,
-        file_output=config_dict["output_file"]
-    )
+    new_maze(config_dict)
 
 
 if __name__ == "__main__":
