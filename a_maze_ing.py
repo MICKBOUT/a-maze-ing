@@ -303,7 +303,7 @@ class MLXRendering:
                 and self.button_new_maze[1] <= y <= button2_box[3]
             ):
                 from main import new_maze
-                new_maze(new_seed=True)
+                self.heap = new_maze(new_seed=True)
                 self.fetch_data()
                 width, height = self.maze_img.width, self.maze_img.height
                 self.mlx.mlx_destroy_image(self.mlx_ptr, self.maze_img.img)
@@ -330,9 +330,32 @@ class MLXRendering:
                 self.maze_img.drawed_path = not self.maze_img.drawed_path
                 self.maze_img.draw_path()
                 self.put_image(self.maze_img, 0, 0)
-
+            
+            if (
+                self.button_show_path_animated[0] <= x <= button4_box[2]
+                and self.button_show_path_animated[1] <= y <= button4_box[3]
+            ):
+                self.show_heap()
         self.mlx.mlx_hook(self.win_ptr, 2, 1, on_keypress, None)
         self.mlx.mlx_mouse_hook(self.win_ptr, on_mouse, None)
+
+    def show_heap(self):
+        print("test")
+        echantillon = 25 # 50 par 50
+        copy = list(self.heap)
+        npop = 0
+        while copy:
+            i = 0
+            while i < echantillon and copy:
+                x, y = copy.pop(0)
+                i += 1
+                npop += 1
+                self.maze_img.draw_cell(self.maze[y][x], y, x, MazeImage.get_faded_path(npop, len(self.heap), (255, 0, 0), (0, 255, 0)))
+            self.mlx.mlx_do_sync(self.mlx_ptr)
+            self.put_image(self.maze_img, 0, 0)
+
+        #self.maze_img.draw_path()
+
 
     def fetch_data(self):
         parsed_data = read_file()
