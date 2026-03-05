@@ -179,25 +179,39 @@ class MazeImage(Image):
         if self.drawed_path:
             self.draw_path()
 
+    @staticmethod
+    def get_faded_path(current: int, end: int, start_color: tuple[int, int, int], end_color: tuple[int, int, int]):
+        start_r, start_g, start_b = start_color
+        end_r, end_g, end_b = end_color
+
+        diff_r = end_r - start_r
+        diff_b = end_b - start_b
+        diff_g = end_g - start_g
+
+        coef = current/end
+
+        return (
+            int(start_r + coef * diff_r,),
+            int(start_g + coef * diff_g,),
+            int(start_b + coef * diff_b,),
+            255 # alpha
+        )
+
     def draw_path(self):
-        if self.drawed_path:
-            color_path = (255, 255, 255, 255)
-        else:
-            color_path = self.background_color
         current_x, current_y = self.start
-        for c in self.path[:-1]:
-            if c == "S":
+        for i in range(len(self.path[:-1])):
+            if self.path[i] == "S":
                 current_y += 1
-            elif c == "N":
+            elif self.path[i] == "N":
                 current_y -= 1
-            elif c == "E":
+            elif self.path[i] == "E":
                 current_x += 1
             else:
                 current_x -= 1
             self.draw_cell(
                 self.maze[current_y][current_x],
                 current_y, current_x,
-                background_color=color_path
+                background_color=self.background_color if not self.drawed_path else MazeImage.get_faded_path(i, len(self.path), (255, 0, 0), (0, 255, 0))
             )
 
 
