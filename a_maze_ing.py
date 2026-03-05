@@ -14,6 +14,7 @@ button2_box = (2900, 660, 3420, 820)
 button3_box = (2900, 930, 3420, 1090)
 button4_box = (2900, 1190, 3420, 1250)
 
+
 def create_colors():
     """Create colors using random"""
     # Dict of complementary colors randomly generated
@@ -211,7 +212,7 @@ class MLXRendering:
         # Mlx instance
         self.mlx = Mlx()
         self.mlx_ptr = self.mlx.mlx_init()
-        self.max_monitor_size = (1600, 900)
+        self.max_monitor_size = self.mlx.mlx_get_screen_size(self.mlx_ptr)[1:]
         self.windows_width = int(self.max_monitor_size[0]*0.9)
         self.windows_height = int(self.max_monitor_size[1]*0.9)
         # New Windows
