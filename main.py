@@ -147,8 +147,6 @@ def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
         print("config file missing")
         print("default value used")
 
-    print(config_dict)
-
     if new_seed:
         config_dict["seed"] = None
 

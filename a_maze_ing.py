@@ -175,7 +175,6 @@ class MazeImage(Image):
             x_end,
             background_color=(255, 0, 0, 255),
         )
-        print(self.drawed_path)
         if self.drawed_path:
             self.draw_path()
 
@@ -263,8 +262,6 @@ class MLXRendering:
         )
         self.maze_img.draw_maze()
         self.put_image(self.maze_img, 0, 0)
-
-        print()
 
         path = self.compute_buttons()
         self.button_ptr, w, h = self.mlx.mlx_png_file_to_image(
