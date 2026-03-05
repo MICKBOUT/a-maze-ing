@@ -43,7 +43,8 @@ def solver_fast(
     stack_visual = []
     while heap:
         _, x, y, path = heappop(heap)
-        stack_visual.append((x, y))
+        if (x, y) not in seen:
+            stack_visual.append((x, y))
         seen.add((x, y))
         if y == y_end and x == x_end:
             return path, stack_visual

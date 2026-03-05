@@ -161,7 +161,7 @@ def gen_imperfect(width: int, height: int, seed_input: str):
         width=width,
         seed_input=seed_input
     )
-    for _ in range((height * width) // 10):
+    for _ in range((height * width) // 12):
         row = randint(0, height - 1)
         col = randint(0, width - 1)
         if maze[row][col] == 15:
@@ -181,7 +181,7 @@ def gen_imperfect(width: int, height: int, seed_input: str):
             continue
         # else:
         rm_wall(maze, row, col, choice(candidate))
-
+    print("ended")
     return maze
 
 

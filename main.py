@@ -143,10 +143,10 @@ def get_maze(file_path: str = "output_maze.txt") -> list[list[int]]:
 
 def main() -> None:
     config_dict = {
-        "width": 20,
+        "width": 25,
         "height": 20,
-        "entry": (0, 0),
-        "exit": (19, 19),
+        "entry": (24, 19),
+        "exit": (23, 18),
         "output_file": "output_maze.txt",
         "perfect": True,
         "seed": None
@@ -163,7 +163,8 @@ def main() -> None:
     else:
         maze = gen_imperfect(
             width=config_dict["width"],
-            height=config_dict["height"]
+            height=config_dict["height"],
+            seed_input=config_dict["seed"]
         )
 
     path, progress_stack = solver_fast(
@@ -171,6 +172,8 @@ def main() -> None:
         start=config_dict["entry"],
         end=config_dict["exit"]
     )
+    print(progress_stack)
+    print(len(progress_stack))
     write_file(
         maze=maze,
         start=config_dict["entry"],

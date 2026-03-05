@@ -156,8 +156,8 @@ class MazeImage(Image):
                 self.draw_cell(self.maze[y][x], y, x,
                                background_color=self.background_color)
 
-            y_start, x_start = self.start
-            y_end, x_end = self.end
+            x_start, y_start = self.start
+            x_end, y_end = self.end
 
             # start
             # start
