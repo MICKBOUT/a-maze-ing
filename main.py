@@ -59,7 +59,7 @@ def get_maze(file_path: str = "output_maze.txt") -> list[list[int]]:
 def main() -> None:
     # maze = gen_perfect(25, 25)
     t = time()
-    maze = gen_perfect(7, 9)
+    maze = gen_perfect(300, 400)
     print("t_perfecte=", time() - t)
     #t = time()
     #maze = gen_imperfect(60, 40)
@@ -77,7 +77,7 @@ def main() -> None:
         print("Solution found", f"{len(path)} move")
 
     write_file(maze, path=path)
-
+    
 
 if __name__ == "__main__":
     main()
