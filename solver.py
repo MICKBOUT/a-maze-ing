@@ -37,7 +37,7 @@ def solver_heap(
     heap = []
     seen = {(x, y)}
     heappush(heap, (
-        abs(x_end - x) + abs(y_end - y),
+        (abs(x_end - x) + abs(y_end - y)) * 3,
         x, y,
         "",))
     stack_visual = []
@@ -52,7 +52,7 @@ def solver_heap(
         if not maze[y][x] & 1:
             if (x, y - 1) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + abs(x_end - x) + abs(y_end - (y - 1)),
+                    len(path) + 1 + (abs(x_end - x) + abs(y_end - (y - 1))) * 3,
                     x,
                     y - 1,
                     path + "N"))
@@ -60,7 +60,7 @@ def solver_heap(
         if not maze[y][x] & 2:
             if (x + 1, y) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + abs(x_end - (x + 1)) + abs(y_end - y),
+                    len(path) + 1 + (abs(x_end - (x + 1)) + abs(y_end - y)) * 3,
                     x + 1,
                     y,
                     path + "E"))
@@ -68,7 +68,7 @@ def solver_heap(
         if not maze[y][x] & 4:
             if (x, y + 1) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + abs(x_end - x) + abs(y_end - (y + 1)),
+                    len(path) + 1 + (abs(x_end - x) + abs(y_end - (y + 1))) * 3,
                     x,
                     y + 1,
                     path + "S"))
@@ -76,7 +76,7 @@ def solver_heap(
         if not maze[y][x] & 8:
             if (x - 1, y) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + abs(x_end - (x - 1)) + abs(y_end - y),
+                    len(path) + 1 + (abs(x_end - (x - 1)) + abs(y_end - y)) * 3,
                     x - 1,
                     y,
                     path + "W"))

@@ -173,8 +173,8 @@ def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
 
 
 def main() -> None:
-    new_maze()
-    render = MLXRendering()
+    heap = new_maze()
+    render = MLXRendering(heap)
     render.mlx.mlx_loop(render.mlx_ptr)
 
 
