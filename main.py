@@ -1,6 +1,6 @@
 import sys
 
-from gen import gen_imperfect, gen_perfect
+from gen import MazeGenerator
 from solver import solver_heap
 from a_maze_ing import MLXRendering
 
@@ -150,11 +150,11 @@ def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
     if new_seed:
         config_dict["seed"] = None
 
-    chosen_gen = gen_perfect if config_dict["perfect"] else gen_imperfect
-    maze = chosen_gen(
+    maze = MazeGenerator.maze_generator(
             width=config_dict["width"],
             height=config_dict["height"],
-            seed_input=config_dict["seed"]
+            seed_input=config_dict["seed"],
+            perfect=config_dict["perfect"]
     )
 
     path, progress_stack = solver_heap(

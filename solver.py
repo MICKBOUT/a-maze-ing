@@ -1,5 +1,5 @@
 from heapq import heappop, heappush
-from gen import gen_perfect, gen_imperfect
+from gen import MazeGenerator
 from exception import PathNotFound
 
 
@@ -27,6 +27,7 @@ def solver_heap(
         ValueError: If the start or end position is on a full block.
         Exception: If no path is found.
     """
+    coeff = 3
     x, y = start
     if maze[y][x] == 15:
         raise ValueError("Error entry on full block")
@@ -37,7 +38,7 @@ def solver_heap(
     heap = []
     seen = {(x, y)}
     heappush(heap, (
-        abs(x_end - x) + abs(y_end - y),
+        (abs(x_end - x) + abs(y_end - y)) * coeff,
         x, y,
         "",))
     stack_visual = []
@@ -52,7 +53,7 @@ def solver_heap(
         if not maze[y][x] & 1:
             if (x, y - 1) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + abs(x_end - x) + abs(y_end - (y - 1)),
+                    len(path) + 1 + (abs(x_end - x) + abs(y_end - (y - 1))) * coeff,
                     x,
                     y - 1,
                     path + "N"))
@@ -60,7 +61,7 @@ def solver_heap(
         if not maze[y][x] & 2:
             if (x + 1, y) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + abs(x_end - (x + 1)) + abs(y_end - y),
+                    len(path) + 1 + (abs(x_end - (x + 1)) + abs(y_end - y)) * coeff,
                     x + 1,
                     y,
                     path + "E"))
@@ -68,7 +69,7 @@ def solver_heap(
         if not maze[y][x] & 4:
             if (x, y + 1) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + abs(x_end - x) + abs(y_end - (y + 1)),
+                    len(path) + 1 + (abs(x_end - x) + abs(y_end - (y + 1))) * coeff,
                     x,
                     y + 1,
                     path + "S"))
@@ -76,7 +77,7 @@ def solver_heap(
         if not maze[y][x] & 8:
             if (x - 1, y) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + abs(x_end - (x - 1)) + abs(y_end - y),
+                    len(path) + 1 + (abs(x_end - (x - 1)) + abs(y_end - y)) * coeff,
                     x - 1,
                     y,
                     path + "W"))
@@ -84,24 +85,15 @@ def solver_heap(
 
 
 if __name__ == "__main__":
-    print("=== perfecte ===")
-    maze = gen_perfect(15, 10)
-    for row in maze:
-        print(row)
-    path = solver_heap(
-        maze=maze,
-        start=(0, 0),
-        end=(14, 9)
-    )
-    print(path)
 
+    import time 
+
+    maze = MazeGenerator.maze_generator(200, 200, None, False)
     print("\n\n=== imperfecte ===")
-    maze = gen_imperfect(15, 10)
-    for row in maze:
-        print(row)
+    t = time.time()
     path = solver_heap(
         maze=maze,
         start=(0, 0),
-        end=(14, 9)
+        end=(199, 199)
     )
-    print(path)
+    print(f"{time.time()- t}")
