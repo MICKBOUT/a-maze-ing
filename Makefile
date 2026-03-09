@@ -1,12 +1,12 @@
 PYTHON			= python3
-VENV			= venv
+VENV			= .venv
 VENV_BIN		= $(VENV)/bin
 V_PYTHON		= $(VENV_BIN)/python
 V_PIP			= $(VENV_BIN)/python -m pip
 MAIN			= a_maze_ing.py
 
 MYPY_FLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
-DEPENDENCIES	= pytest flake8 mypy lib/mlx-2.2-py3-none-any.whl
+DEPENDENCIES	= pytest flake8 mypy lib/mlx-2.2-py3-none-any.whl pillow
 FLAKE			= $(VENV_BIN)/flake8
 MYPY			= $(VENV_BIN)/mypy
 EXCLUDE			= $(VENV)

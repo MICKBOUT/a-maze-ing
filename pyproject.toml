@@ -18,6 +18,17 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "flake8",
+    "mypy"
+]
+
+dependencies = [
+    "Pillow>=10.0"
+]
+
 [project.urls]
 "Homepage" = "https://projects.intra.42.fr/a-maze-ing/mboutte"
 
