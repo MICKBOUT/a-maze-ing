@@ -7,8 +7,8 @@ from a_maze_ing import MLXRendering
 config_dict = {
     "width": 25,
     "height": 20,
-    "entry": (24, 19),
-    "exit": (23, 18),
+    "entry": (0, 0),
+    "exit": (24, 19),
     "output_file": "output_maze.txt",
     "perfect": True,
     "seed": None
@@ -173,8 +173,8 @@ def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
 
 
 def main() -> None:
-    new_maze()
-    render = MLXRendering()
+    heap = new_maze()
+    render = MLXRendering(heap)
     render.mlx.mlx_loop(render.mlx_ptr)
 
 
