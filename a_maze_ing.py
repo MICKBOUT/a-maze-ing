@@ -12,7 +12,7 @@ buttons_size = (580, 1946)
 button1_box = (2900, 400, 3420, 550)
 button2_box = (2900, 660, 3420, 820)
 button3_box = (2900, 930, 3420, 1090)
-button4_box = (2900, 1190, 3420, 1250)
+button4_box = (2900, 1190, 3420, 1340)
 
 
 def create_colors():
@@ -30,7 +30,6 @@ def create_colors():
         [c - randint(0, 128) for c in colors["background"][:-1]] + [255]
     )
     red, green, blue, _ = colors["background"]
-    # Apply the best color to contrast tehe text with the background.
 
     return colors
 
@@ -104,8 +103,8 @@ class MazeImage(Image):
         self.colors = create_colors()
         self.background_color = self.colors["background"]
         self.wall_color = self.colors["wall"]
-        self.path_color_start = tuple(255 - i for i in self.background_color[:-1])
-        self.path_color_end = tuple(255 - i for i in self.wall_color[:-1])
+        self.path_color_start = (255, 0, 0)
+        self.path_color_end = (255, 255, 0) 
 
     def fetch_data(self):
         parsed_data = read_file()
@@ -198,8 +197,6 @@ class MazeImage(Image):
             x_end,
             background_color=(255, 0, 0, 255),
         )
-        if self.drawed_path:
-            self.draw_path()
 
     def get_faded_path(self, current: int, end: int):
         start_color, end_color = self.path_color_start, self.path_color_end
@@ -297,31 +294,35 @@ class MLXRendering:
         def on_mouse(button, x, y, param):
             # Change Color Button
             if (
-                self.button_new_color[0] <= x <= button1_box[2]
-                and self.button_new_color[1] <= y <= button1_box[3]
+                self.button_new_color[0] <= x <= self.button_new_color[2]
+                and self.button_new_color[1] <= y <= self.button_new_color[3]
             ):
+
                 self.maze_img.update_colors()
                 self.maze_img.draw_maze()
                 if self.maze_img.drawed_heap:
                     self.show_heap(float("inf"))
+                if self.maze_img.drawed_path:
+                    self.maze_img.draw_path()
                 self.put_image(self.maze_img, 0, 0)
 
             # New maze button
             if (
-                self.button_new_maze[0] <= x <= button2_box[2]
-                and self.button_new_maze[1] <= y <= button2_box[3]
+                self.button_new_maze[0] <= x <= self.button_new_maze[2]
+                and self.button_new_maze[1] <= y <= self.button_new_maze[3]
             ):
-                print("testtttt")
                 from main import new_maze
                 self.heap = new_maze(new_seed=True)
                 self.maze_img.fetch_data()
                 self.maze_img.draw_maze()
                 self.put_image(self.maze_img, 0, 0)
+                self.maze_img.drawed_heap = False
+                self.maze_img.drawed_path = False
 
             # Show path Button
             if (
-                self.button_show_path[0] <= x <= button3_box[2]
-                and self.button_show_path[1] <= y <= button3_box[3]
+                self.button_show_path[0] <= x <= self.button_show_path[2]
+                and self.button_show_path[1] <= y <= self.button_show_path[3]
             ):
                 if self.maze_img.drawed_path:
                     self.maze_img.drawed_path = False
@@ -335,9 +336,10 @@ class MLXRendering:
                 if not self.maze_img.drawed_path and self.maze_img.drawed_heap:
                     self.show_heap(float("inf"))
             
+            # Draw heap
             if (
-                self.button_show_path_animated[0] <= x <= button4_box[2]
-                and self.button_show_path_animated[1] <= y <= button4_box[3]
+                self.button_show_path_animated[0] <= x <= self.button_show_path_animated[2]
+                and self.button_show_path_animated[1] <= y <= self.button_show_path_animated[3]
             ):
                 if not self.maze_img.drawed_heap:
                     self.maze_img.drawed_heap = True
@@ -349,6 +351,7 @@ class MLXRendering:
                         self.maze_img.draw_path
                     self.put_image(self.maze_img, 0, 0)
 
+            print(x, y)
         self.mlx.mlx_hook(self.win_ptr, 2, 1, on_keypress, None)
         self.mlx.mlx_mouse_hook(self.win_ptr, on_mouse, None)
 
@@ -379,12 +382,21 @@ class MLXRendering:
             x, y
         )
 
+
     def compute_buttons(self):
+        def scale_box(box, screen_w, screen_h):
+            return (
+                int(box[0] * screen_w / 3840),
+                int(box[1] * screen_h / 2160),
+                int(box[2] * screen_w / 3840),
+                int(box[3] * screen_h / 2160),
+            )
         if self.max_monitor_size == (3840, 2160):
-            self.button_new_color = button1_box
-            self.button_new_maze = button2_box
-            self.button_show_path = button3_box
-            self.button_show_path_animated = button4_box
+            self.button_new_color = scale_box(button1_box, self.max_monitor_size[0], self.max_monitor_size[1])
+            self.button_new_maze = scale_box(button2_box, self.max_monitor_size[0], self.max_monitor_size[1])
+            self.button_show_path = scale_box(button3_box, self.max_monitor_size[0], self.max_monitor_size[1])
+            self.button_show_path_animated = scale_box(button4_box, self.max_monitor_size[0], self.max_monitor_size[1])
+
             return "assets/buttons_copy.png"
         else:
             new_image_size = (
@@ -392,25 +404,10 @@ class MLXRendering:
                 int((buttons_size[1] * self.max_monitor_size[1])/2160)
             )
 
-            self.button_new_color = (
-                int((button1_box[0] * self.max_monitor_size[0])/3840),
-                int((button1_box[1] * self.max_monitor_size[1])/2160),
-            )
-
-            self.button_new_maze = (
-                int((button2_box[0] * self.max_monitor_size[0])/3840),
-                int((button2_box[1] * self.max_monitor_size[1])/2160),
-            )
-
-            self.button_show_path = (
-                int((button3_box[0] * self.max_monitor_size[0])/3840),
-                int((button3_box[1] * self.max_monitor_size[1])/2160),
-            )
-
-            self.button_show_path_animated = (
-                int((button4_box[0] * self.max_monitor_size[0])/3840),
-                int((button4_box[1] * self.max_monitor_size[1])/2160),
-            )
+            self.button_new_color = scale_box(button1_box, self.max_monitor_size[0], self.max_monitor_size[1])
+            self.button_new_maze = scale_box(button2_box, self.max_monitor_size[0], self.max_monitor_size[1])
+            self.button_show_path = scale_box(button3_box, self.max_monitor_size[0], self.max_monitor_size[1])
+            self.button_show_path_animated = scale_box(button4_box, self.max_monitor_size[0], self.max_monitor_size[1])
 
             rescale_image("assets/buttons_copy.png", new_image_size)
             return "assets/rescaled/buttons.png"
