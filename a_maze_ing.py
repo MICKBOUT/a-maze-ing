@@ -3,6 +3,7 @@ import sys
 from random import randint
 from PIL import Image as Img
 from pathlib import Path
+from enum import Enum
 
 FILENAME = "maze_output.txt"
 TITLE = "Amazing !"
@@ -33,10 +34,11 @@ def create_colors():
 
     return colors
 
-from enum import Enum
+
 class Colors(Enum):
     BACKGROUND = "background"
     WALL = "wall"
+
 
 class Image:
     def __init__(self, mlx, mlx_ptr, width, height):
@@ -44,9 +46,10 @@ class Image:
         self.img = mlx.mlx_new_image(mlx_ptr, self.width, self.height)
         data_img = mlx.mlx_get_data_addr(self.img)
         self.data, self.bpp, self.size_line, self.fmt = data_img
-        
 
-    def draw_rect(self, x1: int, y1: int, x2: int, y2: int, color: Colors | tuple[int, int, int, int]):
+    def draw_rect(self, x1: int, y1: int,
+                  x2: int, y2: int,
+                  color: Colors | tuple[int, int, int, int]):
         if x2 <= x1 or y2 <= y1:
             return
 
@@ -70,7 +73,9 @@ class Image:
 
     def fill(self, color: Colors | tuple[int, int, int, int]):
         if color == Colors.BACKGROUND:
-            self.draw_rect(0, 0, self.width, self.height, self.background_color)
+            self.draw_rect(
+                0, 0, self.width, self.height, self.background_color
+            )
         elif color == Colors.WALL:
             self.draw_rect(0, 0, self.width, self.height, self.wall_color)
         else:
@@ -104,7 +109,7 @@ class MazeImage(Image):
         self.background_color = self.colors["background"]
         self.wall_color = self.colors["wall"]
         self.path_color_start = (255, 0, 0)
-        self.path_color_end = (255, 255, 0) 
+        self.path_color_end = (255, 255, 0)
 
     def fetch_data(self):
         parsed_data = read_file()
@@ -258,7 +263,7 @@ class MLXRendering:
             self.windows_height,
             TITLE
         )
-        
+
         # Maze Image
         self.maze_img = MazeImage(
             self.mlx,
@@ -293,6 +298,9 @@ class MLXRendering:
 
         def on_mouse(button, x, y, param):
             # Change Color Button
+            if button != 1:
+                return
+
             if (
                 self.button_new_color[0] <= x <= self.button_new_color[2]
                 and self.button_new_color[1] <= y <= self.button_new_color[3]
@@ -332,14 +340,14 @@ class MLXRendering:
                     self.maze_img.drawed_path = True
                     self.maze_img.draw_path()
                     self.put_image(self.maze_img, 0, 0)
-                
+
                 if not self.maze_img.drawed_path and self.maze_img.drawed_heap:
                     self.show_heap(float("inf"))
-            
+
             # Draw heap
             if (
-                self.button_show_path_animated[0] <= x <= self.button_show_path_animated[2]
-                and self.button_show_path_animated[1] <= y <= self.button_show_path_animated[3]
+                self.button_show_heap[0] <= x <= self.button_show_heap[2]
+                and self.button_show_heap[1] <= y <= self.button_show_heap[3]
             ):
                 if not self.maze_img.drawed_heap:
                     self.maze_img.drawed_heap = True
@@ -351,7 +359,6 @@ class MLXRendering:
                         self.maze_img.draw_path
                     self.put_image(self.maze_img, 0, 0)
 
-            print(x, y)
         self.mlx.mlx_hook(self.win_ptr, 2, 1, on_keypress, None)
         self.mlx.mlx_mouse_hook(self.win_ptr, on_mouse, None)
 
@@ -373,7 +380,6 @@ class MLXRendering:
             if not erase:
                 self.mlx.mlx_do_sync(self.mlx_ptr)
 
-
     def put_image(self, img, x, y):
         self.mlx.mlx_put_image_to_window(
             self.mlx_ptr,
@@ -381,7 +387,6 @@ class MLXRendering:
             img.img,
             x, y
         )
-
 
     def compute_buttons(self):
         def scale_box(box, screen_w, screen_h):
@@ -391,23 +396,23 @@ class MLXRendering:
                 int(box[2] * screen_w / 3840),
                 int(box[3] * screen_h / 2160),
             )
-        if self.max_monitor_size == (3840, 2160):
-            self.button_new_color = scale_box(button1_box, self.max_monitor_size[0], self.max_monitor_size[1])
-            self.button_new_maze = scale_box(button2_box, self.max_monitor_size[0], self.max_monitor_size[1])
-            self.button_show_path = scale_box(button3_box, self.max_monitor_size[0], self.max_monitor_size[1])
-            self.button_show_path_animated = scale_box(button4_box, self.max_monitor_size[0], self.max_monitor_size[1])
 
+        self.button_new_color = scale_box(
+            button1_box, self.max_monitor_size[0], self.max_monitor_size[1])
+        self.button_new_maze = scale_box(
+            button2_box, self.max_monitor_size[0], self.max_monitor_size[1])
+        self.button_show_path = scale_box(
+            button3_box, self.max_monitor_size[0], self.max_monitor_size[1])
+        self.button_show_heap = scale_box(
+            button4_box, self.max_monitor_size[0], self.max_monitor_size[1])
+
+        if self.max_monitor_size == (3840, 2160):
             return "assets/buttons_copy.png"
         else:
             new_image_size = (
                 int((buttons_size[0] * self.max_monitor_size[0])/3840),
                 int((buttons_size[1] * self.max_monitor_size[1])/2160)
             )
-
-            self.button_new_color = scale_box(button1_box, self.max_monitor_size[0], self.max_monitor_size[1])
-            self.button_new_maze = scale_box(button2_box, self.max_monitor_size[0], self.max_monitor_size[1])
-            self.button_show_path = scale_box(button3_box, self.max_monitor_size[0], self.max_monitor_size[1])
-            self.button_show_path_animated = scale_box(button4_box, self.max_monitor_size[0], self.max_monitor_size[1])
 
             rescale_image("assets/buttons_copy.png", new_image_size)
             return "assets/rescaled/buttons.png"
@@ -437,4 +442,3 @@ def read_file(file_name: str = "output_maze.txt"):
         "end": tuple([int(n) for n in data[-2].split(sep=",")]),
         "path": data[-1]
     }
-
