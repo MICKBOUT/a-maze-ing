@@ -1,5 +1,4 @@
 from random import randint, choice, seed
-import time
 import os
 
 
@@ -126,7 +125,9 @@ class MazeGenerator:
                 rm_wall(row, col, choice(candidate))
 
     @classmethod
-    def maze_generator(cls, width: int, height: int, seed_input: str, perfect: bool) -> list[list[int]]:
+    def maze_generator(
+         cls, width: int, height: int, seed_input: str, perfect: bool
+         ) -> list[list[int]]:
         if seed_input is None or seed_input.lower() in {"none", ""}:
             try:
                 seed_input = int.from_bytes(os.urandom(4), "big")
@@ -149,12 +150,14 @@ class MazeGenerator:
             cls.gen_imperfect()
         return cls.maze
 
+
 if __name__ == "__main__":
     # 5.1
     import time
     t = time.time()
     for i in range(50):
-        MazeGenerator.maze_generator(width=200, height=200, seed_input=None, perfect=False)
+        MazeGenerator.maze_generator(
+            width=200, height=200, seed_input=None, perfect=False)
     print(f"{round(time.time() - t, 3)}s")
 
     # print(grid)

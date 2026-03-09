@@ -53,7 +53,8 @@ def solver_heap(
         if not maze[y][x] & 1:
             if (x, y - 1) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + (abs(x_end - x) + abs(y_end - (y - 1))) * coeff,
+                    len(path) + 1 + (
+                        abs(x_end - x) + abs(y_end - (y - 1))) * coeff,
                     x,
                     y - 1,
                     path + "N"))
@@ -61,7 +62,8 @@ def solver_heap(
         if not maze[y][x] & 2:
             if (x + 1, y) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + (abs(x_end - (x + 1)) + abs(y_end - y)) * coeff,
+                    len(path) + 1 + (
+                        abs(x_end - (x + 1)) + abs(y_end - y)) * coeff,
                     x + 1,
                     y,
                     path + "E"))
@@ -69,7 +71,8 @@ def solver_heap(
         if not maze[y][x] & 4:
             if (x, y + 1) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + (abs(x_end - x) + abs(y_end - (y + 1))) * coeff,
+                    len(path) + 1 + (
+                        abs(x_end - x) + abs(y_end - (y + 1))) * coeff,
                     x,
                     y + 1,
                     path + "S"))
@@ -77,7 +80,8 @@ def solver_heap(
         if not maze[y][x] & 8:
             if (x - 1, y) not in seen:
                 heappush(heap, (
-                    len(path) + 1 + (abs(x_end - (x - 1)) + abs(y_end - y)) * coeff,
+                    len(path) + 1 + (
+                        abs(x_end - (x - 1)) + abs(y_end - y)) * coeff,
                     x - 1,
                     y,
                     path + "W"))
@@ -86,7 +90,7 @@ def solver_heap(
 
 if __name__ == "__main__":
 
-    import time 
+    import time
 
     maze = MazeGenerator.maze_generator(200, 200, None, False)
     print("\n\n=== imperfecte ===")
