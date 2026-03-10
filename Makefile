@@ -16,12 +16,12 @@ build: $(OUTPUT_FILE)
 
 $(OUTPUT_FILE): $(SRCS)
 	bash -c "\
-	$(RM) -rf build_venv						&& \
-	$(PYTHON) -m venv build_venv					&& \
-	source ./build_venv/bin/activate				&& \
-	$(PYTHON) -m pip install build				&& \
+	$(RM) -rf build_venv				&& \
+	$(PYTHON) -m venv build_venv		&& \
+	source ./build_venv/bin/activate	&& \
+	$(PYTHON) -m pip install build		&& \
 	$(PYTHON) -m build					&& \
-	deactivate						&& \
+	deactivate							&& \
 	$(RM) -rf build_venv"
 	cp ./dist/$(OUTPUT_FILE) .
 

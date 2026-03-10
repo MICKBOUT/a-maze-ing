@@ -1,11 +1,18 @@
-from random import randint, choice, seed
+import random
 import os
 
 
 class MazeGenerator:
 
-    @classmethod
-    def gen_perfect(self) -> list[list[int]]:
+    def __init__(
+      self, width: int, height: int, perfect: bool, seed_input: str = None
+    ) -> None:
+        self.width = width
+        self.height = height
+        self.perfect = perfect
+        self.generator(seed_input)
+
+    def _gen_perfect(self) -> list[list[int]]:
         height, width = self.height, self.width
         self.maze = [[15 for _ in range(width)] for _ in range(height)]
         mid_height = height // 2
@@ -36,9 +43,11 @@ class MazeGenerator:
             (mid_height + 2, mid_width + 3),
         }
 
-        rnd_cell = (randint(0, height - 1), randint(0, width - 1))
+        rnd_cell = (random.randint(
+            0, height - 1), random.randint(0, width - 1))
         while rnd_cell in seen:
-            rnd_cell = (randint(0, height - 1), randint(0, width - 1))
+            rnd_cell = (random.randint(
+                0, height - 1), random.randint(0, width - 1))
         stack = [rnd_cell]
 
         while stack:
@@ -60,7 +69,7 @@ class MazeGenerator:
             if not candidate:
                 stack.pop()
             else:
-                direction = choice(candidate)
+                direction = random.choice(candidate)
                 if direction == 0:  # North
                     self.maze[y][x] -= 1  # 0 LSB (least significant bit)
                     self.maze[y - 1][x] -= 4  # 2 LSB
@@ -80,8 +89,7 @@ class MazeGenerator:
         # north, est, south , west
         return self.maze
 
-    @classmethod
-    def gen_imperfect(cls):
+    def _gen_imperfect(self):
         def rm_wall(row: int,
                     col: int,
                     direction: int,
@@ -89,45 +97,42 @@ class MazeGenerator:
             match direction:
                 # North
                 case 0:
-                    cls.maze[row][col] &= ~(1 << 0)
-                    cls.maze[row - 1][col] &= ~(1 << 2)
+                    self.maze[row][col] &= ~(1 << 0)
+                    self.maze[row - 1][col] &= ~(1 << 2)
                 # East
                 case 1:
-                    cls.maze[row][col] &= ~(1 << 1)
-                    cls.maze[row][col + 1] &= ~(1 << 3)
+                    self.maze[row][col] &= ~(1 << 1)
+                    self.maze[row][col + 1] &= ~(1 << 3)
                 # South
                 case 2:
-                    cls.maze[row][col] &= ~(1 << 2)
-                    cls.maze[row + 1][col] &= ~(1 << 0)
+                    self.maze[row][col] &= ~(1 << 2)
+                    self.maze[row + 1][col] &= ~(1 << 0)
                 # West
                 case 3:
-                    cls.maze[row][col] &= ~(1 << 3)
-                    cls.maze[row][col - 1] &= ~(1 << 1)
+                    self.maze[row][col] &= ~(1 << 3)
+                    self.maze[row][col - 1] &= ~(1 << 1)
 
-        width, height = len(cls.maze[0]), len(cls.maze)
+        width, height = len(self.maze[0]), len(self.maze)
         for _ in range((height * width) // 12):
-            row = randint(0, height - 1)
-            col = randint(0, width - 1)
-            if cls.maze[row][col] == 15:
+            row = random.randint(0, height - 1)
+            col = random.randint(0, width - 1)
+            if self.maze[row][col] == 15:
                 continue
 
             candidate = []
-            if row > 0 and cls.maze[row - 1][col] != 15:
+            if row > 0 and self.maze[row - 1][col] != 15:
                 candidate.append(0)
-            if col < width - 1 and cls.maze[row][col + 1] != 15:
+            if col < width - 1 and self.maze[row][col + 1] != 15:
                 candidate.append(1)
-            if row < height - 1 and cls.maze[row + 1][col] != 15:
+            if row < height - 1 and self.maze[row + 1][col] != 15:
                 candidate.append(2)
-            if col > 0 and cls.maze[row][col - 1] != 15:
+            if col > 0 and self.maze[row][col - 1] != 15:
                 candidate.append(3)
 
             if candidate:
-                rm_wall(row, col, choice(candidate))
+                rm_wall(row, col, random.choice(candidate))
 
-    @classmethod
-    def maze_generator(
-         cls, width: int, height: int, seed_input: str, perfect: bool
-         ) -> list[list[int]]:
+    def generator(self, seed_input) -> list[list[int]]:
         if seed_input is None or seed_input.lower() in {"none", ""}:
             try:
                 seed_input = int.from_bytes(os.urandom(4), "big")
@@ -136,19 +141,16 @@ class MazeGenerator:
             print("Seed auto-Generated:", seed_input)
         else:
             print("Seed used:", seed_input)
-        seed(seed_input)
-
-        if height < 6:
+        random.seed(str(seed_input))
+        if self.height < 6:
             raise ValueError("height need to be >= 6 for the 42 logo")
-        if width < 9:
+        if self.width < 9:
             raise ValueError("width need to be >= 9 for the 42 logo")
 
-        cls.width = width
-        cls.height = height
-        cls.gen_perfect()
-        if not perfect:
-            cls.gen_imperfect()
-        return cls.maze
+        self._gen_perfect()
+        if not self.perfect:
+            self._gen_imperfect()
+        return self.maze
 
 
 if __name__ == "__main__":
@@ -156,8 +158,8 @@ if __name__ == "__main__":
     import time
     t = time.time()
     for i in range(50):
-        MazeGenerator.maze_generator(
-            width=200, height=200, seed_input=None, perfect=False)
+        MazeGenerator(
+            width=200, height=200, seed_input=None, perfect=False).maze
     print(f"{round(time.time() - t, 3)}s")
 
     # print(grid)

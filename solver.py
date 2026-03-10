@@ -27,7 +27,7 @@ def solver_heap(
         ValueError: If the start or end position is on a full block.
         Exception: If no path is found.
     """
-    coeff = 3
+    coeff = 5
     x, y = start
     if maze[y][x] == 15:
         raise ValueError("Error entry on full block")

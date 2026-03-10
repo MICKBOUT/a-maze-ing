@@ -3,6 +3,7 @@ import sys
 from gen import MazeGenerator
 from solver import solver_heap
 from a_maze_ing import MLXRendering
+from exception import ConfigFileError
 
 config_dict = {
     "width": 25,
@@ -74,47 +75,58 @@ def write_file(
     return file
 
 
-def validate_maze(grid: list[list[int]]) -> bool:
-    height = len(grid)
-    width = len(grid[0])
+# def validate_maze(grid: list[list[int]]) -> bool:
+#     height = len(grid)
+#     width = len(grid[0])
 
-    error = []
-    for y in range(height):
-        for x in range(width):
-            if y < height - 1 and ((grid[y][x] >> 2) & 1) != (
-               grid[y + 1][x] & 1):
-                error.append((y, x, "wrong y"))
-            if x < width - 1 and ((grid[y][x] >> 1) & 1) != (
-               (grid[y][x + 1] >> 3) & 1):
-                error.append((y, x, "wrong x"))
+#     error = []
+#     for y in range(height):
+#         for x in range(width):
+#             if y < height - 1 and ((grid[y][x] >> 2) & 1) != (
+#                grid[y + 1][x] & 1):
+#                 error.append((y, x, "wrong y"))
+#             if x < width - 1 and ((grid[y][x] >> 1) & 1) != (
+#                (grid[y][x + 1] >> 3) & 1):
+#                 error.append((y, x, "wrong x"))
 
-    if error:
-        raise Exception(f"maze not validate: {error}")
-    print("maze validate")
-    return True
+#     if error:
+#         raise Exception(f"maze not validate: {error}")
+#     print("maze validate")
+#     return True
 
 
 def load_file(file_name: str, config_dict: dict) -> None:
     """
-    Loads maze configuration parameters from a file and updates the provided
-    config_dict.
+    Load configuration parameters from a file into the provided config_dict.
+    The configuration file should contain lines in the format "variable=value".
+    Lines starting with '#' or empty lines are ignored. The function updates
+    the config_dict with the parsed values, converting them to the appropriate
+    types based on the variable name.
 
     Parameters
     ----------
     file_name : str
-        Path to the configuration file to read.
+        The path to the configuration file to be loaded.
     config_dict : dict
-        Dictionary to update with configuration values parsed from the file.
-
+        A dictionary to be updated with the configuration parameters from the
+        file.The keys should correspond to the expected variable names in the
+        configuration file.
     Raises
     ------
-    Exception
-        If the file cannot be opened or parsed,
-        or if an error occurs during processing.
+    ConfigFileError
+        If there is an issue with the configuration file, such as an invalid
+        variable name, an invalid value format, or if the file cannot be read.
+        The error message will include details about the issue and the line
+        number where it occurred.
+
     """
     try:
+        index = None
+        line = None
         with open(file_name, "r") as file:
-            for line in [line.strip() for line in file if line[0] != '#']:
+            for index, line in enumerate(
+                    [line.strip() for line in file
+                     if line.strip() and line.strip()[0] != '#']):
                 variable, data = line.split("=")
                 variable = variable.lower()
 
@@ -130,18 +142,20 @@ def load_file(file_name: str, config_dict: dict) -> None:
                         config_dict["perfect"] = True
                     elif data.lower() in {"false", 0, "no", "n"}:
                         config_dict["perfect"] = False
+                    else:
+                        raise Exception("bool not found")
                 elif variable == "seed":
                     config_dict["seed"] = data
                 else:
-                    print("unused parameter", variable, data)
-
+                    raise Exception("KEY not used")
     except Exception as e:
-        print("Error:", e)
+        print(ConfigFileError(f"{e}", line=line, line_nb=index))
+        sys.exit(1)
 
 
 def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
-
     if len(sys.argv) > 1:
+        # can sys exit if the config file has an error
         load_file(sys.argv[1], config_dict)
     else:
         print("config file missing")
@@ -150,12 +164,12 @@ def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
     if new_seed:
         config_dict["seed"] = None
 
-    maze = MazeGenerator.maze_generator(
+    maze = MazeGenerator(
             width=config_dict["width"],
             height=config_dict["height"],
+            perfect=config_dict["perfect"],
             seed_input=config_dict["seed"],
-            perfect=config_dict["perfect"]
-    )
+    ).maze
 
     path, progress_stack = solver_heap(
         maze,
