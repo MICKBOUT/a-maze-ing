@@ -4,10 +4,6 @@ from PIL import Image as Img
 from pathlib import Path
 from enum import Enum
 
-FILENAME = "maze_output.txt"
-TITLE = "Amazing !"
-ANIMATION = False
-
 buttons_size = (580, 1946)
 button1_box = (2900, 400, 3420, 550)
 button2_box = (2900, 660, 3420, 820)
@@ -16,8 +12,15 @@ button4_box = (2900, 1190, 3420, 1340)
 
 
 def create_colors():
-    """Create colors using random"""
-    # Dict of complementary colors randomly generated
+    """
+    Generate randomized RGBA colors for background and wall.
+
+    Returns
+    -------
+    dict
+        Dictionary containing two RGBA lists: "background" (bright color)
+        and "wall" (darker variant).
+    """
     colors = {
         "background": [
             randint(128, 255),
@@ -29,33 +32,56 @@ def create_colors():
     colors["wall"] = (
         [c - randint(0, 128) for c in colors["background"][:-1]] + [255]
     )
-    red, green, blue, _ = colors["background"]
 
     return colors
 
 
 class Colors(Enum):
+    """A simple Enum class to represent colors."""
     BACKGROUND = "background"
     WALL = "wall"
 
 
-class Image:
+class MLXImage:
+    """Image wrapper providing basic drawing operations using MLX."""
     def __init__(self, mlx, mlx_ptr, width, height):
+        """
+        Initialize an MLX image buffer.
+
+        Parameters
+        ----------
+        mlx : Mlx
+            MLX wrapper instance.
+        mlx_ptr : int
+            MLX context pointer.
+        width : int
+            Image width in pixels.
+        height : int
+            Image height in pixels.
+        """
         self.width, self.height = width, height
         self.img = mlx.mlx_new_image(mlx_ptr, self.width, self.height)
         data_img = mlx.mlx_get_data_addr(self.img)
-        self.data, self.bpp, self.size_line, self.fmt = data_img
+        self.data_img, self.bpp, self.size_line, self.fmt = data_img
 
     def draw_rect(self, x1: int, y1: int,
                   x2: int, y2: int,
-                  color: Colors | tuple[int, int, int, int]):
+                  color: tuple[int, int, int, int]):
+        """
+        Draw a filled rectangle on the image.
+
+        Parameters
+        ----------
+        x1, y1 : int
+            Top-left corner.
+        x2, y2 : int
+            Bottom-right corner.
+        color : Colors or tuple
+            RGBA color or enum member.
+        """
+
         if x2 <= x1 or y2 <= y1:
             return
-
-        if color == Colors.BACKGROUND:
-            color = self.background_color
-        elif color == Colors.WALL:
-            color = self.wall_color
 
         r, g, b, a = color
         bpp = self.bpp // 8
@@ -65,61 +91,84 @@ class Image:
 
         for y in range(y1, y2):
             offset = y * self.size_line + x1 * bpp
-            self.data[offset:offset + len(line)] = line
+            self.data_img[offset:offset + len(line)] = line
 
-    def clear(self):
-        self.draw_rect(0, 0, self.width, self.height, (0, 0, 0, 255))
+    def fill(self, color: tuple[int, int, int, int]):
+        """
+        Fill the entire image with a given color.
 
-    def fill(self, color: Colors | tuple[int, int, int, int]):
-        if color == Colors.BACKGROUND:
-            self.draw_rect(
-                0, 0, self.width, self.height, self.background_color
-            )
-        elif color == Colors.WALL:
-            self.draw_rect(0, 0, self.width, self.height, self.wall_color)
-        else:
-            self.draw_rect(0, 0, self.width, self.height, color)
+        Parameters
+        ----------
+        color : tuple
+            RGBA color.
+        """
 
-    def update_colors(self):
-        self.colors.update(create_colors())
-        self.background_color = self.colors["background"]
-        self.wall_color = self.colors["wall"]
+        self.draw_rect(0, 0, self.width, self.height, color)
 
 
-class MazeImage(Image):
-    def __init__(self, mlx, mlx_ptr, width, height):
+class MazeData:
+    """
+    Store maze structure and metadata.
+    """
+    def __init__(self):
+        self.parse()
+
+    def parse(self):
+        parsed = read_file("output_maze.txt")
+        self.maze = parsed["maze_data"]
+        self.height = len(self.maze)
+        self.width = len(self.maze[0])
+        self.start = parsed["start"]
+        self.end = parsed["end"]
+        self.path = parsed["path"]
+
+
+class MazeImage(MLXImage):
+    def __init__(self, mlx, mlx_ptr, width, height, data):
         super().__init__(mlx, mlx_ptr, width, height)
         # Logical
-        self.fetch_data()
-        self.drawed_path = False
-        self.drawed_heap = False
+        self.data = data
+        self.drawn_path = False
+        self.drawn_path = False
 
         # Visual
-        self.cell_size = min(int(self.width // self.maze_width),
-                             int(self.height // self.maze_height))
+        self.cell_size = min(int(self.width // self.data.width),
+                             int(self.height // self.data.height))
         self.width_wall = max(1, self.cell_size // 10)
 
-        maze_width_px = self.maze_width * self.cell_size
-        maze_height_px = self.maze_height * self.cell_size
+        maze_width_px = self.data.width * self.cell_size
+        maze_height_px = self.data.height * self.cell_size
         self.offset_x = (self.width - maze_width_px) // 2
         self.offset_y = (self.height - maze_height_px) // 2
 
         self.colors = create_colors()
         self.background_color = self.colors["background"]
         self.wall_color = self.colors["wall"]
-        self.path_color_start = (255, 0, 0)
-        self.path_color_end = (255, 255, 0)
 
-    def fetch_data(self):
-        parsed_data = read_file()
-        self.maze = parsed_data["maze_data"]
-        self.maze_height = len(self.maze)
-        self.maze_width = len(self.maze[0])
-        self.maze_size = (self.maze_width, self.maze_height)
+    def draw_rect(self, x1: int, y1: int,
+                  x2: int, y2: int,
+                  color: Colors | tuple[int, int, int, int]):
+        if color == Colors.BACKGROUND:
+            color = self.background_color
+        elif color == Colors.WALL:
+            color = self.wall_color
+        return super().draw_rect(x1, y1, x2, y2, color)
 
-        self.start = parsed_data["start"]
-        self.end = parsed_data["end"]
-        self.path = parsed_data["path"]
+    def fill(self, color: Colors | tuple[int, int, int, int]):
+        """
+        Fill the entire image with a given color.
+
+        Parameters
+        ----------
+        color : Colors or tuple
+            RGBA color or enum member.
+        """
+
+        if color == Colors.BACKGROUND:
+            color = self.background_color
+        elif color == Colors.WALL:
+            color = self.wall_color
+        return super().fill(color)
 
     def draw_cell(self, value, y, x, background_color=None):
         px = x * self.cell_size + self.offset_x
@@ -177,18 +226,16 @@ class MazeImage(Image):
 
         self.fill(Colors.WALL)
 
-        for y in range(self.maze_height):
-            for x in range(self.maze_width):
-                self.draw_cell(self.maze[y][x], y, x,
+        for y in range(self.data.height):
+            for x in range(self.data.width):
+                self.draw_cell(self.data.maze[y][x], y, x,
                                background_color=self.background_color)
 
-            x_start, y_start = self.start
-            x_end, y_end = self.end
+        x_start, y_start = self.data.start
+        x_end, y_end = self.data.end
 
-            # start
-            # start
         self.draw_cell(
-            self.maze[y_start][x_start],
+            self.data.maze[y_start][x_start],
             y_start,
             x_start,
             background_color=(0, 255, 0, 255),
@@ -196,14 +243,44 @@ class MazeImage(Image):
 
         # end
         self.draw_cell(
-            self.maze[y_end][x_end],
+            self.data.maze[y_end][x_end],
             y_end,
             x_end,
             background_color=(255, 0, 0, 255),
         )
 
-    def get_faded_path(self, current: int, end: int):
-        start_color, end_color = self.path_color_start, self.path_color_end
+    def draw_path(self, color=None):
+        current_x, current_y = self.data.start
+        if color == Colors.BACKGROUND:
+            color = self.background_color
+        else:
+            color = (255, 255, 255, 255)
+        for i in range(len(self.data.path[:-1])):
+            if self.data.path[i] == "S":
+                current_y += 1
+            elif self.data.path[i] == "N":
+                current_y -= 1
+            elif self.data.path[i] == "E":
+                current_x += 1
+            else:
+                current_x -= 1
+            self.draw_cell(
+                self.data.maze[current_y][current_x],
+                current_y, current_x,
+                color
+            )
+
+    def update_colors(self):
+        """
+        Regenerate and update background and wall colors.
+        """
+        self.colors.update(create_colors())
+        self.background_color = self.colors["background"]
+        self.wall_color = self.colors["wall"]
+
+    @staticmethod
+    def get_faded_path(current: int, end: int):
+        start_color, end_color = (255, 0, 0), (255, 255, 0)
         start_r, start_g, start_b = start_color
         end_r, end_g, end_b = end_color
 
@@ -217,37 +294,17 @@ class MazeImage(Image):
             int(start_r + coef * diff_r,),
             int(start_g + coef * diff_g,),
             int(start_b + coef * diff_b,),
-            255  # alpha
+            255
         )
 
-    def draw_path(self, color=None):
-        current_x, current_y = self.start
-        if color == Colors.BACKGROUND:
-            color = self.background_color
-        else:
-            color = (255, 255, 255, 255)
-        for i in range(len(self.path[:-1])):
-            if self.path[i] == "S":
-                current_y += 1
-            elif self.path[i] == "N":
-                current_y -= 1
-            elif self.path[i] == "E":
-                current_x += 1
-            else:
-                current_x -= 1
-            self.draw_cell(
-                self.maze[current_y][current_x],
-                current_y, current_x,
-                color
-            )
 
-
-class MLXRendering:
+class MLXRenderer:
     def __init__(self, heap: list[tuple[int, int]]) -> None:
         """
         Initialise and loop the main window.
         """
         # attributes
+        self.data = MazeData()
         self.heap = heap
         # Mlx instance
         self.mlx = Mlx()
@@ -260,7 +317,7 @@ class MLXRendering:
             self.mlx_ptr,
             self.windows_width,
             self.windows_height,
-            TITLE
+            "Amazing !"
         )
 
         # Maze Image
@@ -269,6 +326,7 @@ class MLXRendering:
             self.mlx_ptr,
             int(self.windows_width * 5/6),
             self.windows_height,
+            self.data
         )
         self.maze_img.draw_maze()
         self.put_image(self.maze_img, 0, 0)
@@ -305,9 +363,9 @@ class MLXRendering:
 
                 self.maze_img.update_colors()
                 self.maze_img.draw_maze()
-                if self.maze_img.drawed_heap:
+                if self.maze_img.drawn_path:
                     self.show_heap(float("inf"))
-                if self.maze_img.drawed_path:
+                if self.maze_img.drawn_path:
                     self.maze_img.draw_path()
                 self.put_image(self.maze_img, 0, 0)
 
@@ -318,27 +376,27 @@ class MLXRendering:
             ):
                 from .utils import new_maze
                 self.heap = new_maze(new_seed=True)
-                self.maze_img.fetch_data()
+                self.data.parse()
                 self.maze_img.draw_maze()
                 self.put_image(self.maze_img, 0, 0)
-                self.maze_img.drawed_heap = False
-                self.maze_img.drawed_path = False
+                self.maze_img.drawn_path = False
+                self.maze_img.drawn_path = False
 
             # Show path Button
             if (
                 self.button_show_path[0] <= x <= self.button_show_path[2]
                 and self.button_show_path[1] <= y <= self.button_show_path[3]
             ):
-                if self.maze_img.drawed_path:
-                    self.maze_img.drawed_path = False
+                if self.maze_img.drawn_path:
+                    self.maze_img.drawn_path = False
                     self.maze_img.draw_path(Colors.BACKGROUND)
                     self.put_image(self.maze_img, 0, 0)
                 else:
-                    self.maze_img.drawed_path = True
+                    self.maze_img.drawn_path = True
                     self.maze_img.draw_path()
                     self.put_image(self.maze_img, 0, 0)
 
-                if not self.maze_img.drawed_path and self.maze_img.drawed_heap:
+                if not self.maze_img.drawn_path and self.maze_img.drawn_path:
                     self.show_heap(float("inf"))
 
             # Draw heap
@@ -346,13 +404,13 @@ class MLXRendering:
                 self.button_show_heap[0] <= x <= self.button_show_heap[2]
                 and self.button_show_heap[1] <= y <= self.button_show_heap[3]
             ):
-                if not self.maze_img.drawed_heap:
-                    self.maze_img.drawed_heap = True
+                if not self.maze_img.drawn_path:
+                    self.maze_img.drawn_path = True
                     self.show_heap(max(1, len(self.heap)//100))
                 else:
-                    self.maze_img.drawed_heap = False
+                    self.maze_img.drawn_path = False
                     self.show_heap(float("inf"), erase=True)
-                    if self.maze_img.drawed_path:
+                    if self.maze_img.drawn_path:
                         self.maze_img.draw_path
                     self.put_image(self.maze_img, 0, 0)
 
@@ -366,11 +424,11 @@ class MLXRendering:
             while j < sample and i < len(heap):
                 x, y = heap[i]
                 i, j = i + 1, j + 1
-                value = self.maze_img.maze[y][x]
+                value = self.data.maze[y][x]
                 if erase:
                     color = self.maze_img.background_color
                 else:
-                    color = self.maze_img.get_faded_path(i, len(heap))
+                    color = MazeImage.get_faded_path(i, len(heap))
                 self.maze_img.draw_cell(value, y, x, color)
 
             self.put_image(self.maze_img, 0, 0)
