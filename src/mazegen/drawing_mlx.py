@@ -294,7 +294,6 @@ class MLXRendering:
                 self.mlx.mlx_release(self.mlx_ptr)
                 self.mlx.mlx_loop_exit(self.mlx_ptr)
 
-                sys.exit(0)
 
         def on_mouse(button, x, y, param):
             # Change Color Button
