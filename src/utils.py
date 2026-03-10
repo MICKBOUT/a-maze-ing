@@ -1,16 +1,16 @@
 import sys
-
-from .generation import MazeGenerator
+ 
+from .mazegen.generation import MazeGenerator
 from .solver import solver_heap
 from .exception import ConfigFileError
 
 config_dict = {
-    "width": 25,
-    "height": 20,
-    "entry": (0, 0),
-    "exit": (24, 19),
+    "width": 75,
+    "height": 50,
+    "entry": (37, 25),
+    "exit": (0, 0),
     "output_file": "output_maze.txt",
-    "perfect": True,
+    "perfect": False,
     "seed": None
 }
 
@@ -23,12 +23,11 @@ def write_file(
         file) -> str:
     """
     Write the given 2-D integer maze to a text file.
-
     Each row of the maze is written on its own line; each cell is formatted
     using uppercase hexadecimal (format(cell, "X")) with no separators.
     After all rows are written a blank line is added, then the start
-    coordinates as "row,col" on a line, the end coordinates as "row,col" on
-    the next line, and finally the path string appended as-is.
+    coordinates as "row,col" on a line, the end coordinates as "row,col"
+    on the next line, and finally the path string appended as-is.
 
     Parameters
     ----------
@@ -50,37 +49,34 @@ def write_file(
     -------
     str
         The path of the file that was written (the value of file_output).
-
-    Raises
-    ------
-    IndexError
-        If maze is empty or rows are inconsistent such that computing default
-        end coordinates or iterating rows fails.
-    OSError
-        If the file cannot be opened or written.
     """
-    with open(file, 'w') as f:
-        line = ""
-        for row in maze:
-            for nb in row:
-                line += format(nb, "X")
+    try:
+        with open(file, 'w') as f:
+            line = ""
+            for row in maze:
+                for nb in row:
+                    line += format(nb, "X")
+                line += "\n"
             line += "\n"
-        line += "\n"
-        line += f"{str(start[0])},{str(start[1])}\n"
-        line += f"{str(end[0])},{str(end[1])}\n"
-        line += path
-        f.write("".join(str(line)))
-
+            line += f"{str(start[0])},{str(start[1])}\n"
+            line += f"{str(end[0])},{str(end[1])}\n"
+            line += path
+            f.write("".join(str(line)))
+    except Exception as e:
+        print(e)
+        sys.exit(1)
     return file
 
 
 def load_file(file_name: str, config_dict: dict) -> None:
     """
-    Load configuration parameters from a file into the provided config_dict.
-    The configuration file should contain lines in the format "variable=value".
-    Lines starting with '#' or empty lines are ignored. The function updates
-    the config_dict with the parsed values, converting them to the appropriate
-    types based on the variable name.
+    Load configuration parameters from a file and update the provided
+    configuration dictionary accordingly. The file is expected to contain lines
+    in the format "KEY=VALUE", where KEY is a configuration parameter and VALUE
+    is its corresponding value. Lines that are empty or start with '#' are
+    ignored. The function updates the config_dict with the values from the
+    file, converting them to the appropriate types based on the expected
+    configuration parameters.
 
     Parameters
     ----------
@@ -88,16 +84,14 @@ def load_file(file_name: str, config_dict: dict) -> None:
         The path to the configuration file to be loaded.
     config_dict : dict
         A dictionary to be updated with the configuration parameters from the
-        file.The keys should correspond to the expected variable names in the
-        configuration file.
+        file.
     Raises
     ------
     ConfigFileError
-        If there is an issue with the configuration file, such as an invalid
-        variable name, an invalid value format, or if the file cannot be read.
-        The error message will include details about the issue and the line
-        number where it occurred.
-
+        If there is an error in the configuration file, such as an unrecognized
+        key, invalid value format, or other parsing issues. The error message
+        will include details about the specific issue and the line number where
+        it occurred.
     """
     try:
         index = None
@@ -133,8 +127,30 @@ def load_file(file_name: str, config_dict: dict) -> None:
 
 
 def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
+    """
+    Generate a new maze based on the configuration parameters provided in a
+    file. If a configuration file is provided as a command-line argument, it
+    will be loaded to update the default configuration parameters. If the
+    new_seed parameter is set to True, the seed value in the configuration will
+    be reset to None, allowing for a new random seed to be generated for
+    the maze. The function generates the maze, solves it using a heap-based
+    solver, and writes the maze and solution path to an output file specified
+    in the configuration.
+
+    Parameters
+    ----------
+    new_seed : bool, optional
+        If True, resets the seed value in the configuration to None to allow
+        for a new random seed to be generated. Defaults to False.
+
+    Returns
+    -------
+    list[tuple[int, int]]
+        A list of (x, y) coordinates representing the progress stack from the
+        maze-solving process. This stack can be used for visualization or
+        analysis of the solver's path through the maze.
+    """
     if len(sys.argv) > 1:
-        # can sys exit if the config file has an error
         load_file(sys.argv[1], config_dict)
     else:
         print("config file missing")

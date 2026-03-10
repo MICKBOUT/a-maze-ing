@@ -1,5 +1,5 @@
 from heapq import heappop, heappush
-from .generation import MazeGenerator
+from .mazegen.generation import MazeGenerator
 from .exception import PathNotFound
 
 

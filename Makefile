@@ -45,6 +45,7 @@ clean:
 	find . -type d -name ".mypy_cache" -exec rm -rf {} +
 	rm -rf .mypy_cache .pytest_cache
 	rm -rf $(OUTPUT_FILE) dist/
+	rm -rf output_maze.txt
 
 lint: install
 	$(FLAKE) . --exclude '$(VENV)'

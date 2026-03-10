@@ -1,6 +1,6 @@
 
-from src.mazegen.utils import new_maze
-from src.mazegen.drawing_mlx import MLXRendering
+from src.utils import new_maze
+from src.drawing_mlx import MLXRendering
 
 
 def main() -> None:
