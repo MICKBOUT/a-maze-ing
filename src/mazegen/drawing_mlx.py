@@ -1,5 +1,4 @@
 from mlx import Mlx
-import sys
 from random import randint
 from PIL import Image as Img
 from pathlib import Path
@@ -293,7 +292,6 @@ class MLXRendering:
                 self.mlx.mlx_destroy_window(self.mlx_ptr, self.win_ptr)
                 self.mlx.mlx_release(self.mlx_ptr)
                 self.mlx.mlx_loop_exit(self.mlx_ptr)
-
 
         def on_mouse(button, x, y, param):
             # Change Color Button
