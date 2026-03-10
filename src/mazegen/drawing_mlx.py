@@ -351,7 +351,7 @@ class MLXRendering:
             ):
                 if not self.maze_img.drawed_heap:
                     self.maze_img.drawed_heap = True
-                    self.show_heap(len(self.heap)//100)
+                    self.show_heap(max(1, len(self.heap)//100))
                 else:
                     self.maze_img.drawed_heap = False
                     self.show_heap(float("inf"), erase=True)
@@ -363,17 +363,17 @@ class MLXRendering:
         self.mlx.mlx_mouse_hook(self.win_ptr, on_mouse, None)
 
     def show_heap(self, sample, erase=False):
-        i = 0
-        while i < len(self.heap):
+        i, heap = 0, self.heap[:-1]
+        while i < len(heap):
             j = 0
-            while j < sample and i < len(self.heap):
-                x, y = self.heap[i]
+            while j < sample and i < len(heap):
+                x, y = heap[i]
                 i, j = i + 1, j + 1
                 value = self.maze_img.maze[y][x]
                 if erase:
                     color = self.maze_img.background_color
                 else:
-                    color = self.maze_img.get_faded_path(i, len(self.heap))
+                    color = self.maze_img.get_faded_path(i, len(heap))
                 self.maze_img.draw_cell(value, y, x, color)
 
             self.put_image(self.maze_img, 0, 0)
