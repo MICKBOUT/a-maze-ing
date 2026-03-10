@@ -2,7 +2,6 @@ import sys
 
 from .generation import MazeGenerator
 from .solver import solver_heap
-from .drawing_mlx import MLXRendering
 from .exception import ConfigFileError
 
 config_dict = {
