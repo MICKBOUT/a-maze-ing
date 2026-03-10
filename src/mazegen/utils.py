@@ -75,26 +75,6 @@ def write_file(
     return file
 
 
-# def validate_maze(grid: list[list[int]]) -> bool:
-#     height = len(grid)
-#     width = len(grid[0])
-
-#     error = []
-#     for y in range(height):
-#         for x in range(width):
-#             if y < height - 1 and ((grid[y][x] >> 2) & 1) != (
-#                grid[y + 1][x] & 1):
-#                 error.append((y, x, "wrong y"))
-#             if x < width - 1 and ((grid[y][x] >> 1) & 1) != (
-#                (grid[y][x + 1] >> 3) & 1):
-#                 error.append((y, x, "wrong x"))
-
-#     if error:
-#         raise Exception(f"maze not validate: {error}")
-#     print("maze validate")
-#     return True
-
-
 def load_file(file_name: str, config_dict: dict) -> None:
     """
     Load configuration parameters from a file into the provided config_dict.
@@ -184,13 +164,3 @@ def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
         config_dict["output_file"]
     )
     return progress_stack
-
-
-def main() -> None:
-    heap = new_maze()
-    render = MLXRendering(heap)
-    render.mlx.mlx_loop(render.mlx_ptr)
-
-
-if __name__ == "__main__":
-    main()
