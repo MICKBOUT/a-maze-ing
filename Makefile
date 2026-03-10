@@ -34,7 +34,7 @@ install: build $(VENV)
 	$(V_PIP) install $(OUTPUT_FILE) --force-reinstall
 
 run: install
-	$(V_PYTHON) main.py config.txt
+	$(V_PYTHON) a_maze_ing.py config.txt
 
 debug: install
 	$(V_PYTHON) -m pdb $(MAIN)

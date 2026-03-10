@@ -1,9 +1,9 @@
 import sys
 
-from gen import MazeGenerator
-from solver import solver_heap
-from a_maze_ing import MLXRendering
-from exception import ConfigFileError
+from .generation import MazeGenerator
+from .solver import solver_heap
+from .drawing_mlx import MLXRendering
+from .exception import ConfigFileError
 
 config_dict = {
     "width": 25,

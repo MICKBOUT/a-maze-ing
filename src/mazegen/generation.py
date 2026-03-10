@@ -12,7 +12,7 @@ class MazeGenerator:
         self.perfect = perfect
         self.generator(seed_input)
 
-    def _gen_perfect(self) -> list[list[int]]:
+    def _gen_perfect(self) -> None:
         height, width = self.height, self.width
         self.maze = [[15 for _ in range(width)] for _ in range(height)]
         mid_height = height // 2
@@ -86,10 +86,8 @@ class MazeGenerator:
                     self.maze[y][x] -= 8
                     self.maze[y][x - 1] -= 2
                     stack.append((y, x - 1))
-        # north, est, south , west
-        return self.maze
 
-    def _gen_imperfect(self):
+    def _gen_imperfect(self) -> None:
         def rm_wall(row: int,
                     col: int,
                     direction: int,
@@ -161,11 +159,6 @@ if __name__ == "__main__":
         MazeGenerator(
             width=200, height=200, seed_input=None, perfect=False).maze
     print(f"{round(time.time() - t, 3)}s")
-
-    # print(grid)
-    # print("\n=== maze ===")
-    # for row in grid:
-    #     print(row)
 
 # Bit Direction|
 # -------------|

@@ -1,6 +1,6 @@
 from heapq import heappop, heappush
-from gen import MazeGenerator
-from exception import PathNotFound
+from .generation import MazeGenerator
+from .exception import PathNotFound
 
 
 def solver_heap(
