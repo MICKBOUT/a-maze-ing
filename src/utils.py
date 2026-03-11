@@ -1,5 +1,5 @@
 import sys
- 
+
 from .mazegen.generation import MazeGenerator
 from .solver import solver_heap
 from .exception import ConfigFileError
