@@ -94,8 +94,7 @@ def load_file(file_name: str, config_dict: dict) -> None:
         it occurred.
     """
     try:
-        index = None
-        line = None
+        index = line = None
         with open(file_name, "r") as file:
             for index, line in enumerate(
                     [line.strip() for line in file
@@ -121,6 +120,9 @@ def load_file(file_name: str, config_dict: dict) -> None:
                     config_dict["seed"] = data
                 else:
                     raise Exception("KEY not used")
+        index = line = None
+        if config_dict["entry"] == config_dict["exit"]:
+            raise Exception("Entry and Exit can not be on the same cell")
     except FileNotFoundError:
         print(ConfigFileError("This programge need the file 'config.txt'"))
         exit()
@@ -155,9 +157,8 @@ def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
     """
     if len(sys.argv) > 1:
         load_file(sys.argv[1], config_dict)
-    else:
-        print("config file missing")
-        print("default value used")
+    if config_dict["entry"] == config_dict["exit"]:
+        print(config_dict)
 
     if new_seed:
         config_dict["seed"] = None
