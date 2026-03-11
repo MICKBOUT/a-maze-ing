@@ -6,6 +6,7 @@ from typing import Callable
 
 class MLXImage:
     """Image wrapper providing basic drawing operations using MLX."""
+
     def __init__(self, mlx: Mlx, mlx_ptr: int,
                  width: int, height: int) -> None:
         """
@@ -311,7 +312,6 @@ class MazeImage(MLXImage):
 
     @staticmethod
     def get_faded_path(current: int, end: int) -> tuple[int, int, int, int]:
-
         """
         Compute a gradient color for path animation.
 
@@ -328,7 +328,7 @@ class MazeImage(MLXImage):
             RGBA color interpolated between red and yellow.
         """
 
-        start_color, end_color = (255, 255, 0), (255, 0, 127)
+        start_color, end_color = (255, 0, 0), (255, 255, 0)
         start_r, start_g, start_b = start_color
         end_r, end_g, end_b = end_color
 

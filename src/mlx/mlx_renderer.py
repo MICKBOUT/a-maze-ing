@@ -13,6 +13,7 @@ class MLXRenderer:
     the maze image, handles user interactions (mouse and keyboard), and
     updates the display accordingly.
     """
+
     def __init__(self, heap: list[tuple[int, int]], filename: str) -> None:
         """
         Initialize the MLX window and prepare all rendering components.
@@ -101,9 +102,11 @@ class MLXRenderer:
             ):
                 from ..utils import new_maze
                 heap = new_maze(new_seed=True)[0]
+
                 self.data.parse(heap)
                 self.maze_img.draw_maze()
                 self.put_image(self.maze_img, 0, 0)
+
                 self.maze_img.drawn_path = False
                 self.maze_img.drawn_heap = False
 
@@ -134,13 +137,11 @@ class MLXRenderer:
             ):
                 if not self.maze_img.drawn_heap:
                     self.maze_img.drawn_heap = True
-
                     self.maze_img.show_heap(
                         max(1, len(self.data.heap)//100),
                         put_image,
                         do_sync
                     )
-
                     self.maze_img.drawn_path = False
 
                 else:
@@ -152,7 +153,6 @@ class MLXRenderer:
                         do_sync,
                         erase=True
                     )
-                self.put_image(self.maze_img, 0, 0)
 
         self.mlx.mlx_hook(self.win_ptr, 2, 1, on_keypress, None)
         self.mlx.mlx_mouse_hook(self.win_ptr, on_mouse, None)
