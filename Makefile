@@ -33,7 +33,7 @@ install: build $(VENV)
 	$(V_PIP) install $(DEPENDENCIES)
 	$(V_PIP) install $(OUTPUT_FILE) --force-reinstall
 
-run: install
+run: install a_maze_ing.py 
 	$(V_PYTHON) a_maze_ing.py config.txt
 
 debug: install

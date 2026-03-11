@@ -24,7 +24,7 @@ def create_colors():
     }
 
     colors["wall"] = (
-        [c - randint(0, 128) for c in colors["background"][:-1]] + [255]
+        [c - randint(64, 128) for c in colors["background"][:-1]] + [255]
     )
 
     return colors

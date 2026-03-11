@@ -16,10 +16,11 @@ class MazeData:
     This class parses the maze file and exposes the grid, dimensions,
     start/end coordinates, and the solution path.
     """
-    def __init__(self):
+    def __init__(self, filename: str):
         """
         Initialize the maze data by parsing the maze file.
         """
+        self.filename = filename
         self.parse()
 
     def parse(self):
@@ -34,7 +35,7 @@ class MazeData:
 
         All values are stored as attributes of the instance.
         """
-        parsed = read_file("output_maze.txt")
+        parsed = read_file(self.filename)
         self.maze = parsed["maze_data"]
         self.height = len(self.maze)
         self.width = len(self.maze[0])
@@ -51,7 +52,7 @@ class MLXRenderer:
     the maze image, handles user interactions (mouse and keyboard), and
     updates the display accordingly.
     """
-    def __init__(self, heap: list[tuple[int, int]]) -> None:
+    def __init__(self, heap: list[tuple[int, int]], filename: str) -> None:
         """
         Initialize the MLX window and prepare all rendering components.
 
@@ -61,7 +62,7 @@ class MLXRenderer:
             Sequence of visited maze cells used for heap visualization.
         """
         # attributes
-        self.data = MazeData()
+        self.data = MazeData(filename)
         self.heap = heap
         # Mlx instance
         self.mlx = Mlx()
@@ -117,7 +118,6 @@ class MLXRenderer:
                 self.button_new_color[0] <= x <= self.button_new_color[2]
                 and self.button_new_color[1] <= y <= self.button_new_color[3]
             ):
-
                 self.maze_img.update_colors()
                 self.maze_img.draw_maze()
                 if self.maze_img.drawn_heap:
@@ -132,7 +132,7 @@ class MLXRenderer:
                 and self.button_new_maze[1] <= y <= self.button_new_maze[3]
             ):
                 from ..utils import new_maze
-                self.heap = new_maze(new_seed=True)
+                self.heap = new_maze(new_seed=True)[0]
                 self.data.parse()
                 self.maze_img.draw_maze()
                 self.put_image(self.maze_img, 0, 0)
@@ -166,7 +166,7 @@ class MLXRenderer:
                     self.show_heap(max(1, len(self.heap)//100))
                 else:
                     self.maze_img.drawn_heap = False
-                    self.show_heap(len(self.heap), erase=True)
+                    self.show_heap(max(1, len(self.heap)//10), erase=True)
 
                     # Si le path est affiché, on le redessine
                     if self.maze_img.drawn_path:

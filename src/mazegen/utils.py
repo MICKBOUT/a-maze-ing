@@ -162,4 +162,4 @@ def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
         path,
         config_dict["output_file"]
     )
-    return progress_stack
+    return progress_stack, config_dict["output_file"]

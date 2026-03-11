@@ -4,8 +4,8 @@ from mazegen.mlx.mlx_renderer import MLXRenderer
 
 
 def main() -> None:
-    heap = new_maze()
-    render = MLXRenderer(heap)
+    heap, filename = new_maze()
+    render = MLXRenderer(heap, filename)
     render.mlx.mlx_loop(render.mlx_ptr)
 
 
