@@ -1,7 +1,7 @@
 WIDTH=100
-HEIGHT=200
-ENTRY=0,199
+HEIGHT=100
+ENTRY=0,100
 EXIT=0,0
-OUTPUT_FILE=output_maze_matisse.txt
-PERFECT=True
+OUTPUT_FILE=output_maze.txt
+PERFECT=False
 SEED=None
