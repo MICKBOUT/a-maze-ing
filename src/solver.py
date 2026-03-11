@@ -30,10 +30,12 @@ def solver_heap(
     coeff = 5
     x, y = start
     if maze[y][x] == 15:
-        raise ValueError("Error entry on full block")
+        print(ValueError("Error: entry on full block"))
+        exit()
     x_end, y_end = end
     if maze[y_end][x_end] == 15:
-        raise ValueError("Error exit on full block")
+        print(ValueError("Error: exit on full block"))
+        exit()
 
     heap = []
     seen = {(x, y)}
