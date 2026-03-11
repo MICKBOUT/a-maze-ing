@@ -12,14 +12,15 @@ class MazeData:
     This class parses the maze file and exposes the grid, dimensions,
     start/end coordinates, and the solution path.
     """
-    def __init__(self, filename: str) -> None:
+    def __init__(self, heap: list[tuple[int, int]], filename: str) -> None:
         """
         Initialize the maze data by parsing the maze file.
         """
         self.filename = filename
-        self.parse()
+        self.heap = heap
+        self.parse(heap)
 
-    def parse(self) -> None:
+    def parse(self, heap: list[tuple[int, int]]) -> None:
         """
         Parse the maze file and extract structural information.
 
@@ -32,6 +33,7 @@ class MazeData:
         All values are stored as attributes of the instance.
         """
         parsed = read_file(self.filename)
+        self.heap = heap
         self.maze = parsed["maze_data"]
         self.height = len(self.maze)
         self.width = len(self.maze[0])
@@ -66,7 +68,8 @@ def create_colors() -> Dict[str, tuple[int, int, int, int]]:
     return colors
 
 
-def rescale_image(filename: str, new_size: tuple):
+def rescale_image(filename: str,
+                  new_size: tuple[int, int]) -> tuple:
     """
     Resize an image and save it into the rescaled assets directory.
 
@@ -95,7 +98,7 @@ def rescale_image(filename: str, new_size: tuple):
     return resized, str(output_path)
 
 
-def read_file(file_name: str = "output_maze.txt"):
+def read_file(file_name: str = "output_maze.txt") -> dict:
     """
     Read and parse a maze description file.
 
@@ -125,5 +128,6 @@ def read_file(file_name: str = "output_maze.txt"):
 
 
 class Colors(Enum):
+    """A basic Enum for maze colors."""
     BACKGROUND = "background"
     WALL = "wall"
