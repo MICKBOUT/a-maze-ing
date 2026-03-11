@@ -17,6 +17,9 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+    "Pillow>=10.0"
+]
 
 [project.optional-dependencies]
 dev = [
@@ -25,12 +28,11 @@ dev = [
     "mypy"
 ]
 
-dependencies = [
-    "Pillow>=10.0"
-]
-
 [project.urls]
 "Homepage" = "https://projects.intra.42.fr/a-maze-ing/mboutte"
 
 [tool.hatch.build.targets.wheel]
-# packages = ["mazegen"]
+packages = ["src/mazegen"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

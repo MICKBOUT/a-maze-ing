@@ -1,12 +1,13 @@
 from heapq import heappop, heappush
-from .mazegen.generation import MazeGenerator
-from .exception import PathNotFound
+from typing import Any
+
+from exception import MisplaceCell
 
 
 def solver_heap(
         maze: list[list[int]],
         start: tuple[int, int],
-        end: tuple[int, int]) -> str:
+        end: tuple[int, int]) -> tuple[str | None, list[tuple[int, int]]]:
     """
     Solves a maze using the A* algorithm and returns the path as a string of
     directions.
@@ -24,30 +25,24 @@ def solver_heap(
         'N', 'E', 'S', 'W' for directions.
     """
     coeff = 5
+
     x, y = start
-
     if not (0 <= y < len(maze)):
-        print(ValueError("\033[0;31mError\033[0m: Entry outside the maze"))
-        exit()
+        raise ValueError("Entry outside the maze")
     if not (0 <= x < len(maze[0])):
-        print(ValueError("\033[0;31mError\033[0m: Entry outside the maze"))
-        exit()
+        raise ValueError("Entry outside the maze")
     if maze[y][x] == 15:
-        print(ValueError("\033[0;31mError\033[0m: Entry on full block"))
-        exit()
+        raise MisplaceCell("Entry on logo 42")
+
     x_end, y_end = end
-
     if not (0 <= y_end < len(maze)):
-        print(ValueError("\033[0;31mError\033[0m: Exit outside the maze"))
-        exit()
+        raise ValueError("Exit outside the maze")
     if not (0 <= x_end <= len(maze[0])):
-        print(ValueError("\033[0;31mError\033[0m: Exit outside the maze"))
-        exit()
+        raise ValueError("Exit outside the maze")
     if maze[y_end][x_end] == 15:
-        print(ValueError("\033[0;31mError\033[0m: Exit on full block"))
-        exit()
+        raise MisplaceCell("Exit on logo 42")
 
-    heap = []
+    heap: list[Any] = []
     seen = {(x, y)}
     heappush(heap, (
         (abs(x_end - x) + abs(y_end - y)) * coeff,
@@ -97,19 +92,5 @@ def solver_heap(
                     x - 1,
                     y,
                     path + "W"))
-    raise PathNotFound
 
-
-if __name__ == "__main__":
-
-    import time
-
-    maze = MazeGenerator.maze_generator(200, 200, None, False)
-    print("\n\n=== imperfecte ===")
-    t = time.time()
-    path = solver_heap(
-        maze=maze,
-        start=(0, 0),
-        end=(199, 199)
-    )
-    print(f"{time.time() - t}")
+    return None, stack_visual

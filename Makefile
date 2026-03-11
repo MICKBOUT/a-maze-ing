@@ -5,9 +5,10 @@ V_PYTHON    = $(VENV_BIN)/python
 V_PIP       = $(V_PYTHON) -m pip
 
 MAIN        = a_maze_ing.py
-OUTPUT_FILE = mazegen-1.0.0-py3-none-any.whl
+VERSION     = 1.0.0
+OUTPUT_FILE = mazegen-$(VERSION)-py3-none-any.whl
 
-DEPENDENCIES = pytest flake8 mypy lib/mlx-2.2-py3-none-any.whl pillow
+LOCAL_DEPS  = lib/mlx-2.2-py3-none-any.whl
 
 FLAKE = $(VENV_BIN)/flake8
 MYPY  = $(VENV_BIN)/mypy
@@ -44,10 +45,10 @@ $(OUTPUT_FILE):
 	@echo "Build complete"
 
 install: build $(VENV)
-	@echo "Installing dependencies..."
-	@$(V_PIP) install -qq $(DEPENDENCIES)
-	@echo "Installing project..."
-	@$(V_PIP) install -qq $(OUTPUT_FILE) --force-reinstall
+	@echo "Installing local dependencies..."
+	@$(V_PIP) install -qq $(LOCAL_DEPS)
+	@echo "Installing project with dependencies..."
+	@$(V_PIP) install -qq -e ".[dev]"
 	@echo "Installation complete"
 
 run: install
@@ -56,6 +57,10 @@ run: install
 
 debug: install
 	@$(V_PYTHON) -m pdb $(MAIN)
+
+test: install
+	@echo "Running tests..."
+	@$(VENV_BIN)/pytest
 
 lint: install
 	@echo "Running flake8..."
@@ -75,4 +80,4 @@ clean:
 	@rm -rf .pytest_cache output_maze.txt
 	@echo "Clean complete"
 
-.PHONY: build install run debug lint lint-strict clean
+.PHONY: build install run debug test lint lint-strict clean

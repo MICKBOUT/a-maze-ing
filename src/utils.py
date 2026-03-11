@@ -1,8 +1,8 @@
-import sys
+from typing import Any
 
 from .mazegen.generation import MazeGenerator
 from .solver import solver_heap
-from .exception import ConfigFileError
+from .exception import ConfigFileError, PathNotFound
 
 config_dict = {
     "width": 75,
@@ -15,12 +15,33 @@ config_dict = {
 }
 
 
+def validate_data(config_dict: dict) -> None:
+    if config_dict["entry"] == config_dict["exit"]:
+        raise ConfigFileError("Entry and Exit can not be on the same cell")
+    if config_dict["width"] < 7:
+        raise ConfigFileError("width to small for the logo '42'")
+    if config_dict["height"] < 5:
+        raise ConfigFileError("width to small for the logo '42'")
+
+    x, y = config_dict["entry"]
+    if not (0 <= y < config_dict["height"]):
+        raise ConfigFileError("Entry outside the maze")
+    if not (0 <= x < config_dict["width"]):
+        raise ConfigFileError("Entry outside the maze")
+
+    x_end, y_end = config_dict["exit"]
+    if not (0 <= y_end < config_dict["height"]):
+        raise ConfigFileError("Exit outside the maze")
+    if not (0 <= x_end <= config_dict["width"]):
+        raise ConfigFileError("Exit outside the maze")
+
+
 def write_file(
         maze: list[list[int]],
-        start: tuple[int, int],
-        end: tuple[int, int],
+        start: Any,
+        end: Any,
         path: str,
-        file) -> str:
+        file: Any) -> Any:
     """
     Write the given 2-D integer maze to a text file.
     Each row of the maze is written on its own line; each cell is formatted
@@ -120,45 +141,51 @@ def load_file(file_name: str, config_dict: dict) -> None:
                     config_dict["seed"] = data
                 else:
                     raise Exception("KEY not used")
-        index = line = None
-        if config_dict["entry"] == config_dict["exit"]:
-            raise Exception("Entry and Exit can not be on the same cell")
     except FileNotFoundError:
-        print(ConfigFileError("This programge need the file 'config.txt'"))
-        exit()
+        raise ConfigFileError("This programge need the file 'config.txt'")
     except Exception as e:
-        print(ConfigFileError(f"{e}", line=line, line_nb=index))
-        exit()
+        raise ConfigFileError(f"{e}", line=line, line_nb=index)
 
 
-def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
+def new_maze(config_file: str = "config.txt", new_seed: bool = False
+             ) -> Any:
     """
-    Generate a new maze based on the configuration parameters provided in a
-    file. If a configuration file is provided as a command-line argument, it
-    will be loaded to update the default configuration parameters. If the
-    new_seed parameter is set to True, the seed value in the configuration will
-    be reset to None, allowing for a new random seed to be generated for
-    the maze. The function generates the maze, solves it using a heap-based
-    solver, and writes the maze and solution path to an output file specified
-    in the configuration.
+    Generate a new maze based on the configuration parameters specified in a
+    given configuration file. The function reads the configuration parameters
+    from the file, generates a maze using the MazeGenerator class, solves the
+    maze using the solver_heap function, and writes the maze and solution path
+    to an output file. The function returns the progress stack from the
+    maze-solving process and the path to the output file.
 
     Parameters
     ----------
+    config_file : str, optional
+        The path to the configuration file containing the maze generation and
+        solving parameters. Defaults to "config_file.txt".
     new_seed : bool, optional
-        If True, resets the seed value in the configuration to None to allow
-        for a new random seed to be generated. Defaults to False.
-
+        If True, the seed value in the configuration will be ignored and set to
+        None, resulting in a new random seed being used for maze generation.
+        Defaults to False.
     Returns
     -------
-    list[tuple[int, int]]
-        A list of (x, y) coordinates representing the progress stack from the
-        maze-solving process. This stack can be used for visualization or
-        analysis of the solver's path through the maze.
+    tuple
+        A tuple containing:
+        - progress_stack: A list of tuples representing the progress of the
+            maze solving process.
+        - output_file: A string representing the path to the output file where
+            the maze and solution path have been written.
+
+    Raises
+    ------
+    ConfigFileError
+        If there is an error in the configuration file, such as an unrecognized
+        key, invalid value format, or other parsing issues. The error message
+        will include details about the specific issue and the line number where
+        it occurred.
     """
-    if len(sys.argv) > 1:
-        load_file(sys.argv[1], config_dict)
-    if config_dict["entry"] == config_dict["exit"]:
-        print(config_dict)
+
+    load_file(config_file, config_dict)
+    validate_data(config_dict)
 
     if new_seed:
         config_dict["seed"] = None
@@ -175,6 +202,9 @@ def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:
         config_dict["entry"],
         config_dict["exit"]
     )
+    if path is None:
+        raise PathNotFound
+
     write_file(
         maze,
         config_dict["entry"],
