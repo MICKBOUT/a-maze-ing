@@ -70,7 +70,7 @@ class MLXImage:
 
 
 class MazeImage(MLXImage):
-    def __init__(self, mlx: Mlx, mlx_ptr: int, 
+    def __init__(self, mlx: Mlx, mlx_ptr: int,
                  width: int, height: int, data: MazeData) -> None:
         """
         Initialize a maze-rendering image.
