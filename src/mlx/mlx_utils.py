@@ -131,3 +131,10 @@ class Colors(Enum):
     """A basic Enum for maze colors."""
     BACKGROUND = "background"
     WALL = "wall"
+
+
+buttons_size = (580, 1946)
+button1_box = (2900, 400, 3420, 550)
+button2_box = (2900, 660, 3420, 820)
+button3_box = (2900, 930, 3420, 1090)
+button4_box = (2900, 1190, 3420, 1340)
