@@ -1,47 +1,14 @@
 from mlx import Mlx
-from .mlx_image import MazeImage
-from .mlx_utils import rescale_image, read_file, Colors
+from typing import Any
+from .mlx_image import MazeImage, MLXImage
+from .mlx_utils import rescale_image, Colors
+from .mlx_utils import MazeData
 
 buttons_size = (580, 1946)
 button1_box = (2900, 400, 3420, 550)
 button2_box = (2900, 660, 3420, 820)
 button3_box = (2900, 930, 3420, 1090)
 button4_box = (2900, 1190, 3420, 1340)
-
-
-class MazeData:
-    """
-    Load and store maze structure and metadata.
-
-    This class parses the maze file and exposes the grid, dimensions,
-    start/end coordinates, and the solution path.
-    """
-    def __init__(self, filename: str):
-        """
-        Initialize the maze data by parsing the maze file.
-        """
-        self.filename = filename
-        self.parse()
-
-    def parse(self):
-        """
-        Parse the maze file and extract structural information.
-
-        The method loads:
-        - the maze grid (hex-encoded wall bitmasks),
-        - maze dimensions,
-        - start and end coordinates,
-        - the solution path.
-
-        All values are stored as attributes of the instance.
-        """
-        parsed = read_file(self.filename)
-        self.maze = parsed["maze_data"]
-        self.height = len(self.maze)
-        self.width = len(self.maze[0])
-        self.start = parsed["start"]
-        self.end = parsed["end"]
-        self.path = parsed["path"]
 
 
 class MLXRenderer:
@@ -101,7 +68,7 @@ class MLXRenderer:
         # Buttons
 
         # Hooks
-        def on_keypress(keycode, param):
+        def on_keypress(keycode: int, param: Any) -> None:
             if keycode == 65307:
                 self.mlx.mlx_destroy_image(self.mlx_ptr, self.maze_img.img)
                 self.mlx.mlx_destroy_image(self.mlx_ptr, self.button_ptr)
@@ -109,7 +76,7 @@ class MLXRenderer:
                 self.mlx.mlx_release(self.mlx_ptr)
                 self.mlx.mlx_loop_exit(self.mlx_ptr)
 
-        def on_mouse(button, x, y, param):
+        def on_mouse(button: int, x: int, y: int, param: Any):
             # Change Color Button
             if button != 1:
                 return
@@ -178,7 +145,7 @@ class MLXRenderer:
         self.mlx.mlx_hook(self.win_ptr, 2, 1, on_keypress, None)
         self.mlx.mlx_mouse_hook(self.win_ptr, on_mouse, None)
 
-    def show_heap(self, sample, erase=False):
+    def show_heap(self, sample: int, erase: bool = False) -> None:
         """
         Display or erase the heap exploration animation.
 
@@ -206,7 +173,7 @@ class MLXRenderer:
             if not erase:
                 self.mlx.mlx_do_sync(self.mlx_ptr)
 
-    def put_image(self, img, x, y):
+    def put_image(self, img: MLXImage, x: int, y: int) -> None:
         """
         Draw an MLX image into the window.
 
@@ -224,7 +191,7 @@ class MLXRenderer:
             x, y
         )
 
-    def compute_buttons(self):
+    def compute_buttons(self) -> None:
         """
         Compute the scaled button hitboxes and return the appropriate
         button image.
@@ -235,7 +202,7 @@ class MLXRenderer:
             Path to the PNG file containing the button graphics.
         """
 
-        def scale_box(box, screen_w, screen_h):
+        def scale_box(box: tuple, screen_w: int, screen_h: int) -> tuple:
             return (
                 int(box[0] * screen_w / 3840),
                 int(box[1] * screen_h / 2160),

@@ -37,7 +37,6 @@ def solver_heap(
         exit()
     x_end, y_end = end
 
-
     if not (0 <= y_end < len(maze)):
         print(ValueError("\033[0;31mError\033[0m: Exit outside the maze"))
         exit()
@@ -113,4 +112,4 @@ if __name__ == "__main__":
         start=(0, 0),
         end=(199, 199)
     )
-    print(f"{time.time()- t}")
+    print(f"{time.time() - t}")

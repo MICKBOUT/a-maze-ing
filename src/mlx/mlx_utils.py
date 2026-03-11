@@ -1,10 +1,46 @@
+from typing import Dict
 from random import randint
 from pathlib import Path
 from PIL import Image
 from enum import Enum
 
 
-def create_colors():
+class MazeData:
+    """
+    Load and store maze structure and metadata.
+
+    This class parses the maze file and exposes the grid, dimensions,
+    start/end coordinates, and the solution path.
+    """
+    def __init__(self, filename: str) -> None:
+        """
+        Initialize the maze data by parsing the maze file.
+        """
+        self.filename = filename
+        self.parse()
+
+    def parse(self) -> None:
+        """
+        Parse the maze file and extract structural information.
+
+        The method loads:
+        - the maze grid (hex-encoded wall bitmasks),
+        - maze dimensions,
+        - start and end coordinates,
+        - the solution path.
+
+        All values are stored as attributes of the instance.
+        """
+        parsed = read_file(self.filename)
+        self.maze = parsed["maze_data"]
+        self.height = len(self.maze)
+        self.width = len(self.maze[0])
+        self.start = parsed["start"]
+        self.end = parsed["end"]
+        self.path = parsed["path"]
+
+
+def create_colors() -> Dict[str, tuple[int, int, int, int]]:
     """
     Generate randomized RGBA colors for maze rendering.
 

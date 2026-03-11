@@ -1,9 +1,12 @@
 from .mlx_utils import create_colors, Colors
+from mlx import Mlx
+from .mlx_utils import MazeData
 
 
 class MLXImage:
     """Image wrapper providing basic drawing operations using MLX."""
-    def __init__(self, mlx, mlx_ptr, width, height):
+    def __init__(self, mlx: Mlx, mlx_ptr: int,
+                 width: int, height: int) -> None:
         """
         Initialize an MLX image buffer.
 
@@ -23,9 +26,10 @@ class MLXImage:
         data_img = mlx.mlx_get_data_addr(self.img)
         self.data_img, self.bpp, self.size_line, self.fmt = data_img
 
-    def draw_rect(self, x1: int, y1: int,
+    def draw_rect(self,
+                  x1: int, y1: int,
                   x2: int, y2: int,
-                  color: tuple[int, int, int, int]):
+                  color: tuple[int, int, int, int]) -> None:
         """
         Draw a filled rectangle on the image.
 
@@ -66,7 +70,8 @@ class MLXImage:
 
 
 class MazeImage(MLXImage):
-    def __init__(self, mlx, mlx_ptr, width, height, data):
+    def __init__(self, mlx: Mlx, mlx_ptr: int, 
+                 width: int, height: int, data: MazeData) -> None:
         """
         Initialize a maze-rendering image.
 
@@ -103,8 +108,10 @@ class MazeImage(MLXImage):
         self.background_color = self.colors["background"]
         self.wall_color = self.colors["wall"]
 
-    def draw_rect(self, x1: int, y1: int,
-                  x2: int, y2: int, color: Colors | tuple[int, int, int, int]):
+    def draw_rect(self,
+                  x1: int, y1: int,
+                  x2: int, y2: int,
+                  color: Colors | tuple[int, int, int, int]) -> None:
         """
         Draw a rectangle using maze-aware colors.
 
@@ -124,7 +131,7 @@ class MazeImage(MLXImage):
             color = self.wall_color
         return super().draw_rect(x1, y1, x2, y2, color)
 
-    def fill(self, color: Colors | tuple[int, int, int, int]):
+    def fill(self, color: Colors | tuple[int, int, int, int]) -> None:
         """
         Fill the entire image with a given color.
 
@@ -140,7 +147,9 @@ class MazeImage(MLXImage):
             color = self.wall_color
         return super().fill(color)
 
-    def draw_cell(self, value, y, x, background_color=None):
+    def draw_cell(self, value: int,
+                  y: int, x: int,
+                  background_color: tuple | None = None) -> None:
         """
         Draw a single maze cell with its walls.
 
@@ -203,7 +212,7 @@ class MazeImage(MLXImage):
                 self.wall_color
             )
 
-    def draw_maze(self):
+    def draw_maze(self) -> None:
         """
         Render the full maze grid, including start and end cells.
         """
@@ -233,7 +242,7 @@ class MazeImage(MLXImage):
             background_color=(255, 0, 0, 255),
         )
 
-    def draw_path(self, color=None):
+    def draw_path(self, color: Colors | None = None) -> None:
         """
         Draw the solution path over the maze.
 
@@ -262,14 +271,14 @@ class MazeImage(MLXImage):
                 color
             )
 
-    def update_colors(self):
+    def update_colors(self) -> None:
         """Regenerate and apply new random background and wall colors."""
         self.colors.update(create_colors())
         self.background_color = self.colors["background"]
         self.wall_color = self.colors["wall"]
 
     @staticmethod
-    def get_faded_path(current: int, end: int):
+    def get_faded_path(current: int, end: int) -> tuple[int, int, int, int]:
 
         """
         Compute a gradient color for path animation.
