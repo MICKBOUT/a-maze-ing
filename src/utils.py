@@ -64,7 +64,7 @@ def write_file(
             f.write("".join(str(line)))
     except Exception as e:
         print(e)
-        sys.exit()
+        exit()
     return file
 
 
@@ -121,9 +121,12 @@ def load_file(file_name: str, config_dict: dict) -> None:
                     config_dict["seed"] = data
                 else:
                     raise Exception("KEY not used")
+    except FileNotFoundError:
+        print(ConfigFileError("This programge need the file 'config.txt'"))
+        exit()
     except Exception as e:
         print(ConfigFileError(f"{e}", line=line, line_nb=index))
-        sys.exit()
+        exit()
 
 
 def new_maze(new_seed: bool = False) -> list[tuple[int, int]]:

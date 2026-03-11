@@ -12,6 +12,7 @@ DEPENDENCIES = pytest flake8 mypy lib/mlx-2.2-py3-none-any.whl pillow
 FLAKE = $(VENV_BIN)/flake8
 MYPY  = $(VENV_BIN)/mypy
 
+RED=\033[0;31m
 GREEN=\033[0;32m
 BLUE=\033[0;34m
 NC=\033[0m

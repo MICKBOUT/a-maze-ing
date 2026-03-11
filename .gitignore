@@ -14,3 +14,6 @@ build_venv/
 output_maze.txt
 dist/
 mazegen-1.0.0-py3-none-any.whl
+
+*.txt
+!config.txt

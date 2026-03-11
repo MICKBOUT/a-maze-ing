@@ -22,34 +22,30 @@ def solver_heap(
     Returns:
         str: A string representing the path from start to end using
         'N', 'E', 'S', 'W' for directions.
-
-    Raises:
-        ValueError: If the start or end position is on a full block.
-        Exception: If no path is found.
     """
     coeff = 5
     x, y = start
 
-    if 0 < y <= len(maze):
-        print(ValueError("Error: Start outside the maze"))
+    if not (0 <= y < len(maze)):
+        print(ValueError("\033[0;31mError\033[0m: Entry outside the maze"))
         exit()
-    if 0 < x <= len(maze[0]):
-        print(ValueError("Error: Start outside the maze"))
+    if not (0 <= x < len(maze[0])):
+        print(ValueError("\033[0;31mError\033[0m: Entry outside the maze"))
         exit()
     if maze[y][x] == 15:
-        print(ValueError("Error: entry on full block"))
+        print(ValueError("\033[0;31mError\033[0m: Entry on full block"))
         exit()
     x_end, y_end = end
 
 
-    if 0 < y_end <= len(maze):
-        print(ValueError("Error: Exit outside the maze"))
+    if not (0 <= y_end < len(maze)):
+        print(ValueError("\033[0;31mError\033[0m: Exit outside the maze"))
         exit()
-    if 0 < x_end <= len(maze[0]):
-        print(ValueError("Error: Exit outside the maze"))
+    if not (0 <= x_end <= len(maze[0])):
+        print(ValueError("\033[0;31mError\033[0m: Exit outside the maze"))
         exit()
     if maze[y_end][x_end] == 15:
-        print(ValueError("Error: exit on full block"))
+        print(ValueError("\033[0;31mError\033[0m: Exit on full block"))
         exit()
 
     heap = []

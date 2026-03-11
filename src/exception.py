@@ -9,7 +9,7 @@ class ConfigFileError(Exception):
                  message: str = "config file",
                  line: str = None,
                  line_nb: int = None):
-        self.message = "ConfigFileError: "
+        self.message = "\033[0;31mConfigFileError\033[0m: "
         self.message += message
 
         if line is not None:
