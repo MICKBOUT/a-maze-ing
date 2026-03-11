@@ -1,6 +1,7 @@
 from .mlx_utils import create_colors, Colors
 from mlx import Mlx
 from .mlx_utils import MazeData
+from typing import Callable
 
 
 class MLXImage:
@@ -56,7 +57,7 @@ class MLXImage:
             offset = y * self.size_line + x1 * bpp
             self.data_img[offset:offset + len(line)] = line
 
-    def fill(self, color: tuple[int, int, int, int]):
+    def fill(self, color: tuple[int, int, int, int]) -> None:
         """
         Fill the entire image with a given color.
 
@@ -147,9 +148,9 @@ class MazeImage(MLXImage):
             color = self.wall_color
         return super().fill(color)
 
-    def draw_cell(self, value: int,
-                  y: int, x: int,
-                  background_color: tuple | None = None) -> None:
+    def draw_cell(self, value: int, y: int, x: int,
+                  background_color: tuple[int, int, int, int]
+                  | None = None) -> None:
         """
         Draw a single maze cell with its walls.
 
@@ -271,6 +272,37 @@ class MazeImage(MLXImage):
                 color
             )
 
+    def show_heap(self, sample: int,
+                  put_img: Callable, do_sync: Callable | None = None,
+                  erase: bool = False) -> None:
+        """
+        Display or erase the heap exploration animation.
+
+        Parameters
+        ----------
+        sample : int
+            Number of heap elements to draw per frame.
+        erase : bool, optional
+            If True, cells are redrawn using the background color.
+        """
+
+        i, heap = 0, self.data.heap[:-1]
+        while i < len(heap):
+            j = 0
+            while j < sample and i < len(heap):
+                x, y = heap[i]
+                i, j = i + 1, j + 1
+                value = self.data.maze[y][x]
+                if erase:
+                    color = self.background_color
+                else:
+                    color = MazeImage.get_faded_path(i, len(heap))
+                self.draw_cell(value, y, x, color)
+
+            put_img()
+            if do_sync is not None:
+                do_sync()
+
     def update_colors(self) -> None:
         """Regenerate and apply new random background and wall colors."""
         self.colors.update(create_colors())
@@ -296,7 +328,7 @@ class MazeImage(MLXImage):
             RGBA color interpolated between red and yellow.
         """
 
-        start_color, end_color = (255, 0, 0), (255, 255, 0)
+        start_color, end_color = (255, 255, 0), (255, 0, 127)
         start_r, start_g, start_b = start_color
         end_r, end_g, end_b = end_color
 
