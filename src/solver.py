@@ -1,5 +1,4 @@
 from heapq import heappop, heappush
-from typing import Any
 
 from exception import MisplaceCell
 
@@ -42,7 +41,7 @@ def solver_heap(
     if maze[y_end][x_end] == 15:
         raise MisplaceCell("Exit on logo 42")
 
-    heap: list[Any] = []
+    heap: list[tuple[int, int, int, str]] = []
     seen = {(x, y)}
     heappush(heap, (
         (abs(x_end - x) + abs(y_end - y)) * coeff,
