@@ -138,8 +138,8 @@ class MazeGenerator:
             if candidate:
                 rm_wall(row, col, random.choice(candidate))
 
-    def generator(self, seed_input: str | None) -> list[list[int]]:
-        if seed_input is None or seed_input.lower() in {"none", ""}:
+    def generator(self, seed_input: str) -> list[list[int]]:
+        if not seed_input:
             try:
                 seed_input = str(int.from_bytes(os.urandom(4), "big"))
             except NotImplementedError:
