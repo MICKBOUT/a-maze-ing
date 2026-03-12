@@ -73,6 +73,7 @@ class MLXRenderer:
                 self.mlx.mlx_loop_exit(self.mlx_ptr)
 
         def on_mouse(button: int, x: int, y: int, param: Any) -> None:
+            print(x, y)
             # New Color Button
             if button != 1:
                 return

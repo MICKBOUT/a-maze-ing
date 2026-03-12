@@ -134,7 +134,7 @@ class Colors(Enum):
 
 
 buttons_size = (580, 1946)
-button1_box = (2900, 400, 3420, 550)
-button2_box = (2900, 660, 3420, 820)
-button3_box = (2900, 930, 3420, 1090)
-button4_box = (2900, 1190, 3420, 1340)
+button1_box = (2900, 450, 3440, 600)
+button2_box = (2900, 750, 3440, 900)
+button3_box = (2900, 1050, 3440, 1200)
+button4_box = (2900, 1320, 3440, 1490)
