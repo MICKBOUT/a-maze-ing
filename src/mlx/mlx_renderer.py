@@ -3,6 +3,7 @@ from typing import Any
 from .mlx_image import MazeImage, MLXImage
 from .mlx_utils import rescale_image, Colors, MazeData, buttons_size
 from .mlx_utils import button1_box, button2_box, button3_box, button4_box
+from ..utils import new_maze
 
 
 class MLXRenderer:
@@ -13,6 +14,7 @@ class MLXRenderer:
     the maze image, handles user interactions (mouse and keyboard), and
     updates the display accordingly.
     """
+
     def __init__(self, heap: list[tuple[int, int]], filename: str) -> None:
         """
         Initialize the MLX window and prepare all rendering components.
@@ -29,7 +31,12 @@ class MLXRenderer:
         self.mlx_ptr = self.mlx.mlx_init()
 
         # WINDOW
-        self.max_monitor_size = self.mlx.mlx_get_screen_size(self.mlx_ptr)[1:]
+        val, w, h = self.mlx.mlx_get_screen_size(self.mlx_ptr)
+        if val == 0:
+            self.max_monitor_size = (w, h)
+        else:
+            self.max_monitor_size = (1920, 1080)
+
         self.windows_width = int(self.max_monitor_size[0]*0.9)
         self.windows_height = int(self.max_monitor_size[1]*0.9)
 
@@ -99,11 +106,12 @@ class MLXRenderer:
                 self.button_new_maze[0] <= x <= self.button_new_maze[2]
                 and self.button_new_maze[1] <= y <= self.button_new_maze[3]
             ):
-                from ..utils import new_maze
                 heap = new_maze(new_seed=True)[0]
+
                 self.data.parse(heap)
                 self.maze_img.draw_maze()
                 self.put_image(self.maze_img, 0, 0)
+
                 self.maze_img.drawn_path = False
                 self.maze_img.drawn_heap = False
 
@@ -134,13 +142,11 @@ class MLXRenderer:
             ):
                 if not self.maze_img.drawn_heap:
                     self.maze_img.drawn_heap = True
-
                     self.maze_img.show_heap(
                         max(1, len(self.data.heap)//100),
                         put_image,
                         do_sync
                     )
-
                     self.maze_img.drawn_path = False
 
                 else:
@@ -152,7 +158,6 @@ class MLXRenderer:
                         do_sync,
                         erase=True
                     )
-                self.put_image(self.maze_img, 0, 0)
 
         self.mlx.mlx_hook(self.win_ptr, 2, 1, on_keypress, None)
         self.mlx.mlx_mouse_hook(self.win_ptr, on_mouse, None)

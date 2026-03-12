@@ -73,6 +73,7 @@ clean:
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
 	@rm -rf .pytest_cache output_maze.txt
+	@rm -rf assets/rescaled
 	@echo "Clean complete"
 
 .PHONY: build install run debug lint lint-strict clean
