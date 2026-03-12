@@ -1,4 +1,3 @@
-from typing import Dict
 from random import randint
 from pathlib import Path
 from PIL import Image
@@ -16,11 +15,10 @@ class MazeData:
         """
         Initialize the maze data by parsing the maze file.
         """
-        self.filename = filename
-        self.heap = heap
-        self.parse(heap)
+        print(heap)
+        self.parse(heap, filename)
 
-    def parse(self, heap: list[tuple[int, int]]) -> None:
+    def parse(self, heap: list[tuple[int, int]], filename: str) -> None:
         """
         Parse the maze file and extract structural information.
 
@@ -32,7 +30,7 @@ class MazeData:
 
         All values are stored as attributes of the instance.
         """
-        parsed = read_file(self.filename)
+        parsed = read_file(filename)
         self.heap = heap
         self.maze = parsed["maze_data"]
         self.height = len(self.maze)
@@ -42,7 +40,7 @@ class MazeData:
         self.path = parsed["path"]
 
 
-def create_colors() -> Dict[str, tuple[int, int, int, int]]:
+def create_colors() -> dict[str, list[int]]:
     """
     Generate randomized RGBA colors for maze rendering.
 

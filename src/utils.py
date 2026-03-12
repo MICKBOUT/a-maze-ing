@@ -164,7 +164,7 @@ def load_file(file_name: str, config_dict: MazeConfig) -> None:
 
 
 def new_maze(config_file: str = "config.txt", new_seed: bool = False
-             ) -> tuple[list[int], str]:
+             ) -> tuple[list[tuple[int, int]], str]:
     """
     Generate a new maze based on the configuration parameters specified in a
     given configuration file. The function reads the configuration parameters

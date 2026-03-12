@@ -86,8 +86,8 @@ class MLXRenderer:
             if button != 1:
                 return
 
-            def put_image(): self.put_image(self.maze_img, 0, 0)
-            def do_sync(): self.mlx.mlx_do_sync(self.mlx_ptr)
+            def put_image() -> None: self.put_image(self.maze_img, 0, 0)
+            def do_sync() -> None: self.mlx.mlx_do_sync(self.mlx_ptr)
 
             if (
                 self.button_new_color[0] <= x <= self.button_new_color[2]
@@ -109,9 +109,9 @@ class MLXRenderer:
                 self.button_new_maze[0] <= x <= self.button_new_maze[2]
                 and self.button_new_maze[1] <= y <= self.button_new_maze[3]
             ):
-                heap = new_maze(new_seed=True)[0]
+                heap, filename = new_maze(new_seed=True)
 
-                self.data.parse(heap)
+                self.data.parse(heap, filename)
                 self.maze_img.draw_maze()
                 self.put_image(self.maze_img, 0, 0)
 
@@ -183,7 +183,7 @@ class MLXRenderer:
             x, y
         )
 
-    def compute_buttons(self) -> None:
+    def compute_buttons(self) -> str:
         """
         Compute the scaled button hitboxes and return the appropriate
         button image.

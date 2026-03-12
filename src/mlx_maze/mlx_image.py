@@ -33,7 +33,7 @@ class MLXImage:
     def draw_rect(self,
                   x1: int, y1: int,
                   x2: int, y2: int,
-                  color: tuple[int, int, int, int]) -> None:
+                  color: list[int]) -> None:
         """
         Draw a filled rectangle on the image.
 
@@ -60,7 +60,7 @@ class MLXImage:
             offset = y * self.size_line + x1 * bpp
             self.data_img[offset:offset + len(line)] = line
 
-    def fill(self, color: tuple[int, int, int, int]) -> None:
+    def fill(self, color: list[int]) -> None:
         """
         Fill the entire image with a given color.
 
@@ -116,7 +116,7 @@ class MazeImage(MLXImage):
     def draw_rect(self,
                   x1: int, y1: int,
                   x2: int, y2: int,
-                  color: Colors | tuple[int, int, int, int]) -> None:
+                  color: Colors | list[int]) -> None:
         """
         Draw a rectangle using maze-aware colors.
 
@@ -126,8 +126,8 @@ class MazeImage(MLXImage):
             Top-left corner.
         x2, y2 : int
             Bottom-right corner.
-        color : Colors or tuple
-            Enum member or RGBA tuple.
+        color : Colors or list
+            Enum member or RGBA list.
         """
 
         if color == Colors.BACKGROUND:
@@ -136,7 +136,7 @@ class MazeImage(MLXImage):
             color = self.wall_color
         return super().draw_rect(x1, y1, x2, y2, color)
 
-    def fill(self, color: Colors | tuple[int, int, int, int]) -> None:
+    def fill(self, color: Colors | list[int]) -> None:
         """
         Fill the entire image with a given color.
 
@@ -153,7 +153,7 @@ class MazeImage(MLXImage):
         return super().fill(color)
 
     def draw_cell(self, value: int, y: int, x: int,
-                  background_color: tuple[int, int, int, int]
+                  background_color: list[int]
                   | None = None) -> None:
         """
         Draw a single maze cell with its walls.
@@ -236,7 +236,7 @@ class MazeImage(MLXImage):
             self.data.maze[y_start][x_start],
             y_start,
             x_start,
-            background_color=(0, 255, 0, 255),
+            background_color=[0, 255, 0, 255],
         )
 
         # end
@@ -244,7 +244,7 @@ class MazeImage(MLXImage):
             self.data.maze[y_end][x_end],
             y_end,
             x_end,
-            background_color=(255, 0, 0, 255),
+            background_color=[255, 0, 0, 255],
         )
 
     def draw_path(self, color: Colors | None = None) -> None:
@@ -258,9 +258,9 @@ class MazeImage(MLXImage):
         """
         current_x, current_y = self.data.start
         if color == Colors.BACKGROUND:
-            color = self.background_color
+            color_used = self.background_color
         else:
-            color = (255, 255, 255, 255)
+            color_used = [255, 255, 255, 255]
         for d in self.data.path[:-1]:
             if d == "S":
                 current_y += 1
@@ -273,7 +273,7 @@ class MazeImage(MLXImage):
             self.draw_cell(
                 self.data.maze[current_y][current_x],
                 current_y, current_x,
-                color
+                color_used
             )
 
     def show_heap(self, sample: int,
@@ -314,7 +314,7 @@ class MazeImage(MLXImage):
         self.wall_color = self.colors["wall"]
 
     @staticmethod
-    def get_faded_path(current: int, end: int) -> tuple[int, int, int, int]:
+    def get_faded_path(current: int, end: int) -> list[int]:
         """
         Compute a gradient color for path animation.
 
@@ -330,9 +330,9 @@ class MazeImage(MLXImage):
         tuple
             RGBA color interpolated between red and yellow.
         """
-        start_color, end_color = (255, 0, 0), (255, 255, 0)
+        start_color, end_color = [255, 0, 0], [255, 255, 0]
         if end == 0:
-            return tuple(list(start_color) + [255])
+            return start_color + [255]
         start_r, start_g, start_b = start_color
         end_r, end_g, end_b = end_color
 
@@ -342,9 +342,9 @@ class MazeImage(MLXImage):
 
         coef = current/end
 
-        return (
+        return [
             int(start_r + coef * diff_r,),
             int(start_g + coef * diff_g,),
             int(start_b + coef * diff_b,),
             255
-        )
+        ]
