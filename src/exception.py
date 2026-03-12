@@ -1,5 +1,14 @@
+from typing import Optional
+
+
 class PathNotFound(Exception):
     def __init__(self, message: str = "Path not found"):
+        self.message = message
+        super().__init__(self.message)
+
+
+class MisplaceCell(Exception):
+    def __init__(self, message: str = "Key cell place on 42 logo"):
         self.message = message
         super().__init__(self.message)
 
@@ -7,8 +16,8 @@ class PathNotFound(Exception):
 class ConfigFileError(Exception):
     def __init__(self,
                  message: str = "config file",
-                 line: str = None,
-                 line_nb: int = None):
+                 line: Optional[str] = None,
+                 line_nb: Optional[int] = None) -> None:
         self.message = "\033[0;31mConfigFileError\033[0m: "
         self.message += message
 

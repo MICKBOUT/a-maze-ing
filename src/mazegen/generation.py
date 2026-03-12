@@ -1,15 +1,23 @@
 import random
 import os
+import time
 
 
 class MazeGenerator:
 
     def __init__(
-      self, width: int, height: int, perfect: bool, seed_input: str = None
+      self, width: int, height: int, perfect: bool, seed_input: str = ""
     ) -> None:
         self.width = width
         self.height = height
         self.perfect = perfect
+        self.maze: list[list[int]] = []
+
+        if self.width < 7:
+            raise ValueError("width too smale for a maze w/ logo")
+        if self.height < 5:
+            raise ValueError("height too smale for a maze w/ logo")
+
         self.generator(seed_input)
 
     def _gen_perfect(self) -> None:
@@ -43,16 +51,16 @@ class MazeGenerator:
             (mid_height + 2, mid_width + 3),
         }
 
-        rnd_cell = (random.randint(
-            0, height - 1), random.randint(0, width - 1))
-        while rnd_cell in seen:
-            rnd_cell = (random.randint(
-                0, height - 1), random.randint(0, width - 1))
-        stack = [rnd_cell]
+        stack = [
+            (mid_height + 1, mid_width - 2),  # bottom left of the 4
+            (mid_height, mid_width),  # b/w 4 and 2
+            (mid_height + 1, mid_width + 2),  # bottom part of the 2
+        ]
 
         while stack:
             y, x = stack[-1]
             seen.add((y, x))
+
             candidate = []
             # North
             if y > 0 and (y - 1, x) not in seen:
@@ -130,43 +138,28 @@ class MazeGenerator:
             if candidate:
                 rm_wall(row, col, random.choice(candidate))
 
-    def generator(self, seed_input) -> list[list[int]]:
+    def generator(self, seed_input: str | None) -> list[list[int]]:
         if seed_input is None or seed_input.lower() in {"none", ""}:
             try:
-                seed_input = int.from_bytes(os.urandom(4), "big")
+                seed_input = str(int.from_bytes(os.urandom(4), "big"))
             except NotImplementedError:
-                seed_input = int(time.time())
+                seed_input = str(int(time.time()))
             print("Seed auto-Generated:", seed_input)
         else:
             print("Seed used:", seed_input)
-        random.seed(str(seed_input))
-        if self.height < 6:
-            print(ValueError("\033[0;31mError\033[0m: Height need to be >= 6 \
-                             for the 42 logo"))
+        random.seed(seed_input)
+        if self.height < 5:
+            print(ValueError(
+                "\033[0;31mError\033[0m"
+                ": Height need to be >= 5 for the 42 logo"))
             exit(1)
-        if self.width < 9:
-            print(ValueError("\033[0;31mError\033[0m: Width need to be >= 9 \
-                             for the 42 logo"))
+        if self.width < 7:
+            print(ValueError(
+                "\033[0;31mError\033[0m"
+                ": Width need to be >= 7 for the 42 logo"))
             exit(1)
 
         self._gen_perfect()
         if not self.perfect:
             self._gen_imperfect()
         return self.maze
-
-
-if __name__ == "__main__":
-    # 5.1
-    import time
-    t = time.time()
-    for i in range(50):
-        MazeGenerator(
-            width=200, height=200, seed_input=None, perfect=False).maze
-    print(f"{round(time.time() - t, 3)}s")
-
-# Bit Direction|
-# -------------|
-# 0 North      |
-# 1 East       |
-# 2 South      |
-# 3 West       |
