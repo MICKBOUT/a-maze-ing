@@ -76,6 +76,11 @@ maze = MazeGenerator(width=25, height=25, perfect=True, seed_input="42").maze
 make test
 ```
 
+## Contribution
+- mboutte: A* solver, config parsing, maze generation.
+- pdauga: MLX visualization, UI design.
+
+
 ## Resources
 - Maze generation: https://en.wikipedia.org/wiki/Maze_generation_algorithm
 - A* algorithm: https://en.wikipedia.org/wiki/A*_search_algorithm
