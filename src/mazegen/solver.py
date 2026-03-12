@@ -36,7 +36,7 @@ def solver_heap(
     x_end, y_end = end
     if not (0 <= y_end < len(maze)):
         raise ValueError("Exit outside the maze")
-    if not (0 <= x_end <= len(maze[0])):
+    if not (0 <= x_end < len(maze[0])):
         raise ValueError("Exit outside the maze")
     if maze[y_end][x_end] == 15:
         raise MisplaceCell("Exit on logo 42")
