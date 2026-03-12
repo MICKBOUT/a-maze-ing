@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, TypedDict
+from typing import Tuple, TypedDict
 
 from mazegen.generation import MazeGenerator
 from solver import solver_heap
@@ -12,7 +12,7 @@ class MazeConfig(TypedDict):
     exit: Tuple[int, int]
     output_file: str
     perfect: bool
-    seed: Optional[str]
+    seed: str
 
 
 config_dict: MazeConfig = {
@@ -22,7 +22,7 @@ config_dict: MazeConfig = {
     "exit": (0, 0),
     "output_file": "output_maze.txt",
     "perfect": False,
-    "seed": None
+    "seed": ""
 }
 
 
@@ -138,14 +138,17 @@ def load_file(file_name: str, config_dict: MazeConfig) -> None:
                         config_dict["width"] = int(data)
                     else:
                         config_dict["height"] = int(data)
+
                 elif variable in {"entry", "exit"}:
                     x, y = data.split(',')
                     if variable == "entry":
                         config_dict["entry"] = (int(x), int(y))
                     else:
                         config_dict["exit"] = (int(x), int(y))
+
                 elif variable == "output_file":
                     config_dict["output_file"] = data
+
                 elif variable == "perfect":
                     if data.lower() in {"true", 1, "yes", "y"}:
                         config_dict["perfect"] = True
@@ -153,6 +156,7 @@ def load_file(file_name: str, config_dict: MazeConfig) -> None:
                         config_dict["perfect"] = False
                     else:
                         raise Exception("bool not found")
+
                 elif variable == "seed":
                     config_dict["seed"] = data
                 else:
@@ -164,7 +168,7 @@ def load_file(file_name: str, config_dict: MazeConfig) -> None:
 
 
 def new_maze(config_file: str = "config.txt", new_seed: bool = False
-             ) -> tuple[list[int], str]:
+             ) -> tuple[list[tuple[int, int]], str]:
     """
     Generate a new maze based on the configuration parameters specified in a
     given configuration file. The function reads the configuration parameters
@@ -204,7 +208,7 @@ def new_maze(config_file: str = "config.txt", new_seed: bool = False
     validate_data(config_dict)
 
     if new_seed:
-        config_dict["seed"] = None
+        config_dict["seed"] = ""
 
     maze = MazeGenerator(
             width=config_dict["width"],
