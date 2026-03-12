@@ -1,5 +1,5 @@
-from src.mlx_maze.mlx_utils import create_colors, Colors
-from src.mlx_maze.mlx_utils import MazeData
+from mlx_maze.mlx_utils import create_colors, Colors
+from mlx_maze.mlx_utils import MazeData
 
 import mlx
 

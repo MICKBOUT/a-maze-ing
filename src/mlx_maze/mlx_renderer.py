@@ -2,12 +2,11 @@ from typing import Any
 
 import mlx
 
-from src.mlx_maze.mlx_image import MazeImage, MLXImage
-from src.mlx_maze.mlx_utils import button1_box, MazeData, buttons_size
-from src.mlx_maze.mlx_utils import rescale_image, button2_box, button3_box
-from src.mlx_maze.mlx_utils import button4_box, Colors
-
-from src.utils import new_maze
+from mlx_maze.mlx_image import MazeImage, MLXImage
+from mlx_maze.mlx_utils import button1_box, MazeData, buttons_size
+from mlx_maze.mlx_utils import rescale_image, button2_box, button3_box
+from mlx_maze.mlx_utils import button4_box, Colors
+from utils import new_maze
 
 
 class MLXRenderer:
