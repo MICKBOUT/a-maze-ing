@@ -1,13 +1,15 @@
-from .mlx_utils import create_colors, Colors
-from mlx import Mlx
-from .mlx_utils import MazeData
+from src.mlx_maze.mlx_utils import create_colors, Colors
+from src.mlx_maze.mlx_utils import MazeData
+
+import mlx
+
 from typing import Callable
 
 
 class MLXImage:
     """Image wrapper providing basic drawing operations using MLX."""
 
-    def __init__(self, mlx: Mlx, mlx_ptr: int,
+    def __init__(self, mlx: mlx.Mlx, mlx_ptr: int,
                  width: int, height: int) -> None:
         """
         Initialize an MLX image buffer.
@@ -72,8 +74,9 @@ class MLXImage:
 
 
 class MazeImage(MLXImage):
-    def __init__(self, mlx: Mlx, mlx_ptr: int,
-                 width: int, height: int, data: MazeData) -> None:
+    def __init__(self, mlx: mlx.Mlx, mlx_ptr: int,
+                 width: int, height: int,
+                 data: MazeData) -> None:
         """
         Initialize a maze-rendering image.
 

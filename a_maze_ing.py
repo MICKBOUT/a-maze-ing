@@ -1,6 +1,6 @@
 
 from src.utils import new_maze
-from src.mlx.mlx_renderer import MLXRenderer
+from src.mlx_maze.mlx_renderer import MLXRenderer
 from src.exception import ConfigFileError, PathNotFound, MisplaceCell
 import sys
 
