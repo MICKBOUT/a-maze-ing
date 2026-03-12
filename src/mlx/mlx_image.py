@@ -258,12 +258,12 @@ class MazeImage(MLXImage):
             color = self.background_color
         else:
             color = (255, 255, 255, 255)
-        for i in range(len(self.data.path[:-1])):
-            if self.data.path[i] == "S":
+        for d in self.data.path[:-1]:
+            if d == "S":
                 current_y += 1
-            elif self.data.path[i] == "N":
+            elif d == "N":
                 current_y -= 1
-            elif self.data.path[i] == "E":
+            elif d == "E":
                 current_x += 1
             else:
                 current_x -= 1
@@ -327,8 +327,9 @@ class MazeImage(MLXImage):
         tuple
             RGBA color interpolated between red and yellow.
         """
-
         start_color, end_color = (255, 0, 0), (255, 255, 0)
+        if end == 0:
+            return tuple(list(start_color) + [255])
         start_r, start_g, start_b = start_color
         end_r, end_g, end_b = end_color
 

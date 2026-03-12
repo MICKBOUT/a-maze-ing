@@ -3,6 +3,7 @@ from typing import Any
 from .mlx_image import MazeImage, MLXImage
 from .mlx_utils import rescale_image, Colors, MazeData, buttons_size
 from .mlx_utils import button1_box, button2_box, button3_box, button4_box
+from ..utils import new_maze
 
 
 class MLXRenderer:
@@ -30,7 +31,12 @@ class MLXRenderer:
         self.mlx_ptr = self.mlx.mlx_init()
 
         # WINDOW
-        self.max_monitor_size = self.mlx.mlx_get_screen_size(self.mlx_ptr)[1:]
+        val, w, h = self.mlx.mlx_get_screen_size(self.mlx_ptr)
+        if val == 0:
+            self.max_monitor_size = (w, h)
+        else:
+            self.max_monitor_size = (1920, 1080)
+
         self.windows_width = int(self.max_monitor_size[0]*0.9)
         self.windows_height = int(self.max_monitor_size[1]*0.9)
 
@@ -73,7 +79,6 @@ class MLXRenderer:
                 self.mlx.mlx_loop_exit(self.mlx_ptr)
 
         def on_mouse(button: int, x: int, y: int, param: Any) -> None:
-            print(x, y)
             # New Color Button
             if button != 1:
                 return
@@ -101,7 +106,6 @@ class MLXRenderer:
                 self.button_new_maze[0] <= x <= self.button_new_maze[2]
                 and self.button_new_maze[1] <= y <= self.button_new_maze[3]
             ):
-                from ..utils import new_maze
                 heap = new_maze(new_seed=True)[0]
 
                 self.data.parse(heap)
