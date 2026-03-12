@@ -1,7 +1,7 @@
 from typing import Tuple, TypedDict
 
 from mazegen.generation import MazeGenerator
-from solver import solver_heap
+from mazegen.solver import solver_heap
 from exception import ConfigFileError, PathNotFound
 
 

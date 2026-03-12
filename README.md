@@ -13,16 +13,18 @@ A-Maze-Ing is a maze generator, solver, and visualizer built for the 42 curricul
 - `Pillow` (for image scaling)
 - MLX Python wheel (included): `lib/mlx-2.2-py3-none-any.whl`
 
-Install dependencies:
+Install dependencies Manualy:
 ```bash
 pip install Pillow
 pip install lib/mlx-2.2-py3-none-any.whl
 ```
+### Note:
+The program will install the dependencies by itself with make run or make build, and create a virtual environement.
 
 ## Quickstart
 Run the visualizer from the repo root:
 ```bash
-PYTHONPATH=src python a_maze_ing.py config.txt
+make run
 ```
 
 This will:
@@ -68,7 +70,7 @@ maze = MazeGenerator(width=25, height=25, perfect=True, seed_input="42").maze
 
 ## Tests
 ```bash
-PYTHONPATH=src pytest
+make test
 ```
 
 ## Credits

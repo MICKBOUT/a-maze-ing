@@ -2,9 +2,10 @@ import random
 import os
 import time
 
+from .solver import solver_heap
+
 
 class MazeGenerator:
-
     def __init__(
       self, width: int, height: int, perfect: bool, seed_input: str = ""
     ) -> None:
@@ -138,7 +139,7 @@ class MazeGenerator:
             if candidate:
                 rm_wall(row, col, random.choice(candidate))
 
-    def generator(self, seed_input: str) -> list[list[int]]:
+    def generator(self, seed_input: str) -> None:
         if not seed_input:
             try:
                 seed_input = str(int.from_bytes(os.urandom(4), "big"))
@@ -162,4 +163,10 @@ class MazeGenerator:
         self._gen_perfect()
         if not self.perfect:
             self._gen_imperfect()
+
+    def get_maze(self) -> list[list[int]]:
         return self.maze
+
+    def get_path(self, entry: tuple[int, int], end: tuple[int, int]
+                 ) -> str | None:
+        return solver_heap(self.maze, entry, end)[0]

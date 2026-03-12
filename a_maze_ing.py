@@ -28,3 +28,13 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+    # import mazegen
+    # obj = mazegen.MazeGenerator(
+    #         width=100,
+    #         height=100,
+    #         perfect=True)
+
+    # maze = obj.get_maze()
+    # path = obj.get_path((0, 0), (99, 99))
+    # print(path)
