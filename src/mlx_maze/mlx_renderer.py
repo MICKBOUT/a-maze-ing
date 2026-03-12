@@ -194,7 +194,9 @@ class MLXRenderer:
             Path to the PNG file containing the button graphics.
         """
 
-        def scale_box(box: tuple, screen_w: int, screen_h: int) -> tuple:
+        def scale_box(box: tuple[int, int, int, int],
+                      screen_w: int, screen_h: int
+                      ) -> tuple[int, int, int, int]:
             """
             This function return the right box of the button
             depending on the size
@@ -203,16 +205,16 @@ class MLXRenderer:
                 int(box[0] * screen_w / 3840),
                 int(box[1] * screen_h / 2160),
                 int(box[2] * screen_w / 3840),
-                int(box[3] * screen_h / 2160),
+                int(box[3] * screen_h / 2160)
             )
 
-        self.button_new_color = scale_box(
+        self.button_new_color: tuple[int, int, int, int] = scale_box(
             button1_box, self.max_monitor_size[0], self.max_monitor_size[1])
-        self.button_new_maze = scale_box(
+        self.button_new_maze: tuple[int, int, int, int] = scale_box(
             button2_box, self.max_monitor_size[0], self.max_monitor_size[1])
-        self.button_show_path = scale_box(
+        self.button_show_path: tuple[int, int, int, int] = scale_box(
             button3_box, self.max_monitor_size[0], self.max_monitor_size[1])
-        self.button_show_heap = scale_box(
+        self.button_show_heap: tuple[int, int, int, int] = scale_box(
             button4_box, self.max_monitor_size[0], self.max_monitor_size[1])
 
         if self.max_monitor_size == (3840, 2160):

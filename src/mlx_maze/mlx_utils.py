@@ -2,6 +2,14 @@ from random import randint
 from pathlib import Path
 from PIL import Image
 from enum import Enum
+from typing import Any, TypedDict
+
+
+class MazeFileData(TypedDict):
+    maze_data: list[list[int]]
+    start: tuple[int, int]
+    end: tuple[int, int]
+    path: str
 
 
 class MazeData:
@@ -31,13 +39,13 @@ class MazeData:
         All values are stored as attributes of the instance.
         """
         parsed = read_file(filename)
-        self.heap = heap
-        self.maze = parsed["maze_data"]
-        self.height = len(self.maze)
-        self.width = len(self.maze[0])
-        self.start = parsed["start"]
-        self.end = parsed["end"]
-        self.path = parsed["path"]
+        self.maze: list[list[int]] = parsed["maze_data"]
+        self.heap: list[tuple[int, int]] = heap
+        self.height: int = len(self.maze)
+        self.width: int = len(self.maze[0])
+        self.start: tuple[int, int] = parsed["start"]
+        self.end: tuple[int, int] = parsed["end"]
+        self.path: str = parsed["path"]
 
 
 def create_colors() -> dict[str, list[int]]:
@@ -67,7 +75,7 @@ def create_colors() -> dict[str, list[int]]:
 
 
 def rescale_image(filename: str,
-                  new_size: tuple[int, int]) -> tuple:
+                  new_size: tuple[int, int]) -> tuple[Any, str]:
     """
     Resize an image and save it into the rescaled assets directory.
 
@@ -96,7 +104,7 @@ def rescale_image(filename: str,
     return resized, str(output_path)
 
 
-def read_file(file_name: str = "output_maze.txt") -> dict:
+def read_file(file_name: str = "output_maze.txt") -> MazeFileData:
     """
     Read and parse a maze description file.
 
@@ -117,10 +125,16 @@ def read_file(file_name: str = "output_maze.txt") -> dict:
     with open(file_name, 'r') as file:
         data = [line.strip() for line in file]
 
+    start_vals: tuple[int, ...] = tuple(int(n) for n in data[-3].split(","))
+    end_vals: tuple[int, ...] = tuple(int(n) for n in data[-2].split(","))
+
+    start = (start_vals[0], start_vals[1])
+    end = (end_vals[0], end_vals[1])
+
     return {
         "maze_data": [[int(c, 16) for c in line] for line in data[:-4]],
-        "start": tuple([int(n) for n in data[-3].split(sep=",")]),
-        "end": tuple([int(n) for n in data[-2].split(sep=",")]),
+        "start": start,
+        "end": end,
         "path": data[-1]
     }
 

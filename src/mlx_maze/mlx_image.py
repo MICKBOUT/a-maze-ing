@@ -277,7 +277,8 @@ class MazeImage(MLXImage):
             )
 
     def show_heap(self, sample: int,
-                  put_img: Callable, do_sync: Callable | None = None,
+                  put_img: Callable[[], None],
+                  do_sync: Callable[[], None] | None = None,
                   erase: bool = False) -> None:
         """
         Display or erase the heap exploration animation.
