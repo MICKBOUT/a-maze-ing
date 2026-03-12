@@ -1,10 +1,21 @@
-from typing import Any
+from typing import Optional, Tuple, TypedDict
 
 from .mazegen.generation import MazeGenerator
 from .solver import solver_heap
 from .exception import ConfigFileError, PathNotFound
 
-config_dict = {
+
+class MazeConfig(TypedDict):
+    width: int
+    height: int
+    entry: Tuple[int, int]
+    exit: Tuple[int, int]
+    output_file: str
+    perfect: bool
+    seed: Optional[str]
+
+
+config_dict: MazeConfig = {
     "width": 75,
     "height": 50,
     "entry": (37, 25),
@@ -15,7 +26,7 @@ config_dict = {
 }
 
 
-def validate_data(config_dict: dict) -> None:
+def validate_data(config_dict: MazeConfig) -> None:
     if config_dict["entry"] == config_dict["exit"]:
         raise ConfigFileError("Entry and Exit can not be on the same cell")
     if config_dict["width"] < 7:
@@ -38,10 +49,10 @@ def validate_data(config_dict: dict) -> None:
 
 def write_file(
         maze: list[list[int]],
-        start: Any,
-        end: Any,
+        start: Tuple[int, int],
+        end: Tuple[int, int],
         path: str,
-        file: Any) -> Any:
+        file: str) -> str:
     """
     Write the given 2-D integer maze to a text file.
     Each row of the maze is written on its own line; each cell is formatted
@@ -83,13 +94,12 @@ def write_file(
             line += f"{str(end[0])},{str(end[1])}\n"
             line += path
             f.write("".join(str(line)))
-    except Exception as e:
-        print(e)
-        exit()
+    except Exception:
+        raise ConfigFileError(f"Unable to write in the file '{file}'")
     return file
 
 
-def load_file(file_name: str, config_dict: dict) -> None:
+def load_file(file_name: str, config_dict: MazeConfig) -> None:
     """
     Load configuration parameters from a file and update the provided
     configuration dictionary accordingly. The file is expected to contain lines
@@ -124,12 +134,18 @@ def load_file(file_name: str, config_dict: dict) -> None:
                 variable = variable.lower()
 
                 if variable in {"width", "height"}:
-                    config_dict[variable] = int(data)
+                    if variable == "width":
+                        config_dict["width"] = int(data)
+                    else:
+                        config_dict["height"] = int(data)
                 elif variable in {"entry", "exit"}:
                     x, y = data.split(',')
-                    config_dict[variable] = (int(x), int(y))
+                    if variable == "entry":
+                        config_dict["entry"] = (int(x), int(y))
+                    else:
+                        config_dict["exit"] = (int(x), int(y))
                 elif variable == "output_file":
-                    config_dict[variable] = data
+                    config_dict["output_file"] = data
                 elif variable == "perfect":
                     if data.lower() in {"true", 1, "yes", "y"}:
                         config_dict["perfect"] = True
@@ -148,7 +164,7 @@ def load_file(file_name: str, config_dict: dict) -> None:
 
 
 def new_maze(config_file: str = "config.txt", new_seed: bool = False
-             ) -> Any:
+             ) -> tuple[list[int], str]:
     """
     Generate a new maze based on the configuration parameters specified in a
     given configuration file. The function reads the configuration parameters
