@@ -1,5 +1,8 @@
+*This project has been created as part of the 42 curriculum by mboutte and pdauga.*
+
 # A-Maze-Ing
 
+## Description
 A-Maze-Ing is a maze generator, solver, and visualizer built for the 42 curriculum. It generates mazes with an embedded """42""" logo, solves them with A*, and renders the result in an MLX window.
 
 ## Features
@@ -21,7 +24,7 @@ pip install lib/mlx-2.2-py3-none-any.whl
 ### Note:
 The program will install the dependencies by itself with make run or make build, and create a virtual environement.
 
-## Quickstart
+## Instructions
 Run the visualizer from the repo root:
 ```bash
 make run
@@ -73,5 +76,7 @@ maze = MazeGenerator(width=25, height=25, perfect=True, seed_input="42").maze
 make test
 ```
 
-## Credits
-Created as part of the 42 curriculum by mboutte and pdauga.
+## Resources
+- Maze generation: https://en.wikipedia.org/wiki/Maze_generation_algorithm
+- A* algorithm: https://en.wikipedia.org/wiki/A*_search_algorithm
+- MLX documentation: https://harm-smits.github.io/42docs/libs/minilibx
