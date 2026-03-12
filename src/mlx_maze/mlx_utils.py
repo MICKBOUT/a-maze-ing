@@ -23,7 +23,6 @@ class MazeData:
         """
         Initialize the maze data by parsing the maze file.
         """
-        print(heap)
         self.parse(heap, filename)
 
     def parse(self, heap: list[tuple[int, int]], filename: str) -> None:
