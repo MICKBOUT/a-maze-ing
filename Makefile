@@ -24,6 +24,9 @@ MYPY_FLAGS = \
 	--disallow-untyped-defs		\
 	--check-untyped-defs
 
+
+all: run
+
 .ensure-uv:
 	@if ! command -v uv > /dev/null 2>&1 && [ ! -f $(UV) ]; then \
 		echo "$(BLUE)uv not found, installing...$(NC)"; \
