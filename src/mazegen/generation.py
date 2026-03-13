@@ -6,6 +6,30 @@ from .solver import solver_heap
 
 
 class MazeGenerator:
+    """
+
+    A class to generate a maze with a 42 logo in the center. The maze can be
+    perfect (no loops) or imperfect (with loops). The maze is represented as
+    a 2D list of integers, where each integer encodes the presence of walls
+    in the four cardinal directions (North, East, South, West) using a 4-bit
+    binary representation. The class provides methods to generate the maze and
+    to find a path from an entry point to an exit point using a maze-solving
+    algorithm.
+
+    Attributes
+    ----------
+    width : int
+        The width of the maze.
+    height : int
+        The height of the maze.
+    perfect : bool
+        A flag indicating whether the maze should be perfect (no loops) or
+        imperfect (with loops).
+    maze : list[list[int]]
+        A 2D list representing the maze, where each cell contains an integer
+        encoding the presence of walls in the four cardinal directions.
+
+    """
     def __init__(
       self, width: int, height: int, perfect: bool, seed_input: str = ""
     ) -> None:

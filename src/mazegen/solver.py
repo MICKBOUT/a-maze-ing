@@ -8,20 +8,35 @@ def solver_heap(
         start: tuple[int, int],
         end: tuple[int, int]) -> tuple[str | None, list[tuple[int, int]]]:
     """
-    Solves a maze using the A* algorithm and returns the path as a string of
-    directions.
+    Solve the maze using a heuristic-based search algorithm (A*).
+    The function takes a maze represented as a 2D list of integers, the entry
+    and exit points as tuples of coordinates. It returns a tuple containing the
+    solution path as a string of directions (N, E, S, W) or None if no path is
+    found, and a list of coordinates representing the progress stack from the
+    maze-solving process. The algorithm uses a priority queue (min-heap) to
+    explore the maze, prioritizing paths that are estimated to be closer to the
+    exit point based on the Manhattan distance heuristic. If the entry or exit
+    points are invalid (e.g., outside the maze boundaries or on a cell with the
+    42 logo), a MisplaceCell exception is raised with an appropriate message.
 
-    Parameters:
-        maze (list[list[int]]): The maze represented as a 2D list of integers,
-        where each integer encodes wall information.
-        start (tuple[int, int], optional): The starting position in the maze
-        as (x, y). Defaults to (0, 0).
-        end (tuple[int, int], optional): The ending position in the maze as
-        (x, y). If None, must be provided by the caller.
+    Parameters
+    ----------
+    maze : list[list[int]]
+        A 2D list representing the maze, where each cell contains an integer
+        encoding the presence of walls in the four cardinal directions.
+    start : tuple[int, int]
+        A tuple representing the coordinates (x, y) of the entry point in the
+        maze.
+    end : tuple[int, int]
+        A tuple representing the coordinates (x, y) of the exit point in the
+        maze.
 
-    Returns:
-        str: A string representing the path from start to end using
-        'N', 'E', 'S', 'W' for directions.
+    Returns
+    -------
+    tuple[str | None, list[tuple[int, int]]]
+        A tuple containing the solution path as a string of directions
+        (N, E, S, W) or None if no path is found, and a list of coordinates
+        representing the progress stack from the maze-solving process.
     """
     coeff = 5
 

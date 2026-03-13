@@ -27,6 +27,34 @@ config_dict: MazeConfig = {
 
 
 def validate_data(config_dict: MazeConfig) -> None:
+    """
+    Validate the configuration parameters for maze generation and solving.
+    This function checks the validity of the configuration parameters provided
+    in the config_dict. It ensures that the entry and exit points are not the
+    same, that the width and height of the maze are sufficient for the logo
+    '42', and that the entry and exit points are within the bounds of the maze
+    dimensions. If any of the validation checks fail, a ConfigFileError is
+    raised with an appropriate error message indicating the specific issue with
+    the configuration parameters.
+
+    Parameters
+    ----------
+    config_dict : MazeConfig
+        A dictionary containing the configuration parameters for maze
+        generation and solving. The expected keys in the dictionary include
+        "width", "height", "entry", "exit", "output_file", "perfect", and
+        "seed". The function validates the values associated with these keys to
+        ensure they meet the necessary criteria for successful maze generation
+        and solving.
+    Raises
+    ------
+    ConfigFileError
+        If any of the validation checks fail, such as if the entry and exit
+        points are the same, if the width or height of the maze is too small
+        for the logo '42', or if the entry or exit points are outside the
+        bounds of the maze dimensions. The error message will indicate the
+        specific issue with the configuration parameters.
+    """
     if config_dict["entry"] == config_dict["exit"]:
         raise ConfigFileError("Entry and Exit can not be on the same cell")
     if config_dict["width"] < 7:
@@ -54,33 +82,43 @@ def write_file(
         path: str,
         file: str) -> str:
     """
-    Write the given 2-D integer maze to a text file.
-    Each row of the maze is written on its own line; each cell is formatted
-    using uppercase hexadecimal (format(cell, "X")) with no separators.
-    After all rows are written a blank line is added, then the start
-    coordinates as "row,col" on a line, the end coordinates as "row,col"
-    on the next line, and finally the path string appended as-is.
+    Write the maze configuration and solution path to a specified output file.
+    The function takes the maze as a 2D list of integers, the entry and exit
+    points as tuples of coordinates, the solution path as a string, and the
+    output file name. It formats the maze and solution information into a
+    string and writes it to the specified file. If there is an error during the
+    file writing process, a ConfigFileError is raised with details about the
+    issue.
 
     Parameters
     ----------
     maze : list[list[int]]
-        2-D list representing the maze grid (rows of integer cells).
-    start : tuple[int, int]
-        (row, column) coordinates of the start cell.
-        If None, defaults to (0, 0).
-    end : tuple[int, int]
-        (row, column) coordinates of the end cell. If None, defaults to
-        (len(maze) - 1, len(maze[0]) - 1).
+        A 2D list representing the maze, where each element is an integer
+        indicating the type of cell (e.g., wall, path).
+    start : Tuple[int, int]
+        A tuple representing the coordinates of the entry point in the maze
+        (x, y).
+    end : Tuple[int, int]
+        A tuple representing the coordinates of the exit point in the maze
+        (x, y).
     path : str
-        Arbitrary string describing or representing the path; written verbatim
-        after the coordinates. Defaults to "Placer_holder".
+        A string representing the solution path through the maze, typically
+        using characters to indicate directions (e.g., 'N', 'S', 'E', 'W').
     file : str
-        Filesystem path to write the output to. Defaults to "output_maze.txt".
+        The name of the output file where the maze and solution will be
+        written.
 
     Returns
     -------
     str
-        The path of the file that was written (the value of file_output).
+        The name of the output file where the maze and solution were written.
+    Raises
+    ------
+    ConfigFileError
+        If there is an error during the file writing process, such as issues
+        with file permissions, invalid file name, or other I/O errors. The
+        error message will include details about the specific issue
+        encountered.
     """
     try:
         with open(file, 'w') as f:
@@ -101,28 +139,29 @@ def write_file(
 
 def load_file(file_name: str, config_dict: MazeConfig) -> None:
     """
-    Load configuration parameters from a file and update the provided
-    configuration dictionary accordingly. The file is expected to contain lines
-    in the format "KEY=VALUE", where KEY is a configuration parameter and VALUE
-    is its corresponding value. Lines that are empty or start with '#' are
-    ignored. The function updates the config_dict with the values from the
-    file, converting them to the appropriate types based on the expected
-    configuration parameters.
+    Load configuration parameters from a text file into a dictionary.
+    The function reads the specified file line by line, parsing key-value pairs
+    in the format "key=value". It ignores empty lines and lines starting with
+    '#'. The recognized keys are "width", "height", "entry", "exit",
+    "output_file", "perfect", and "seed". The values are processed and stored
+    in the provided config_dict. If the file is not found or if there are
+    parsing errors, a ConfigFileError is raised with details about the issue
+    and the line number where it occurred.
 
     Parameters
     ----------
     file_name : str
         The path to the configuration file to be loaded.
     config_dict : dict
-        A dictionary to be updated with the configuration parameters from the
-        file.
+        A dictionary to store the loaded configuration parameters. The function
+        updates this dictionary with the values read from the file.
     Raises
     ------
     ConfigFileError
-        If there is an error in the configuration file, such as an unrecognized
-        key, invalid value format, or other parsing issues. The error message
-        will include details about the specific issue and the line number where
-        it occurred.
+        If the specified file is not found, or if there are parsing errors such
+        as unrecognized keys, invalid value formats, or other issues. The error
+        message will include details about the specific issue and the line
+        number where it occurred.
     """
     try:
         index = line = None
@@ -172,30 +211,26 @@ def new_maze(config_file: str = "config.txt", new_seed: bool = False
              ) -> tuple[list[tuple[int, int]], str]:
     """
     Generate a new maze based on the configuration parameters specified in a
-    given configuration file. The function reads the configuration parameters
-    from the file, generates a maze using the MazeGenerator class, solves the
-    maze using the solver_heap function, and writes the maze and solution path
-    to an output file. The function returns the progress stack from the
+    configuration file. The function reads the configuration from the specified
+    file, validates the parameters, generates a maze using the MazeGenerator
+    class, and solves the maze using the solver_heap function. The resulting
+    maze, along with the entry and exit points, is then written to an output
+    file. The function returns a tuple containing the progress stack from the
     maze-solving process and the path to the output file.
 
     Parameters
     ----------
     config_file : str, optional
-        The path to the configuration file containing the maze generation and
-        solving parameters. Defaults to "config_file.txt".
+        The path to the configuration file to be loaded. Defaults to
+        "config.txt".
     new_seed : bool, optional
-        If True, the seed value in the configuration will be ignored and set to
-        None, resulting in a new random seed being used for maze generation.
-        Defaults to False.
+        If True, the seed value in the configuration will be ignored and a new
+        maze will be generated with a random seed. Defaults to False.
     Returns
     -------
-    tuple
-        A tuple containing:
-        - progress_stack: A list of tuples representing the progress of the
-            maze solving process.
-        - output_file: A string representing the path to the output file where
-            the maze and solution path have been written.
-
+    tuple[list[tuple[int, int]], str]
+        A tuple containing the progress stack from the maze-solving process and
+        the path to the output file where the maze and solution are written.
     Raises
     ------
     ConfigFileError
@@ -203,6 +238,9 @@ def new_maze(config_file: str = "config.txt", new_seed: bool = False
         key, invalid value format, or other parsing issues. The error message
         will include details about the specific issue and the line number where
         it occurred.
+    PathNotFound
+        If the maze-solving algorithm fails to find a path from the entry point
+        to the exit point in the generated maze.
     """
 
     load_file(config_file, config_dict)
