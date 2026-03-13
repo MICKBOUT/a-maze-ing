@@ -1,4 +1,4 @@
 from .generation import MazeGenerator
 from typing import Any
 
-__all__: Any = [MazeGenerator]
+__all__: Any = ["MazeGenerator"]

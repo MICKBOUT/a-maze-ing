@@ -23,7 +23,6 @@ class ConfigFileError(Exception):
 
         if line is not None:
             self.message += f" in '{line}'"
-        super().__init__(self.message)
 
         if line_nb is not None:
             self.message += f" (line {line_nb})"

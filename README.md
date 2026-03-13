@@ -1,47 +1,87 @@
+*This project has been created as part of the 42 curriculum by mboutte and pdauga.*
 
-*This project has been created as part of the 42 curriculum by mboutte, pdauga*
+# A-Maze-Ing
 
-# Genaration algorithme
+## Description
+A-Maze-Ing is a maze generator, solver, and visualizer built for the 42 curriculum. It generates mazes with an embedded """42""" logo, solves them with A*, and renders the result in an MLX window.
 
-Generate a perfect maze represented as a 2D grid of wall-bit masks.
+## Features
+- Perfect or imperfect maze generation (randomized DFS + optional extra openings).
+- A* solver that returns a directional path string.
+- MLX visualizer with controls for new mazes, color refresh, and path/heap display.
+- Deterministic generation via seed.
 
-Each cell is an integer bitmask with four wall bits (1 = wall present):
-- 1 (LSB): north
-- 2: east
-- 4: south
-- 8: west
+## Requirements
+- Python 3.7+
+- `Pillow` (for image scaling)
+- MLX Python wheel (included): `lib/mlx-2.2-py3-none-any.whl`
 
-The algorithm uses a randomized depth-first search (iterative
-recursive-backtracker) to carve passages between cells. The grid is
-initialized with all walls present (value 15) for every cell; when a
-passage between two adjacent cells is created the corresponding bits in
-both cells are cleared.
+Install dependencies Manualy:
+```bash
+pip install Pillow
+pip install lib/mlx-2.2-py3-none-any.whl
+```
+### Note:
+The program will install the dependencies by itself with make run or make build, and create a virtual environement.
 
-## Parameters
-Height : int\
-Number of rows in the maze (must be a positive integer).
+## Instructions
+Run the visualizer from the repo root:
+```bash
+make run
+```
 
-Width : int\
-Number of columns in the maze (must be a positive integer).
+This will:
+- Read your configuration.
+- Generate a maze.
+- Solve it.
+- Write the maze + solution to `OUTPUT_FILE`.
+- Open the MLX window.
 
-## Returns
-list[list[int]]
-    A height-by-width 2D list of integers where each integer encodes the
-    walls remaining around that cell using the bit layout described above.
+## Configuration
+Edit `config.txt` (keys are case-insensitive):
+- `WIDTH` and `HEIGHT`: maze size (min 7x5 due to the 42 logo).
+- `ENTRY`: start coordinates `x,y`.
+- `EXIT`: end coordinates `x,y`.
+- `OUTPUT_FILE`: output path.
+- `PERFECT`: `True` or `False`.
+- `SEED`: empty for random, or a fixed seed string for determinism.
 
-## Notes
-- The starting cell is selected uniformly at random.
-- The function prints each row of the generated grid to stdout as a list
-    of integers before returning the grid.
-- The function relies on the standard random module being available.
+Constraints:
+- Entry and exit must be inside the grid and not on the """42""" logo cells.
+- Entry and exit must be different.
 
-## Examples
-grid = gen(5, 7)
+## Output Format
+The output file contains:
+- Hex-encoded maze rows (one row per line).
+- A blank line.
+- The entry coordinates (`row,col`).
+- The exit coordinates (`row,col`).
+- The path string as a sequence of `N`, `E`, `S`, `W`.
+
+Each cell is a 4-bit wall mask:
+- `1`: North
+- `2`: East
+- `4`: South
+- `8`: West
+
+## Using The Generator In Python
+```python
+from mazegen import MazeGenerator
+
+maze = MazeGenerator(width=25, height=25, perfect=True, seed_input="42").maze
+```
+
+## Tests
+```bash
+make test
+```
+
+## Contribution
+- mboutte: A* solver, config parsing, maze generation.
+- pdauga: MLX visualization, UI design.
 
 
-Bit Direction|
--------------|
-0 North    1 |
-1 East     2 |
-2 South    4 |
-3 West     8 |
+## Resources
+- Maze generation: https://en.wikipedia.org/wiki/Maze_generation_algorithm
+- A* algorithm: https://en.wikipedia.org/wiki/A*_search_algorithm
+- MLX documentation: https://harm-smits.github.io/42docs/libs/minilibx

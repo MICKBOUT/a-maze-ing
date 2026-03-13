@@ -1,7 +1,7 @@
 from typing import Tuple, TypedDict
 
 from mazegen.generation import MazeGenerator
-from solver import solver_heap
+from mazegen.solver import solver_heap
 from exception import ConfigFileError, PathNotFound
 
 
@@ -43,7 +43,7 @@ def validate_data(config_dict: MazeConfig) -> None:
     x_end, y_end = config_dict["exit"]
     if not (0 <= y_end < config_dict["height"]):
         raise ConfigFileError("Exit outside the maze")
-    if not (0 <= x_end <= config_dict["width"]):
+    if not (0 <= x_end < config_dict["width"]):
         raise ConfigFileError("Exit outside the maze")
 
 
@@ -128,8 +128,9 @@ def load_file(file_name: str, config_dict: MazeConfig) -> None:
         index = line = None
         with open(file_name, "r") as file:
             for index, line in enumerate(
-                    [line.strip() for line in file
-                     if line.strip() and line.strip()[0] != '#']):
+                    [line.strip() for line in file], start=1):
+                if not line or line[0] == '#':
+                    continue
                 variable, data = line.split("=")
                 variable = variable.lower()
 
@@ -150,9 +151,9 @@ def load_file(file_name: str, config_dict: MazeConfig) -> None:
                     config_dict["output_file"] = data
 
                 elif variable == "perfect":
-                    if data.lower() in {"true", 1, "yes", "y"}:
+                    if data.lower() in {"true", '1', "yes", "y"}:
                         config_dict["perfect"] = True
-                    elif data.lower() in {"false", 0, "no", "n"}:
+                    elif data.lower() in {"false", '0', "no", "n"}:
                         config_dict["perfect"] = False
                     else:
                         raise Exception("bool not found")
