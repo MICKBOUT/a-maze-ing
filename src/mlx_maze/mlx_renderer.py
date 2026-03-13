@@ -20,12 +20,15 @@ class MLXRenderer:
 
     def __init__(self, heap: list[tuple[int, int]], filename: str) -> None:
         """
-        Initialize the MLX window and prepare all rendering components.
+        Initialize the MLX window, load the maze data, and prepare all
+        rendering components.
 
         Parameters
         ----------
-        heap : list of tuple[int, int]
+        heap : list[tuple[int, int]]
             Sequence of visited maze cells used for heap visualization.
+        filename : str
+            Path to the maze file used to initialize MazeData.
         """
         self.data = MazeData(heap, filename)
 
@@ -74,10 +77,45 @@ class MLXRenderer:
 
         # EVENTS
         def on_keypress(keycode: int, param: Any) -> None:
+            """
+            Handle keyboard events for the MLX window.
+
+            Parameters
+            ----------
+            keycode : int
+                Key code received from MLX. The Escape key (65307)
+                closes the window.
+            param : Any
+                Unused MLX callback parameter.
+            """
             if keycode == 65307:
                 self.destroy()
 
         def on_mouse(button: int, x: int, y: int, param: Any) -> None:
+            """
+            Handle mouse click events and trigger the corresponding UI actions.
+
+            Parameters
+            ----------
+            button : int
+                Mouse button identifier. Only button 1 (left click) is handled.
+            x, y : int
+                Cursor position in window coordinates at the moment
+                of the click.
+            param : Any
+                Unused MLX callback parameter.
+
+            Notes
+            -----
+            This function detects which button region was clicked and performs:
+            - Color regeneration
+            - Maze regeneration
+            - Path display toggle
+            - Heap animation toggle
+
+            It also manages redraws and synchronization through internal
+            callbacks.
+            """
             # New Color Button
             if button != 1:
                 return
@@ -187,21 +225,34 @@ class MLXRenderer:
 
     def compute_buttons(self) -> str:
         """
-        Compute the scaled button hitboxes and return the appropriate
-        button image.
+        Compute and scale the clickable button regions based on the monitor
+        resolution, then return the path to the appropriate PNG image
+        containing the button graphics.
 
         Returns
         -------
         str
-            Path to the PNG file containing the button graphics.
+            Path to the PNG file used for rendering the buttons.
         """
 
         def scale_box(box: tuple[int, int, int, int],
                       screen_w: int, screen_h: int
                       ) -> tuple[int, int, int, int]:
             """
-            This function return the right box of the button
-            depending on the size
+            Scale a button hitbox from a 3840×2160 reference resolution to
+            the current monitor size.
+
+            Parameters
+            ----------
+            box : tuple[int, int, int, int]
+                Original button coordinates (x1, y1, x2, y2).
+            screen_w, screen_h : int
+                Current monitor resolution.
+
+            Returns
+            -------
+            tuple[int, int, int, int]
+                Scaled button coordinates.
             """
             return (
                 int(box[0] * screen_w / 3840),

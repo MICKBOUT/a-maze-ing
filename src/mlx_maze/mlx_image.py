@@ -163,7 +163,7 @@ class MazeImage(MLXImage):
             Bitmask representing the cell's walls.
         y, x : int
             Cell coordinates in the maze grid.
-        background_color : tuple or None
+        background_color : list or None
             Optional RGBA fill for the cell interior.
         """
         px = x * self.cell_size + self.offset_x
@@ -254,6 +254,9 @@ class MazeImage(MLXImage):
         ----------
         color : Colors or tuple, optional
             Path color. Defaults to white unless BACKGROUND is specified.
+            in the case where background is specified,
+            if the background is in Colors: background color will be used.
+
         """
         current_x, current_y = self.data.start
         if color == Colors.BACKGROUND:
@@ -280,16 +283,21 @@ class MazeImage(MLXImage):
                   do_sync: Callable[[], None] | None = None,
                   erase: bool = False) -> None:
         """
-        Display or erase the heap exploration animation.
+        Animate the exploration heap by progressively coloring visited cells.
 
         Parameters
         ----------
         sample : int
             Number of heap elements to draw per frame.
+        put_img : Callable[[], None]
+            Callback used to display the updated image after each batch.
+        do_sync : Callable[[], None], optional
+            Optional callback to synchronize the display (e.g., mlx_loop_hook).
         erase : bool, optional
-            If True, cells are redrawn using the background color.
+            If True, cells are redrawn using the maze background color.
+            If False, cells are colored using a fading gradient computed
+            by `get_faded_path`.
         """
-
         i, heap = 0, self.data.heap[:-1]
         while i < len(heap):
             j = 0
@@ -308,7 +316,15 @@ class MazeImage(MLXImage):
                 do_sync()
 
     def update_colors(self) -> None:
-        """Regenerate and apply new random background and wall colors."""
+        """
+        Regenerate the entire color palette and update the maze's
+        background and wall colors accordingly.
+
+        Notes
+        -----
+        This refreshes *all* entries in the internal color dictionary,
+        not only the background and wall colors.
+        """
         self.colors.update(create_colors())
         self.background_color = self.colors["background"]
         self.wall_color = self.colors["wall"]
@@ -316,19 +332,22 @@ class MazeImage(MLXImage):
     @staticmethod
     def get_faded_path(current: int, end: int) -> list[int]:
         """
-        Compute a gradient color for path animation.
+        Compute a fading RGBA color used for heap exploration animation.
+
+        The color transitions linearly from yellow (start of heap)
+        to pink (end of heap).
 
         Parameters
         ----------
         current : int
-            Current step index.
+            Current index in the heap traversal.
         end : int
-            Total number of steps.
+            Total number of heap elements.
 
         Returns
         -------
-        tuple
-            RGBA color interpolated between red and yellow.
+        list[int]
+            A 4‑component RGBA color representing the interpolated value.
         """
         start_color, end_color = [255, 255, 0], [255, 0, 127]
         if end == 0:

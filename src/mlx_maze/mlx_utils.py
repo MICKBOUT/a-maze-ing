@@ -21,15 +21,31 @@ class MazeData:
     """
     def __init__(self, heap: list[tuple[int, int]], filename: str) -> None:
         """
-        Initialize the maze data by parsing the maze file.
+        Initialize the MazeData object and load maze information.
+
+        Parameters
+        ----------
+        heap : list[tuple[int, int]]
+            Sequence of visited cells used for heap visualization.
+        filename : str
+            Path to the maze file to parse.
         """
         self.parse(heap, filename)
 
     def parse(self, heap: list[tuple[int, int]], filename: str) -> None:
         """
-        Parse the maze file and extract structural information.
+        Load maze structure and metadata from a maze file.
 
-        The method loads:
+        Parameters
+        ----------
+        heap : list[tuple[int, int]]
+            Sequence of visited cells provided externally.
+        filename : str
+            Path to the maze file to read.
+
+        Notes
+        -----
+        This method loads:
         - the maze grid (hex-encoded wall bitmasks),
         - maze dimensions,
         - start and end coordinates,
@@ -49,14 +65,15 @@ class MazeData:
 
 def create_colors() -> dict[str, list[int]]:
     """
-    Generate randomized RGBA colors for maze rendering.
+    Generate randomized RGBA colors used for maze rendering.
 
     Returns
     -------
-    dict
-        Dictionary containing two RGBA lists:
-        - "background": bright base color
-        - "wall": darker variant derived from the background
+    dict[str, list[int]]
+        Dictionary containing:
+        - "background": a bright random RGB color with full opacity,
+        - "wall": a darker color obtained by subtracting a random
+          offset from each RGB component of the background.
     """
     colors = {
         "background": [
@@ -114,13 +131,21 @@ def read_file(file_name: str = "output_maze.txt") -> MazeFileData:
 
     Returns
     -------
-    dict
-        Parsed maze data containing:
-        - "maze_data": 2D list of wall bitmasks
-        - "start": (x, y) start coordinates
-        - "end": (x, y) end coordinates
-        - "path": string representing the solution path
+    MazeFileData
+        Parsed maze information containing:
+        - "maze_data": 2D list of hex-encoded wall bitmasks,
+        - "start": (x, y) start coordinates,
+        - "end": (x, y) end coordinates,
+        - "path": solution path string.
+
+    Notes
+    -----
+    The last three lines of the file contain:
+    - start coordinates,
+    - end coordinates,
+    - solution path.
     """
+
     with open(file_name, 'r') as file:
         data = [line.strip() for line in file]
 
