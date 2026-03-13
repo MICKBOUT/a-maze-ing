@@ -70,7 +70,7 @@ lint: install
 
 lint-strict: install
 	@$(FLAKE) . --exclude $(VENV)
-	@$(MYPY) $(MYPY_FLAGS) --strict src
+	@$(MYPY) --strict src
 
 clean:
 	@echo "Cleaning project..."
