@@ -174,15 +174,9 @@ class MazeGenerator:
             print("Seed used:", seed_input)
         random.seed(seed_input)
         if self.height < 5:
-            print(ValueError(
-                "\033[0;31mError\033[0m"
-                ": Height need to be >= 5 for the 42 logo"))
-            exit(1)
+            raise ValueError("height too smale for a maze w/ logo")
         if self.width < 7:
-            print(ValueError(
-                "\033[0;31mError\033[0m"
-                ": Width need to be >= 7 for the 42 logo"))
-            exit(1)
+            raise ValueError("width too smale for a maze w/ logo")
 
         self._gen_perfect()
         if not self.perfect:

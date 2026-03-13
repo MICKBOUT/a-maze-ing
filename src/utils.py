@@ -170,7 +170,7 @@ def load_file(file_name: str, config_dict: MazeConfig) -> None:
                     [line.strip() for line in file], start=1):
                 if not line or line[0] == '#':
                     continue
-                variable, data = line.split("=")
+                variable, data = line.split("=", maxsplit=1)
                 variable = variable.lower()
 
                 if variable in {"width", "height"}:
