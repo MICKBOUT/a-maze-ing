@@ -158,6 +158,11 @@ class MLXRenderer:
                         erase=True
                     )
 
+                    if self.maze_img.drawn_path:
+                        self.maze_img.draw_path()
+
+                    self.put_image(self.maze_img, 0, 0)
+
         self.mlx.mlx_hook(self.win_ptr, 2, 1, on_keypress, None)
         self.mlx.mlx_hook(self.win_ptr, 33, 0, lambda x: self.destroy(), None)
         self.mlx.mlx_mouse_hook(self.win_ptr, on_mouse, None)

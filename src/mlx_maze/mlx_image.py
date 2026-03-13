@@ -43,8 +43,7 @@ class MLXImage:
             Top-left corner.
         x2, y2 : int
             Bottom-right corner.
-        color : Colors or tuple
-            RGBA color or enum member.
+        color : list RGBA color
         """
 
         if x2 <= x1 or y2 <= y1:
@@ -66,7 +65,7 @@ class MLXImage:
 
         Parameters
         ----------
-        color : tuple
+        color : list
             RGBA color.
         """
 
@@ -142,7 +141,7 @@ class MazeImage(MLXImage):
 
         Parameters
         ----------
-        color : Colors or tuple
+        color : Colors or list
             RGBA color or enum member.
         """
 
@@ -331,7 +330,7 @@ class MazeImage(MLXImage):
         tuple
             RGBA color interpolated between red and yellow.
         """
-        start_color, end_color = [255, 0, 0], [255, 255, 0]
+        start_color, end_color = [255, 255, 0], [255, 0, 127]
         if end == 0:
             return start_color + [255]
         start_r, start_g, start_b = start_color
