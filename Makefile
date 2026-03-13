@@ -36,7 +36,7 @@ all: run
 
 $(VENV): .ensure-uv
 	@echo "Creating virtual environment..."
-	@$(UV) venv $(VENV)
+	@$(UV) venv $(VENV) --clear
 	@echo "Virtual environment ready"
 
 build: .ensure-uv $(OUTPUT_FILE)
