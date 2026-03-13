@@ -75,11 +75,7 @@ class MLXRenderer:
         # EVENTS
         def on_keypress(keycode: int, param: Any) -> None:
             if keycode == 65307:
-                self.mlx.mlx_destroy_image(self.mlx_ptr, self.maze_img.img)
-                self.mlx.mlx_destroy_image(self.mlx_ptr, self.button_ptr)
-                self.mlx.mlx_destroy_window(self.mlx_ptr, self.win_ptr)
-                self.mlx.mlx_release(self.mlx_ptr)
-                self.mlx.mlx_loop_exit(self.mlx_ptr)
+                self.destroy()
 
         def on_mouse(button: int, x: int, y: int, param: Any) -> None:
             # New Color Button
@@ -163,6 +159,7 @@ class MLXRenderer:
                     )
 
         self.mlx.mlx_hook(self.win_ptr, 2, 1, on_keypress, None)
+        self.mlx.mlx_hook(self.win_ptr, 33, 0, lambda x: self.destroy(), None)
         self.mlx.mlx_mouse_hook(self.win_ptr, on_mouse, None)
 
     def put_image(self, img: MLXImage, x: int, y: int) -> None:
@@ -227,3 +224,10 @@ class MLXRenderer:
 
             rescale_image("assets/buttons_copy.png", new_image_size)
             return "assets/rescaled/buttons.png"
+
+    def destroy(self) -> None:
+        self.mlx.mlx_destroy_image(self.mlx_ptr, self.maze_img.img)
+        self.mlx.mlx_destroy_image(self.mlx_ptr, self.button_ptr)
+        self.mlx.mlx_destroy_window(self.mlx_ptr, self.win_ptr)
+        self.mlx.mlx_release(self.mlx_ptr)
+        self.mlx.mlx_loop_exit(self.mlx_ptr)
