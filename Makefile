@@ -1,8 +1,7 @@
-PYTHON      = python3
+UV          = uv
 VENV        = .venv
 VENV_BIN    = $(VENV)/bin
 V_PYTHON    = $(VENV_BIN)/python
-V_PIP       = $(V_PYTHON) -m pip
 
 MAIN        = a_maze_ing.py
 VERSION     = 1.0.0
@@ -25,30 +24,31 @@ MYPY_FLAGS = \
 	--disallow-untyped-defs		\
 	--check-untyped-defs
 
-$(VENV):
+.ensure-uv:
+	@if ! command -v uv > /dev/null 2>&1; then \
+		echo "uv not found, installing..."; \
+		curl -Lsf https://astral.sh/uv/install.sh | sh; \
+		echo "uv installed"; \
+	fi
+
+$(VENV): .ensure-uv
 	@echo "Creating virtual environment..."
-	@$(PYTHON) -m venv $(VENV)
-	@$(V_PIP) install -q --upgrade pip
+	@$(UV) venv $(VENV)
 	@echo "Virtual environment ready"
 
-build: $(OUTPUT_FILE)
+build: .ensure-uv $(OUTPUT_FILE)
 
 $(OUTPUT_FILE):
 	@echo "Building project..."
-	@rm -rf build_venv
-	@$(PYTHON) -m venv build_venv
-	@. build_venv/bin/activate && \
-		python -m pip install -q build && \
-		python -m build
-	@rm -rf build_venv
+	@$(UV) build
 	@cp dist/$(OUTPUT_FILE) .
 	@echo "Build complete"
 
 install: build $(VENV)
 	@echo "Installing local dependencies..."
-	@$(V_PIP) install -qq $(LOCAL_DEPS)
+	@$(UV) pip install --python $(V_PYTHON) $(LOCAL_DEPS)
 	@echo "Installing project with dependencies..."
-	@$(V_PIP) install -qq -e ".[dev]"
+	@$(UV) pip install --python $(V_PYTHON) -e ".[dev]"
 	@echo "Installation complete"
 
 run: install
@@ -74,11 +74,11 @@ lint-strict: install
 
 clean:
 	@echo "Cleaning project..."
-	@rm -rf $(VENV) build_venv dist $(OUTPUT_FILE)
+	@rm -rf $(VENV) dist $(OUTPUT_FILE)
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
 	@rm -rf .pytest_cache output_maze.txt
 	@rm -rf assets/rescaled
 	@echo "Clean complete"
 
-.PHONY: build install run debug test lint lint-strict clean
+.PHONY: .ensure-uv build install run debug test lint lint-strict clean

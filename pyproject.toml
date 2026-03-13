@@ -36,3 +36,11 @@ packages = ["src/mazegen"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+
+[tool.mypy]
+mypy_path = "src"
+files = ["src"]
+
+[[tool.mypy.overrides]]
+module = "mlx.*"
+ignore_missing_imports = true
