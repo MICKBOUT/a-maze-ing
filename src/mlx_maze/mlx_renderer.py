@@ -271,14 +271,14 @@ class MLXRenderer:
             button4_box, self.max_monitor_size[0], self.max_monitor_size[1])
 
         if self.max_monitor_size == (3840, 2160):
-            return "assets/buttons_copy.png"
+            return "assets/buttons.png"
         else:
             new_image_size = (
                 int((buttons_size[0] * self.max_monitor_size[0])/3840),
                 int((buttons_size[1] * self.max_monitor_size[1])/2160)
             )
 
-            rescale_image("assets/buttons_copy.png", new_image_size)
+            rescale_image("assets/buttons.png", new_image_size)
             return "assets/rescaled/buttons.png"
 
     def destroy(self) -> None:
