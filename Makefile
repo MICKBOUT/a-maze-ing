@@ -1,4 +1,4 @@
-UV          = uv
+UV          = $(HOME)/.local/bin/uv
 VENV        = .venv
 VENV_BIN    = $(VENV)/bin
 V_PYTHON    = $(VENV_BIN)/python
@@ -25,10 +25,10 @@ MYPY_FLAGS = \
 	--check-untyped-defs
 
 .ensure-uv:
-	@if ! command -v uv > /dev/null 2>&1; then \
-		echo "uv not found, installing..."; \
+	@if ! command -v uv > /dev/null 2>&1 && [ ! -f $(UV) ]; then \
+		echo "$(BLUE)uv not found, installing...$(NC)"; \
 		curl -Lsf https://astral.sh/uv/install.sh | sh; \
-		echo "uv installed"; \
+		echo "$(GREEN)uv installed$(NC)"; \
 	fi
 
 $(VENV): .ensure-uv
