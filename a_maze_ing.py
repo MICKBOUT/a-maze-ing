@@ -35,6 +35,6 @@ if __name__ == "__main__":
     #         height=100,
     #         perfect=True)
 
-    # maze = obj.get_maze()
-    # path = obj.get_path((0, 0), (99, 99))
+    # maze_grid = maze.get_maze()
+    # path = maze.get_path((0, 0), (99, 99))
     # print(path)
