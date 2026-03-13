@@ -1,5 +1,5 @@
 import mazegen
-from solver import solver_heap
+from mazegen.solver import solver_heap
 
 
 def test_perfecte_nopath_0() -> None:
