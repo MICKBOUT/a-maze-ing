@@ -6,6 +6,8 @@ V_PYTHON    = $(VENV_BIN)/python
 MAIN        = a_maze_ing.py
 VERSION     = 1.0.0
 OUTPUT_FILE = mazegen-$(VERSION)-py3-none-any.whl
+STAMP       = $(VENV)/.install.stamp
+VENV_STAMP  = $(VENV)/.venv.stamp
 
 LOCAL_DEPS  = lib/mlx-2.2-py3-none-any.whl
 
@@ -18,60 +20,63 @@ BLUE=\033[0;34m
 NC=\033[0m
 
 MYPY_FLAGS = \
-	--warn-return-any			\
-	--warn-unused-ignores		\
-	--ignore-missing-imports	\
-	--disallow-untyped-defs		\
+	--warn-return-any           \
+	--warn-unused-ignores       \
+	--ignore-missing-imports    \
+	--disallow-untyped-defs     \
 	--check-untyped-defs
 
 
 all: run
 
-.ensure-uv:
-	@if ! command -v uv > /dev/null 2>&1 && [ ! -f $(UV) ]; then \
-		echo "$(BLUE)uv not found, installing...$(NC)"; \
-		curl -Lsf https://astral.sh/uv/install.sh | sh; \
-		echo "$(GREEN)uv installed$(NC)"; \
-	fi
+$(UV):
+	@echo "$(BLUE)uv not found, installing...$(NC)"
+	@curl -Lsf https://astral.sh/uv/install.sh | sh
+	@echo "$(GREEN)uv installed$(NC)"
 
-$(VENV): .ensure-uv
+$(VENV_STAMP): $(UV)
 	@echo "Creating virtual environment..."
-	@$(UV) venv $(VENV) --clear
+	@$(UV) venv $(VENV)
+	@touch $(VENV_STAMP)
 	@echo "Virtual environment ready"
 
-build: .ensure-uv $(OUTPUT_FILE)
-
-$(OUTPUT_FILE):
+$(OUTPUT_FILE): $(VENV_STAMP)
 	@echo "Building project..."
 	@$(UV) build
 	@cp dist/$(OUTPUT_FILE) .
 	@echo "Build complete"
 
-install: build $(VENV)
+$(STAMP): $(VENV_STAMP) $(OUTPUT_FILE) $(LOCAL_DEPS)
 	@echo "Installing local dependencies..."
 	@$(UV) pip install --python $(V_PYTHON) $(LOCAL_DEPS)
 	@echo "Installing project with dependencies..."
 	@$(UV) pip install --python $(V_PYTHON) -e ".[dev]"
+	@touch $(STAMP)
 	@echo "Installation complete"
 
-run: install
-	@echo "$(BLUE)Running maze generator...$(NC)\n --------------------"
+build: $(OUTPUT_FILE)
+
+install: $(STAMP)
+
+run: $(STAMP)
+	@echo "$(BLUE)Running maze generator...$(NC)"
+	@echo "--------------------"
 	-@$(V_PYTHON) $(MAIN) config.txt
 
-debug: install
+debug: $(STAMP)
 	@$(V_PYTHON) -m pdb $(MAIN)
 
-test: install
+test: $(STAMP)
 	@echo "Running tests..."
 	@$(VENV_BIN)/pytest
 
-lint: install
+lint: $(STAMP)
 	@echo "Running flake8..."
 	@$(FLAKE) . --exclude $(VENV)
 	@echo "Running mypy..."
 	@$(MYPY) $(MYPY_FLAGS) src
 
-lint-strict: install
+lint-strict: $(STAMP)
 	@$(FLAKE) . --exclude $(VENV)
 	@$(MYPY) --strict src
 
@@ -84,4 +89,4 @@ clean:
 	@rm -rf assets/rescaled
 	@echo "Clean complete"
 
-.PHONY: .ensure-uv build install run debug test lint lint-strict clean
+.PHONY: all build install run debug test lint lint-strict clean
