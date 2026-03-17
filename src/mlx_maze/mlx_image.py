@@ -201,7 +201,7 @@ class MazeImage(MLXImage):
                 self.wall_color
             )
 
-        # # Ouest
+        # Ouest
         if value & 8:
             self.draw_rect(
                 x1, y1,

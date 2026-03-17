@@ -2,16 +2,16 @@
 # format in this file: 'KEY=VALUE'
 
 # width of the maze (in cell) default to 100
-WIDTH=100
+WIDTH=32
 
 # height of the maze (in cell) default to 50
-HEIGHT=100
+HEIGHT=22
 
 # entry of the maze
-# ENTRY=5=0,50
+# ENTRY=0,0
 
 # exit of the maze
-EXIT=99,99
+EXIT=29,21
 
 # file to save the output in
 OUTPUT_FILE=output_maze.txt

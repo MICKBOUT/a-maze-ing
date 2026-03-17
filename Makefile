@@ -3,7 +3,7 @@ VENV        = .venv
 VENV_BIN    = $(VENV)/bin
 V_PYTHON    = $(VENV_BIN)/python
 
-MAIN        = a_maze_ing.py
+MAIN        = a-maze-ing.py
 VERSION     = 1.0.0
 OUTPUT_FILE = mazegen-$(VERSION)-py3-none-any.whl
 STAMP       = $(VENV)/.install.stamp
@@ -27,7 +27,7 @@ MYPY_FLAGS = \
 	--check-untyped-defs
 
 
-all: run
+build: $(OUTPUT_FILE)
 
 $(UV):
 	@echo "$(BLUE)uv not found, installing...$(NC)"
@@ -53,8 +53,6 @@ $(STAMP): $(VENV_STAMP) $(OUTPUT_FILE) $(LOCAL_DEPS)
 	@$(UV) pip install --python $(V_PYTHON) -e ".[dev]"
 	@touch $(STAMP)
 	@echo "Installation complete"
-
-build: $(OUTPUT_FILE)
 
 install: $(STAMP)
 

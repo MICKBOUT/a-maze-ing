@@ -15,10 +15,6 @@ class MazeConfig(TypedDict, total=False):
     seed: str
 
 
-config_dict: MazeConfig = {
-}
-
-
 def validate_data(config_dict: MazeConfig) -> None:
     """
     Validate the configuration parameters for maze generation and solving.
@@ -170,7 +166,6 @@ def load_file(file_name: str, config_dict: MazeConfig) -> None:
                 line = line.strip()
 
                 if not line or line[0] == '#':
-                    print(f"line {line_nb} skipped")
                     continue
 
                 if '=' not in line:
@@ -320,6 +315,7 @@ def new_maze(config_file: str = "config.txt", new_seed: bool = False
         to the exit point in the generated maze.
     """
 
+    config_dict: MazeConfig = {}
     load_file(config_file, config_dict)
     fill_config_dict(config_dict)
     validate_data(config_dict)
@@ -350,13 +346,3 @@ def new_maze(config_file: str = "config.txt", new_seed: bool = False
         config_dict["output_file"]
     )
     return progress_stack, config_dict["output_file"]
-
-
-if __name__ == "__main__":
-    config_dict = {}
-    try:
-        load_file("config.txt", config_dict)
-        fill_config_dict(config_dict)
-    except ConfigFileError as e:
-        print()
-        print(f"\033[0;31m{type(e).__name__}\033[0m:", e)

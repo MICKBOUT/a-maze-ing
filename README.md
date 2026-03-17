@@ -2,6 +2,9 @@
 
 # A-Maze-Ing
 
+## Result
+![Result](result.png)
+
 ## Description
 A-Maze-Ing is a maze generator, solver, and visualizer built for the 42 curriculum. It generates mazes with an embedded """42""" logo, solves them with A*, and renders the result in an MLX window.
 

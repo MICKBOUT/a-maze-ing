@@ -12,7 +12,6 @@ def main() -> None:
         print("\033[0;31mError\033[0m"
               ":No file provided")
         return
-
     try:
         heap, filename = new_maze(config_file=config_file)
     except ConfigFileError as e:
