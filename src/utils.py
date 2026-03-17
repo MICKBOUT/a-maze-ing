@@ -5,7 +5,7 @@ from mazegen.solver import solver_heap
 from exception import ConfigFileError, PathNotFound
 
 
-class MazeConfig(TypedDict):
+class MazeConfig(TypedDict, total=False):
     width: int
     height: int
     entry: Tuple[int, int]
@@ -16,13 +16,6 @@ class MazeConfig(TypedDict):
 
 
 config_dict: MazeConfig = {
-    "width": 75,
-    "height": 50,
-    "entry": (37, 25),
-    "exit": (0, 0),
-    "output_file": "output_maze.txt",
-    "perfect": False,
-    "seed": ""
 }
 
 
@@ -139,72 +132,156 @@ def write_file(
 
 def load_file(file_name: str, config_dict: MazeConfig) -> None:
     """
-    Load configuration parameters from a text file into a dictionary.
-    The function reads the specified file line by line, parsing key-value pairs
-    in the format "key=value". It ignores empty lines and lines starting with
-    '#'. The recognized keys are "width", "height", "entry", "exit",
-    "output_file", "perfect", and "seed". The values are processed and stored
-    in the provided config_dict. If the file is not found or if there are
-    parsing errors, a ConfigFileError is raised with details about the issue
-    and the line number where it occurred.
+    Load and parse the configuration file for maze generation and solving.
+    This function reads the specified configuration file line by line, parsing
+    the key-value pairs to populate the config_dict with the necessary
+    parameters for maze generation and solving. The function handles various
+    cases, such as skipping empty lines and comments, validating the presence
+    of the '=' separator, and ensuring that the keys and values are in the
+    expected format. If any issues are encountered during the parsing process,
+    such as missing keys, invalid formats, or duplicate keys, a
+    ConfigFileError is raised with details about the specific issue and the
+    line number where it occurred.
 
     Parameters
     ----------
     file_name : str
-        The path to the configuration file to be loaded.
-    config_dict : dict
-        A dictionary to store the loaded configuration parameters. The function
-        updates this dictionary with the values read from the file.
+        The name of the configuration file to be loaded and parsed.
+    config_dict : MazeConfig
+        A dictionary that will be populated with the configuration parameters
+        extracted from the configuration file. The expected keys in the
+        dictionary include "width", "height", "entry", "exit", "output_file",
+        "perfect", and "seed". The function will update this dictionary with
+        the values parsed from the configuration file.
     Raises
     ------
     ConfigFileError
-        If the specified file is not found, or if there are parsing errors such
-        as unrecognized keys, invalid value formats, or other issues. The error
-        message will include details about the specific issue and the line
-        number where it occurred.
+        If there is an error in the configuration file, such as an unrecognized
+        key, invalid value format, missing separator, or other parsing issues.
+        The error message will include details about the specific issue and
+        the line number where it occurred, if applicable. Additionally, if the
+        specified configuration file cannot be found, a ConfigFileError will
+        be raised indicating that the file is required for the program to run.
     """
+
     try:
-        index = line = None
         with open(file_name, "r") as file:
-            for index, line in enumerate(
-                    [line.strip() for line in file], start=1):
+            for line_nb, line in enumerate(file, start=1):
+                line = line.strip()
+
                 if not line or line[0] == '#':
+                    print(f"line {line_nb} skipped")
                     continue
-                variable, data = line.split("=", maxsplit=1)
-                variable = variable.lower()
 
-                if variable in {"width", "height"}:
-                    if variable == "width":
-                        config_dict["width"] = int(data)
-                    else:
-                        config_dict["height"] = int(data)
+                if '=' not in line:
+                    raise ConfigFileError(
+                        "No separator found in the line ('=' expected)"
+                    )
+                key, value = line.split("=", maxsplit=1)
+                key = key.strip().lower()
+                value = value.strip()
 
-                elif variable in {"entry", "exit"}:
-                    x, y = data.split(',')
-                    if variable == "entry":
-                        config_dict["entry"] = (int(x), int(y))
-                    else:
-                        config_dict["exit"] = (int(x), int(y))
+                if key in config_dict:
+                    raise ConfigFileError(
+                        "Key present multiple time in config file")
 
-                elif variable == "output_file":
-                    config_dict["output_file"] = data
+                match key:
+                    case "width":
+                        try:
+                            config_dict["width"] = int(value)
+                        except ValueError:
+                            raise ConfigFileError(
+                                "Number not found in the given data"
+                            )
 
-                elif variable == "perfect":
-                    if data.lower() in {"true", '1', "yes", "y"}:
-                        config_dict["perfect"] = True
-                    elif data.lower() in {"false", '0', "no", "n"}:
-                        config_dict["perfect"] = False
-                    else:
-                        raise Exception("bool not found")
+                    case "height":
+                        try:
+                            config_dict["height"] = int(value)
+                        except ValueError:
+                            raise ConfigFileError(
+                                "Number not found in the given data"
+                            )
 
-                elif variable == "seed":
-                    config_dict["seed"] = data
-                else:
-                    raise Exception("KEY not used")
+                    case "entry":
+                        try:
+                            x, y = value.split(',')
+                        except ValueError:
+                            raise ConfigFileError(
+                                "Value in wrong format "
+                                f"(expected: 'int,int' found: {value}), "
+                                "reading impossible"
+                            )
+                        try:
+                            config_dict["entry"] = int(x), int(y)
+                        except ValueError:
+                            raise ConfigFileError(
+                                "Number not found in the given data"
+                            )
+
+                    case "exit":
+                        try:
+                            x, y = value.split(',')
+                        except ValueError:
+                            raise ConfigFileError(
+                                "Value in wrong format "
+                                f"(expected: 'int,int' found: {value}), "
+                                "reading impossible"
+                            )
+                        try:
+                            config_dict["exit"] = int(x), int(y)
+                        except ValueError:
+                            raise ConfigFileError(
+                                "Number not found in the given data"
+                            )
+
+                    case "output_file":
+                        config_dict["output_file"] = value
+
+                    case "perfect":
+                        value = value.lower()
+                        if value in {'yes', 'y', '1', 'true'}:
+                            config_dict["perfect"] = True
+                        elif value in {'no', 'n', '0', 'false'}:
+                            config_dict["perfect"] = False
+                        else:
+                            raise ConfigFileError(
+                                "bool not found on line"
+                            )
+
+                    case "seed":
+                        config_dict["seed"] = value
+
+                    case _:
+                        raise ConfigFileError("Invalid key in config file")
+
     except FileNotFoundError:
         raise ConfigFileError("This programge need the file 'config.txt'")
     except Exception as e:
-        raise ConfigFileError(f"{e}", line=line, line_nb=index)
+        raise ConfigFileError(f"{e}", line=line, line_nb=line_nb)
+
+
+def fill_config_dict(config_dict: MazeConfig) -> None:
+    """
+    Fill the configuration dictionary with default values.
+    """
+
+    if "width" not in config_dict:
+        config_dict["width"] = 100
+    if "height" not in config_dict:
+        config_dict["height"] = 50
+    if "entry" not in config_dict:
+        config_dict["entry"] = (0, 0)
+    if "exit" not in config_dict:
+        config_dict["exit"] = (
+            config_dict["width"] - 1,
+            config_dict["height"] - 1
+        )
+    if "output_file" not in config_dict:
+        config_dict["output_file"] = "output_maze.txt"
+    if "perfect" not in config_dict:
+        config_dict["perfect"] = False
+    if "seed" not in config_dict:
+        config_dict["seed"] = ""
 
 
 def new_maze(config_file: str = "config.txt", new_seed: bool = False
@@ -244,6 +321,7 @@ def new_maze(config_file: str = "config.txt", new_seed: bool = False
     """
 
     load_file(config_file, config_dict)
+    fill_config_dict(config_dict)
     validate_data(config_dict)
 
     if new_seed:
@@ -272,3 +350,13 @@ def new_maze(config_file: str = "config.txt", new_seed: bool = False
         config_dict["output_file"]
     )
     return progress_stack, config_dict["output_file"]
+
+
+if __name__ == "__main__":
+    config_dict = {}
+    try:
+        load_file("config.txt", config_dict)
+        fill_config_dict(config_dict)
+    except ConfigFileError as e:
+        print()
+        print(f"\033[0;31m{type(e).__name__}\033[0m:", e)

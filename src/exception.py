@@ -28,11 +28,11 @@ class ConfigFileError(Exception):
                  message: str = "config file",
                  line: Optional[str] = None,
                  line_nb: Optional[int] = None) -> None:
-        self.message = "\033[0;31mConfigFileError\033[0m: "
-        self.message += message
+
+        self.message = message
 
         if line is not None:
-            self.message += f" in '{line}'"
+            self.message += f" in '\033[0;34m{line}\033[0m'"
 
         if line_nb is not None:
             self.message += f" (line {line_nb})"

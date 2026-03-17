@@ -1,4 +1,3 @@
-
 import sys
 
 from utils import new_maze
@@ -17,7 +16,7 @@ def main() -> None:
     try:
         heap, filename = new_maze(config_file=config_file)
     except ConfigFileError as e:
-        print(e)
+        print(f"\033[0;31m{type(e).__name__}\033[0m:", e)
         return
     except (MisplaceCell, PathNotFound) as e:
         print("\033[0;31mError\033[0m:", e)

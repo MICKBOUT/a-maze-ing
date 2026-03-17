@@ -1,7 +1,23 @@
+# config file, used to create a maze with custom value
+# format in this file: 'KEY=VALUE'
+
+# width of the maze (in cell) default to 100
 WIDTH=100
+
+# height of the maze (in cell) default to 50
 HEIGHT=100
-ENTRY=50,50
+
+# entry of the maze
+# ENTRY=5=0,50
+
+# exit of the maze
 EXIT=99,99
+
+# file to save the output in
 OUTPUT_FILE=output_maze.txt
+
+# if the maze will be perfect or not, a perfect maze only has one solution, a non perfect has multiple solution
 PERFECT=False
+
+# The seed used to generate the maze, leave this field blank to get a random maze
 SEED=
