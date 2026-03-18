@@ -79,6 +79,11 @@ maze = MazeGenerator(width=25, height=25, perfect=True, seed_input="42").maze
 make test
 ```
 
+## Profiler
+```bash
+make profile
+```
+
 ## Contribution
 - mboutte: A* solver, config parsing, maze generation.
 - pdauga: MLX visualization, UI design.
