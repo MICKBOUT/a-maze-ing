@@ -1,6 +1,13 @@
 from heapq import heappop, heappush
 
-from exception import MisplaceCell
+
+class MisplaceCell(Exception):
+    """
+    Exception raised when a key cell is placed on the 42 logo in the maze.
+    """
+    def __init__(self, message: str = "Key cell place on 42 logo"):
+        self.message = message
+        super().__init__(self.message)
 
 
 def solver_heap(
