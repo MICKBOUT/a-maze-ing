@@ -78,6 +78,10 @@ lint-strict: $(STAMP)
 	@$(FLAKE) . --exclude $(VENV)
 	@$(MYPY) --strict src
 
+profiler: $(STAMP)
+	-@$(V_PYTHON) -m cProfile -o profile.stats $(MAIN) config.txt "profiler"
+	snakeviz profile.stats
+
 clean:
 	@echo "Cleaning project..."
 	@rm -rf $(VENV) dist $(OUTPUT_FILE)

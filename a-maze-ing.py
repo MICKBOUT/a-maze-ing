@@ -6,8 +6,11 @@ from exception import ConfigFileError, PathNotFound, MisplaceCell
 
 
 def main() -> None:
+    profiler = False
     if len(sys.argv) > 1:
         config_file = sys.argv[1]
+        if len(sys.argv) > 2 and sys.argv[2] == "profiler":
+            profiler = True
     else:
         print("\033[0;31mError\033[0m"
               ":No file provided")
@@ -21,7 +24,7 @@ def main() -> None:
         print("\033[0;31mError\033[0m:", e)
         return
 
-    render = MLXRenderer(heap, filename)
+    render = MLXRenderer(heap, filename, profiler=profiler)
     render.mlx.mlx_loop(render.mlx_ptr)
 
 

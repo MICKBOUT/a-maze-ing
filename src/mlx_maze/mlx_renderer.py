@@ -18,17 +18,25 @@ class MLXRenderer:
     updates the display accordingly.
     """
 
-    def __init__(self, heap: list[tuple[int, int]], filename: str) -> None:
+    def __init__(
+            self,
+            heap: list[tuple[int, int]],
+            filename: str,
+            profiler: bool = False
+            ) -> None:
         """
-        Initialize the MLX window, load the maze data, and prepare all
-        rendering components.
+        Initialize the MLXRenderer with maze data and set up the graphical
+        interface.
 
         Parameters
         ----------
         heap : list[tuple[int, int]]
-            Sequence of visited maze cells used for heap visualization.
+            List of coordinates representing the heap state of the maze.
         filename : str
-            Path to the maze file used to initialize MazeData.
+            Path to the maze configuration file, used for parsing and display.
+        profiler : bool, optional
+            If True, the renderer will exit immediately after initialization,
+            allowing for profiling of the setup phase. Default is False.
         """
         self.data = MazeData(heap, filename)
 
@@ -204,6 +212,9 @@ class MLXRenderer:
         self.mlx.mlx_hook(self.win_ptr, 2, 1, on_keypress, None)
         self.mlx.mlx_hook(self.win_ptr, 33, 0, lambda x: self.destroy(), None)
         self.mlx.mlx_mouse_hook(self.win_ptr, on_mouse, None)
+
+        if profiler:
+            exit()
 
     def put_image(self, img: MLXImage, x: int, y: int) -> None:
         """

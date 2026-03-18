@@ -16,5 +16,6 @@ dist/
 mazegen-1.0.0-py3-none-any.whl
 assets/rescaled/
 
+profile.stats
 *.txt
 !config.txt
