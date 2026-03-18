@@ -17,13 +17,9 @@ A-Maze-Ing is a maze generator, solver, and visualizer built for the 42 curricul
 ## Requirements
 - Python 3.7+
 - `Pillow` (for image scaling)
+- snakevie for the profiler
 - MLX Python wheel (included): `lib/mlx-2.2-py3-none-any.whl`
 
-Install dependencies Manualy:
-```bash
-pip install Pillow
-pip install lib/mlx-2.2-py3-none-any.whl
-```
 ### Note:
 The program will install the dependencies by itself with make run or make build, and create a virtual environement.
 
@@ -81,7 +77,7 @@ make test
 
 ## Profiler
 ```bash
-make profile
+make profiler
 ```
 
 ## Contribution
