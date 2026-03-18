@@ -3,7 +3,7 @@ VENV        = .venv
 VENV_BIN    = $(VENV)/bin
 V_PYTHON    = $(VENV_BIN)/python
 
-MAIN        = a-maze-ing.py
+MAIN        = a_maze_ing.py
 VERSION     = 1.0.0
 OUTPUT_FILE = mazegen-$(VERSION)-py3-none-any.whl
 STAMP       = $(VENV)/.install.stamp
