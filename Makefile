@@ -1,13 +1,10 @@
-UV          = $(HOME)/.local/bin/uv
 VENV        = .venv
 VENV_BIN    = $(VENV)/bin
 V_PYTHON    = $(VENV_BIN)/python
 
-MAIN        = a-maze-ing.py
-VERSION     = 1.0.0
+MAIN        = a_maze_ing.py
+VERSION     = 2.0.0
 OUTPUT_FILE = mazegen-$(VERSION)-py3-none-any.whl
-STAMP       = $(VENV)/.install.stamp
-VENV_STAMP  = $(VENV)/.venv.stamp
 
 LOCAL_DEPS  = lib/mlx-2.2-py3-none-any.whl
 
@@ -28,38 +25,38 @@ MYPY_FLAGS = \
 
 
 install: $(OUTPUT_FILE)
-	uv sync
-	@$(UV) pip install --python $(V_PYTHON) $(LOCAL_DEPS)
+	uv sync --link-mode=copy
+	uv pip install --python $(V_PYTHON) $(LOCAL_DEPS) --link-mode=copy
 
 
 $(OUTPUT_FILE):
-	@echo "Building project..."
-	@$(UV) build
-	@cp dist/$(OUTPUT_FILE) .
-	@echo "Build complete"
+	echo "Building project..."
+	uv build
+	cp dist/$(OUTPUT_FILE) .
+	echo "Build complete"
 
 
-run: build
+run: install
 	uv run $(MAIN) config.txt
 
-debug: build
-	@$(V_PYTHON) -m pdb $(MAIN)
+debug: install
+	$(V_PYTHON) -m pdb $(MAIN)
 
-test: build
+test: install
 	@echo "Running tests..."
 	@$(VENV_BIN)/pytest
 
-lint: build
+lint: install
 	@echo "Running flake8..."
 	@$(FLAKE) . --exclude $(VENV)
 	@echo "Running mypy..."
 	@$(MYPY) $(MYPY_FLAGS) src
 
-lint-strict: build
+lint-strict: install
 	@$(FLAKE) . --exclude $(VENV)
 	@$(MYPY) --strict src
 
-profiler: build
+profiler: install
 	-@$(V_PYTHON) -m cProfile -o profile.stats $(MAIN) config.txt "profiler"
 	snakeviz profile.stats
 

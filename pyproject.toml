@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mazegen"
-version = "1.0.0"
+version = "2.0.0"
 authors = [
   { name="pdauga", email="pdauga@student.42lyon.fr" },
   { name="mboutte", email="mboutte@student.42lyon.fr" },

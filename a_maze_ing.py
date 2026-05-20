@@ -1,9 +1,9 @@
 import sys
 
-from utils import new_maze
-from mlx_maze.mlx_renderer import MLXRenderer
-from exception import ConfigFileError, PathNotFound
-from mazegen import MisplaceCell
+from src.utils import new_maze
+from src.mazegen import MisplaceCell
+from src.mlx_maze.mlx_renderer import MLXRenderer
+from src.exception import ConfigFileError, PathNotFound
 
 
 def main() -> None:
