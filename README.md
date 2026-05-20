@@ -17,7 +17,7 @@ A-Maze-Ing is a maze generator, solver, and visualizer built for the 42 curricul
 ## Requirements
 - Python 3.7+
 - `Pillow` (for image scaling)
-- snakevie for the profiler
+- snakeviz for the profiler
 - MLX Python wheel (included): `lib/mlx-2.2-py3-none-any.whl`
 
 ### Note:
@@ -63,6 +63,9 @@ Each cell is a 4-bit wall mask:
 - `4`: South
 - `8`: West
 
+## Algorithm
+A* algorithm is used for solving the maze, with a heuristic based on Manhattan distance. The maze generation uses a randomized depth-first search (DFS) to create a perfect maze, with an option to add extra openings for imperfection.
+
 ## Using The Generator In Python
 ```python
 from mazegen import MazeGenerator
@@ -87,5 +90,5 @@ make profiler
 
 ## Resources
 - Maze generation: https://en.wikipedia.org/wiki/Maze_generation_algorithm
-- A* algorithm: https://en.wikipedia.org/wiki/A*_search_algorithm
+- A* algorithm: https://en.wikipedia.org/wiki/paff3000/A*_search_algorithm/
 - MLX documentation: https://harm-smits.github.io/42docs/libs/minilibx

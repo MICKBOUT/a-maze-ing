@@ -4,25 +4,22 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mazegen"
-version = "1.0.0"
+version = "2.0.0"
 authors = [
   { name="pdauga", email="pdauga@student.42lyon.fr" },
   { name="mboutte", email="mboutte@student.42lyon.fr" },
 ]
 description = "None"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = [
-    "Pillow>=10.0"
-]
 
-[project.optional-dependencies]
-dev = [
+dependencies = [
+    "Pillow>=10.0",
     "pytest",
     "flake8",
     "mypy",

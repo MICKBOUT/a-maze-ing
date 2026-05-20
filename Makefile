@@ -1,23 +1,15 @@
-UV          = $(HOME)/.local/bin/uv
 VENV        = .venv
 VENV_BIN    = $(VENV)/bin
 V_PYTHON    = $(VENV_BIN)/python
 
 MAIN        = a_maze_ing.py
-VERSION     = 1.0.0
+VERSION     = 2.0.0
 OUTPUT_FILE = mazegen-$(VERSION)-py3-none-any.whl
-STAMP       = $(VENV)/.install.stamp
-VENV_STAMP  = $(VENV)/.venv.stamp
 
 LOCAL_DEPS  = lib/mlx-2.2-py3-none-any.whl
 
 FLAKE = $(VENV_BIN)/flake8
 MYPY  = $(VENV_BIN)/mypy
-
-RED=\033[0;31m
-GREEN=\033[0;32m
-BLUE=\033[0;34m
-NC=\033[0m
 
 MYPY_FLAGS = \
 	--warn-return-any           \
@@ -27,68 +19,48 @@ MYPY_FLAGS = \
 	--check-untyped-defs
 
 
-build: $(OUTPUT_FILE)
+install: $(OUTPUT_FILE)
+	@uv sync --link-mode=copy 2> /dev/null
+	@uv pip install --python $(V_PYTHON) $(LOCAL_DEPS) --link-mode=copy 2> /dev/null
+	@echo "installation complete"
 
-$(UV):
-	@echo "$(BLUE)uv not found, installing...$(NC)"
-	@curl -Lsf https://astral.sh/uv/install.sh | sh
-	@echo "$(GREEN)uv installed$(NC)"
-
-$(VENV_STAMP): $(UV)
-	@echo "Creating virtual environment..."
-	@$(UV) venv $(VENV)
-	@touch $(VENV_STAMP)
-	@echo "Virtual environment ready"
-
-$(OUTPUT_FILE): $(VENV_STAMP)
+$(OUTPUT_FILE):
 	@echo "Building project..."
-	@$(UV) build
+	@uv build
 	@cp dist/$(OUTPUT_FILE) .
 	@echo "Build complete"
 
-$(STAMP): $(VENV_STAMP) $(OUTPUT_FILE) $(LOCAL_DEPS)
-	@echo "Installing local dependencies..."
-	@$(UV) pip install --python $(V_PYTHON) $(LOCAL_DEPS)
-	@echo "Installing project with dependencies..."
-	@$(UV) pip install --python $(V_PYTHON) -e ".[dev]"
-	@touch $(STAMP)
-	@echo "Installation complete"
 
-install: $(STAMP)
+run: install
+	uv run --active --link-mode=copy $(MAIN) config.txt
 
-run: $(STAMP)
-	@echo "$(BLUE)Running maze generator...$(NC)"
-	@echo "--------------------"
-	-@$(V_PYTHON) $(MAIN) config.txt
+debug: install
+	$(V_PYTHON) -m pdb $(MAIN)
 
-debug: $(STAMP)
-	@$(V_PYTHON) -m pdb $(MAIN)
-
-test: $(STAMP)
+test: install
 	@echo "Running tests..."
 	@$(VENV_BIN)/pytest
 
-lint: $(STAMP)
+lint: install
 	@echo "Running flake8..."
 	@$(FLAKE) . --exclude $(VENV)
 	@echo "Running mypy..."
 	@$(MYPY) $(MYPY_FLAGS) src
 
-lint-strict: $(STAMP)
+lint-strict: install
 	@$(FLAKE) . --exclude $(VENV)
 	@$(MYPY) --strict src
 
-profiler: $(STAMP)
+profiler: install
 	-@$(V_PYTHON) -m cProfile -o profile.stats $(MAIN) config.txt "profiler"
 	snakeviz profile.stats
 
 clean:
 	@echo "Cleaning project..."
-	@rm -rf $(VENV) dist $(OUTPUT_FILE)
+	@uv clean
+	@rm -rf $(VENV) dist $(OUTPUT_FILE) profile.stats .pytest_cache output_maze.txt assets/rescaled
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
-	@rm -rf .pytest_cache output_maze.txt
-	@rm -rf assets/rescaled
 	@echo "Clean complete"
 
-.PHONY: all build install run debug test lint lint-strict clean
+.PHONY: install run debug test lint lint-strict profiler clean
