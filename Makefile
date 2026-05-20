@@ -3,7 +3,7 @@ VENV        = .venv
 VENV_BIN    = $(VENV)/bin
 V_PYTHON    = $(VENV_BIN)/python
 
-MAIN        = a_maze_ing.py
+MAIN        = a-maze-ing.py
 VERSION     = 1.0.0
 OUTPUT_FILE = mazegen-$(VERSION)-py3-none-any.whl
 STAMP       = $(VENV)/.install.stamp
@@ -28,62 +28,45 @@ MYPY_FLAGS = \
 
 
 build: $(OUTPUT_FILE)
+	uv sync
+	@$(UV) pip install --python $(V_PYTHON) $(LOCAL_DEPS)
 
-$(UV):
-	@echo "$(BLUE)uv not found, installing...$(NC)"
-	@curl -Lsf https://astral.sh/uv/install.sh | sh
-	@echo "$(GREEN)uv installed$(NC)"
 
-$(VENV_STAMP): $(UV)
-	@echo "Creating virtual environment..."
-	@$(UV) venv $(VENV)
-	@touch $(VENV_STAMP)
-	@echo "Virtual environment ready"
-
-$(OUTPUT_FILE): $(VENV_STAMP)
+$(OUTPUT_FILE):
 	@echo "Building project..."
 	@$(UV) build
 	@cp dist/$(OUTPUT_FILE) .
 	@echo "Build complete"
 
-$(STAMP): $(VENV_STAMP) $(OUTPUT_FILE) $(LOCAL_DEPS)
-	@echo "Installing local dependencies..."
-	@$(UV) pip install --python $(V_PYTHON) $(LOCAL_DEPS)
-	@echo "Installing project with dependencies..."
-	@$(UV) pip install --python $(V_PYTHON) -e ".[dev]"
-	@touch $(STAMP)
-	@echo "Installation complete"
 
-install: $(STAMP)
+run: build
+	uv run $(MAIN) config.txt
 
-run: $(STAMP)
-	@echo "$(BLUE)Running maze generator...$(NC)"
-	@echo "--------------------"
-	-@$(V_PYTHON) $(MAIN) config.txt
-
-debug: $(STAMP)
+debug: build
 	@$(V_PYTHON) -m pdb $(MAIN)
 
-test: $(STAMP)
+test: build
 	@echo "Running tests..."
 	@$(VENV_BIN)/pytest
 
-lint: $(STAMP)
+lint: build
 	@echo "Running flake8..."
 	@$(FLAKE) . --exclude $(VENV)
 	@echo "Running mypy..."
 	@$(MYPY) $(MYPY_FLAGS) src
 
-lint-strict: $(STAMP)
+lint-strict: build
 	@$(FLAKE) . --exclude $(VENV)
 	@$(MYPY) --strict src
 
-profiler: $(STAMP)
+profiler: build
 	-@$(V_PYTHON) -m cProfile -o profile.stats $(MAIN) config.txt "profiler"
 	snakeviz profile.stats
 
+
 clean:
 	@echo "Cleaning project..."
+	@uv clean
 	@rm -rf $(VENV) dist $(OUTPUT_FILE)
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
@@ -91,4 +74,4 @@ clean:
 	@rm -rf assets/rescaled
 	@echo "Clean complete"
 
-.PHONY: all build install run debug test lint lint-strict clean
+.PHONY: build run debug test lint lint-strict profiler clean
