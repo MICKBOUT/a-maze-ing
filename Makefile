@@ -27,7 +27,7 @@ MYPY_FLAGS = \
 	--check-untyped-defs
 
 
-build: $(OUTPUT_FILE)
+install: $(OUTPUT_FILE)
 	uv sync
 	@$(UV) pip install --python $(V_PYTHON) $(LOCAL_DEPS)
 
@@ -63,7 +63,6 @@ profiler: build
 	-@$(V_PYTHON) -m cProfile -o profile.stats $(MAIN) config.txt "profiler"
 	snakeviz profile.stats
 
-
 clean:
 	@echo "Cleaning project..."
 	@uv clean
@@ -74,4 +73,4 @@ clean:
 	@rm -rf assets/rescaled
 	@echo "Clean complete"
 
-.PHONY: build run debug test lint lint-strict profiler clean
+.PHONY: install run debug test lint lint-strict profiler clean
