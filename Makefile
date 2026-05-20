@@ -11,11 +11,6 @@ LOCAL_DEPS  = lib/mlx-2.2-py3-none-any.whl
 FLAKE = $(VENV_BIN)/flake8
 MYPY  = $(VENV_BIN)/mypy
 
-RED=\033[0;31m
-GREEN=\033[0;32m
-BLUE=\033[0;34m
-NC=\033[0m
-
 MYPY_FLAGS = \
 	--warn-return-any           \
 	--warn-unused-ignores       \
@@ -25,15 +20,15 @@ MYPY_FLAGS = \
 
 
 install: $(OUTPUT_FILE)
-	uv sync --link-mode=copy
-	uv pip install --python $(V_PYTHON) $(LOCAL_DEPS) --link-mode=copy
-
+	@uv sync --link-mode=copy 2> /dev/null
+	@uv pip install --python $(V_PYTHON) $(LOCAL_DEPS) --link-mode=copy 2> /dev/null
+	@echo "installation complete"
 
 $(OUTPUT_FILE):
-	echo "Building project..."
-	uv build
-	cp dist/$(OUTPUT_FILE) .
-	echo "Build complete"
+	@echo "Building project..."
+	@uv build
+	@cp dist/$(OUTPUT_FILE) .
+	@echo "Build complete"
 
 
 run: install
