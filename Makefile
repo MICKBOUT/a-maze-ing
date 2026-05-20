@@ -58,11 +58,9 @@ profiler: install
 clean:
 	@echo "Cleaning project..."
 	@uv clean
-	@rm -rf $(VENV) dist $(OUTPUT_FILE)
+	@rm -rf $(VENV) dist $(OUTPUT_FILE) profile.stats .pytest_cache output_maze.txt assets/rescaled
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
-	@rm -rf .pytest_cache output_maze.txt
-	@rm -rf assets/rescaled
 	@echo "Clean complete"
 
 .PHONY: install run debug test lint lint-strict profiler clean
