@@ -102,21 +102,21 @@ def test_perfect_maze_diff_noseed() -> None:
         width=width,
         height=height,
         perfect=True,
-        seed_input=None
+        seed_input=""
     ).maze
 
     maze_1 = mazegen.MazeGenerator(
         width=width,
         height=height,
         perfect=True,
-        seed_input=None
+        seed_input=""
     ).maze
 
     maze_2 = mazegen.MazeGenerator(
         width=width,
         height=height,
         perfect=True,
-        seed_input=None
+        seed_input=""
     ).maze
 
     assert maze_0 != maze_1 != maze_2
@@ -129,21 +129,21 @@ def test_imperfect_maze_diff_noseed() -> None:
         width=width,
         height=height,
         perfect=False,
-        seed_input=None
+        seed_input=""
     ).maze
 
     maze_1 = mazegen.MazeGenerator(
         width=width,
         height=height,
         perfect=False,
-        seed_input=None
+        seed_input=""
     ).maze
 
     maze_2 = mazegen.MazeGenerator(
         width=width,
         height=height,
         perfect=False,
-        seed_input=None
+        seed_input=""
     ).maze
 
     assert maze_0 != maze_1 != maze_2

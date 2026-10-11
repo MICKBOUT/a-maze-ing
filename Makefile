@@ -1,66 +1,53 @@
-VENV        = .venv
-VENV_BIN    = $(VENV)/bin
-V_PYTHON    = $(VENV_BIN)/python
+VENV			= .venv
+MAIN			= a_maze_ing.py
+VERSION			= 2.0.0
+OUTPUT_FILE		= mazegen-$(VERSION)-py3-none-any.whl
 
-MAIN        = a_maze_ing.py
-VERSION     = 2.0.0
-OUTPUT_FILE = mazegen-$(VERSION)-py3-none-any.whl
+LOCAL_DEPS		= lib/mlx-2.2-py3-none-any.whl
 
-LOCAL_DEPS  = lib/mlx-2.2-py3-none-any.whl
-
-FLAKE = $(VENV_BIN)/flake8
-MYPY  = $(VENV_BIN)/mypy
-
-MYPY_FLAGS = \
+MYPY_FLAGS		= \
 	--warn-return-any           \
 	--warn-unused-ignores       \
 	--ignore-missing-imports    \
 	--disallow-untyped-defs     \
 	--check-untyped-defs
 
+EXCLUDE_VENV	= --exclude $(VENV)
 
-install: $(OUTPUT_FILE)
-	@uv sync --link-mode=copy 2> /dev/null
-	@uv pip install --python $(V_PYTHON) $(LOCAL_DEPS) --link-mode=copy 2> /dev/null
-	@echo "installation complete"
+install:
+	uv sync
 
-$(OUTPUT_FILE):
-	@echo "Building project..."
-	@uv build
-	@cp dist/$(OUTPUT_FILE) .
-	@echo "Build complete"
+run:
+	uv run python $(MAIN) config.txt
 
+debug:
+	uv run python -m pdb $(MAIN)
 
-run: install
-	uv run --active --link-mode=copy $(MAIN) config.txt
+build:
+	uv build
+	cp dist/$(OUTPUT_FILE) .
 
-debug: install
-	$(V_PYTHON) -m pdb $(MAIN)
+test:
+	uv run pytest
 
-test: install
-	@echo "Running tests..."
-	@$(VENV_BIN)/pytest
+lint:
+	uv run flake8 . $(EXCLUDE_VENV)
+	uv run mypy . $(EXCLUDE_VENV) $(MYPY_FLAGS)
 
-lint: install
-	@echo "Running flake8..."
-	@$(FLAKE) . --exclude $(VENV)
-	@echo "Running mypy..."
-	@$(MYPY) $(MYPY_FLAGS) src
+lint-strict:
+	uv run flake8 . $(EXCLUDE_VENV)
+	uv run mypy . $(EXCLUDE_VENV) --strict
 
-lint-strict: install
-	@$(FLAKE) . --exclude $(VENV)
-	@$(MYPY) --strict src
-
-profiler: install
-	-@$(V_PYTHON) -m cProfile -o profile.stats $(MAIN) config.txt "profiler"
+profiler:
+	-uv run python -m cProfile -o profile.stats $(MAIN) config.txt "profiler"
 	snakeviz profile.stats
 
 clean:
-	@echo "Cleaning project..."
-	@uv clean
-	@rm -rf $(VENV) dist $(OUTPUT_FILE) profile.stats .pytest_cache output_maze.txt assets/rescaled
-	@find . -type d -name "__pycache__" -exec rm -rf {} +
-	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
-	@echo "Clean complete"
+	echo "Cleaning project..."
+	uv clean
+	rm -rf $(VENV) dist $(OUTPUT_FILE) profile.stats .pytest_cache output_maze.txt assets/rescaled
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type d -name ".mypy_cache" -exec rm -rf {} +
+	echo "Clean complete"
 
 .PHONY: install run debug test lint lint-strict profiler clean
